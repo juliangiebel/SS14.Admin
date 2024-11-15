@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Serilog;
+using SS14.Admin.Components;
 using SS14.Admin.Helpers;
 using SS14.Admin.SignIn;
 
@@ -35,7 +36,7 @@ namespace SS14.Admin
             services.AddDbContext<PostgresServerDbContext>(options => options.UseNpgsql(connStr));
 
             services.AddControllers();
-            services.AddRazorPages(options =>
+            /*services.AddRazorPages(options =>
             {
                 options.Conventions.AuthorizeFolder("/Players");
                 options.Conventions.AuthorizeFolder("/Connections");
@@ -44,7 +45,10 @@ namespace SS14.Admin
                 options.Conventions.AuthorizeFolder("/Logs");
                 options.Conventions.AuthorizeFolder("/Characters");
                 options.Conventions.AuthorizeFolder("/Whitelist");
-            });
+            });*/
+
+            services.AddRazorComponents()
+                .AddInteractiveServerComponents();
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -116,14 +120,18 @@ namespace SS14.Admin
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAntiforgery();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapRazorComponents<App>()
+                    .AddInteractiveServerRenderMode();
                 endpoints.MapControllers();
+
             });
         }
     }
