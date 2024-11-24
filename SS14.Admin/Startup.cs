@@ -28,6 +28,7 @@ namespace SS14.Admin
             services.AddScoped<BanHelper>();
             services.AddScoped<PlayerLocator>();
             services.AddHttpContextAccessor();
+            services.AddQuickGridEntityFrameworkAdapter();
 
             var connStr = Configuration.GetConnectionString("DefaultConnection");
             if (connStr == null)

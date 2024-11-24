@@ -13,6 +13,8 @@
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="NetEscapades.Configuration.Yaml" />
@@ -28,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\Shared\Tables\" />
     <Folder Include="wwwroot\fonts\" />
   </ItemGroup>
 
@@ -40,7 +43,7 @@
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
       </PropertyGroup>
     -->
-    <Exec Command="npm ci"      Condition="'$(RestorePackagesWithLockFile)' == 'true'" />
+    <Exec Command="npm ci" Condition="'$(RestorePackagesWithLockFile)' == 'true'" />
     <Exec Command="npm install" Condition="'$(RestorePackagesWithLockFile)' != 'true'" />
 
     <!-- Write the stamp file, so incremental builds work -->
@@ -48,6 +51,6 @@
   </Target>
   
   <Target Name="BuildTailwind" Inputs="../tailwind.config.js;wwwroot/css/input.css;components/**/*" Outputs="wwwroot/css/output.css" AfterTargets="NpmInstall" BeforeTargets="BeforeBuild">
-    <Exec Command="npx tailwindcss -c ../tailwind.config.js -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css"/>
+    <Exec Command="npx tailwindcss -c ../tailwind.config.js -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css" />
   </Target>
 </Project>
