@@ -8,3 +8,5 @@ riderModule.iml
 **/discord.xml
 
 *.user
+
+node_modules

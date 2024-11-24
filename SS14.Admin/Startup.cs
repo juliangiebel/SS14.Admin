@@ -50,6 +50,7 @@ namespace SS14.Admin
             services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
+
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             services.AddAuthentication(options =>
@@ -80,6 +81,9 @@ namespace SS14.Admin
                         await handler.HandleTokenValidated(ctx);
                     };
                 });
+
+            services.AddAuthorization();
+            services.AddCascadingAuthenticationState();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

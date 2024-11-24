@@ -11,7 +11,7 @@ namespace SS14.Admin.Controllers
         {
             return Challenge(new AuthenticationProperties
             {
-                RedirectUri = Url.Page("/Index")
+                RedirectUri = "/"
             });
         }
 
@@ -19,7 +19,7 @@ namespace SS14.Admin.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("Cookies");
-            return RedirectToPage("/Index");
+            return Redirect("/");
         }
     }
 }

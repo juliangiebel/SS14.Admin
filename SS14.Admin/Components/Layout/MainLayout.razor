@@ -1,9 +1,50 @@
-@inherits LayoutComponentBase
 
-@Body
+@using SS14.Admin.Models
+@inherits LayoutComponentBase
+<noscript>
+    <style>
+    [x-show] { display: none; }
+  </style>
+</noscript>
+
+<header class="Header flex gap-x-8 p-2 pl-0 items-center sticky top-0 bg-white header-height z-10 pl-2" x-data="{ open: false }">
+    <img class="m-3 h-9  md:block" src="https://wiki.spacestation14.io/w/images/logo.svg" alt="space station 14 logo">
+    <h1 class="sr-only">space station 14 admin panel</h1>
+    <div class=" sm:flex focus-outline items-center h-9 border px-2 rounded-full">
+      <div class="ri-search-line text-lg"> </div>
+      <input type="text" class="border-none h-6 appearance-none accent-transparent focus-none" placeholder="Search" />
+    </div>
+    <Breadcrumbs/>
+  <div class="grow"></div>
+  <div class="mr-3 flex gap-x-2">
+    <a href="#" class=" font-semibold">adminXY</a><NavLink href="/Login/Logout">Logout</NavLink>
+    <!--<img class="rounded-full h-8 w-8" height="32" alt="@placeholder" src="https://i.pravatar.cc/32" width="32">-->
+  </div>
+</header>
+<div class="flex h-full-content bg-stone-100">
+    <NavMenu/>
+    <CascadingValue Value="Breadcrumbs">
+    <main class="basis-full p-8 m-2 rounded bg-white overflow-auto">
+        <div class="flex w-full justify-between">
+            <menu class="flex gap-2 text-neutral-600">
+                <!--<li><button class="p-2 rounded-md bg-red-600 hover:bg-red-500 text-white">Cancel<i class="ri-close-circle-line ml-1"></i></button></li>
+        <li><button class="p-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white">Merge<i class="ri-git-merge-line ml-1"></i></button></li>-->
+            </menu>
+        </div>
+        <div class="flex w-full gap-4 mt-6 flex-col">
+            @Body
+        </div>
+    </main>
+    </CascadingValue>
+</div>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code
+{
+    public List<Breadcrumb> Breadcrumbs = [];
+}

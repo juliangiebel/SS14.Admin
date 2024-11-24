@@ -1,0 +1,31 @@
+﻿@page "/unauthorized"
+<main class="h-screen bg-gray-100 flex items-center justify-center">
+
+<!-- Full Page Background -->
+  <div class="absolute inset-0 bg-gray-400">
+    <div class="absolute inset-0 bg-gray-500 bg-opacity-30 backdrop-blur-lg"></div>
+  </div>
+
+  <!-- Centered Login Box -->
+  <div class="relative z-10 flex flex-col items-center justify-center w-full max-w-md p-6 bg-white shadow-xl rounded-xl">
+      <!-- Logo Section -->
+      <div class="mb-6">
+          <img class="w-24 h-24 mx-auto" src="https://wiki.spacestation14.io/w/images/logo.svg" alt="space station 14 logo">
+      </div>
+      <form action="./login">
+          <!-- Login Button -->
+          <div>
+              <button
+                  type="submit"
+                  class="w-full px-4 py-2 font-semibold text-white bg-blue-500 rounded-md shadow-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-300"
+              >
+                  Login
+              </button>
+          </div>
+      </form>
+  </div>
+</main>
+
+@code {
+
+}
