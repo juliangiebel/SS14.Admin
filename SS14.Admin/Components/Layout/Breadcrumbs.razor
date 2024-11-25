@@ -1,38 +1,66 @@
 ﻿@inject NavigationManager Navigation
 
-<div class=" md:flex gap-1">
+<div class="md:flex gap-1">
     <NavLink href="/" class="hover:text-rose-600">SS14.Admin</NavLink>
-    @if (_name != null)
+    @foreach (var crumb in _breadcrumbs)
     {
         <i class="ri-arrow-right-s-line"></i>
-        <span class="text-neutral-600 cursor-default">@_name</span>
+        @if (!string.IsNullOrEmpty(crumb.Url))
+        {
+            <NavLink href="@crumb.Url" class="hover:text-rose-600">@crumb.Name</NavLink>
+        }
+        else
+        {
+            <span class="text-neutral-600 cursor-default">@crumb.Name</span>
+        }
     }
 </div>
 
-@code
-{
+@code {
 
-    // This is shit and I don't care
+    //this should be dynamically generated
     private readonly Dictionary<string, string> _crumbNames = new()
     {
-        { "bans", "Bans"},
-        { "characters", "Characters"},
-        { "connections", "Connections"},
-        { "logs", "Logs"},
-        { "players", "Players"},
-        { "role_bans", "Role Bans"},
-        { "whitelist", "Whitelist"},
-        { "settings", "Settings"}
+        { "bans", "Bans" },
+        { "bans/createban", "Create Ban" },
+        { "characters", "Characters" },
+        { "connections", "Connections" },
+        { "logs", "Logs" },
+        { "players", "Players" },
+        { "role_bans", "Role Bans" },
+        { "whitelist", "Whitelist" },
+        { "settings", "Settings" }
     };
 
-    private string? _name;
-    private string? _url;
+    private List<(string Url, string Name)> _breadcrumbs = new();
 
     protected override void OnInitialized()
     {
-        // TODO: Deal with nested pages
-        _url = Navigation.ToBaseRelativePath(Navigation.Uri);
-        _name = _crumbNames.GetValueOrDefault(_url);
+        Navigation.LocationChanged += HandleLocationChanged;
+        UpdateBreadcrumbs();
     }
 
+    private void HandleLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        UpdateBreadcrumbs();
+    }
+
+    private void UpdateBreadcrumbs()
+    {
+        var url = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var segments = url.Split("/", StringSplitOptions.RemoveEmptyEntries);
+        var cumulativePath = string.Empty;
+
+        _breadcrumbs.Clear();
+
+        foreach (var segment in segments)
+        {
+            cumulativePath = string.IsNullOrEmpty(cumulativePath) ? segment : $"{cumulativePath}/{segment}";
+            var name = _crumbNames.GetValueOrDefault(cumulativePath, segment);
+
+            _breadcrumbs.Add((Url: cumulativePath != segments[^1] ? $"/{cumulativePath}" : null, Name: name));
+        }
+
+        StateHasChanged();
+    }
 }

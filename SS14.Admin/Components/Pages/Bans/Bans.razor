@@ -16,12 +16,12 @@
 <div class="flex gap-1">
     <AuthorizeView Roles="MASSBAN">
         <Authorized>
-            <NavLink href="./CreateMassBan" class="button button-primary">Create new Mass Ban</NavLink>
+            <NavLink href="/bans/createmassban" class="button button-primary">Create new Mass Ban</NavLink>
         </Authorized>
     </AuthorizeView>
     <AuthorizeView Roles="BAN">
         <Authorized>
-            <NavLink href="./CreateBan" class="button button-primary">Create new Ban</NavLink>
+            <NavLink href="/bans/createban" class="button button-primary">Create new Ban</NavLink>
         </Authorized>
     </AuthorizeView>
 </div>
@@ -56,6 +56,9 @@
     private string? SearchQuery { get; set; }
     private string ShowFilter { get; set; } = "Active";
 
+    /// <summary>
+    /// Fetches and filters bans based on the current filters and search query.
+    /// </summary>
     private IQueryable<BanHelper.BanJoin<ServerBan, ServerUnban>> BansQuery()
     {
         var user = ClaimsPrincipal.Current;
@@ -91,6 +94,7 @@
 
     private async Task ConfirmUnban(int banId)
     {
+        var user = ClaimsPrincipal.Current;
         var ban = await DbContext.Ban.Include(b => b.Unban).SingleOrDefaultAsync(b => b.Id == banId);
         if (ban == null || ban.Unban != null)
         {
@@ -101,7 +105,7 @@
         ban.Unban = new ServerUnban
         {
             Ban = ban,
-            //UnbanningAdmin = User.Claims.GetUserId(),
+            UnbanningAdmin = user.Claims.GetUserId(),
             UnbanTime = DateTime.UtcNow
         };
 
@@ -119,5 +123,10 @@
         ConfirmingUnbanId = null;
     }
 
-    private string HighlightRow(BansModel.Ban ban) => ban.Id == ConfirmingUnbanId ? "table-warning" : string.Empty;
+    private string HighlightRow(BanHelper.BanJoin<ServerBan, ServerUnban> ban)
+    {
+        return ban.Ban.Id == ConfirmingUnbanId ? "table-warning" : string.Empty;
+    }
 }
+
+
