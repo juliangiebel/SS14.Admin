@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <!-- TODO: Fix darkmode code -->
 <html lang="en" data-bs-theme="light">
+<!--suppress HtmlRequiredTitleElement -->
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -11,10 +12,10 @@
     <link rel="stylesheet" href="/css/output.css"/>
     <link rel="stylesheet" href="/lib/remixicon/remixicon.css">
     <link rel="stylesheet" href="SS14.Admin.styles.css"/>
-    <HeadOutlet/>
+    <HeadOutlet @rendermode="InteractiveServer"/>
 </head>
-<body>
-    <Routes/>
+<body class="min-h-screen">
+    <Routes @rendermode="InteractiveServer"/>
     <script src="_framework/blazor.web.js"></script>
 </body>
 </html>

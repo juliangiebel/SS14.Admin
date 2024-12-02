@@ -63,7 +63,7 @@ public class LogsIndexModel : PageModel
             int? countselect
         )
         {
-            //Converts "any" to null in order to correctly use FindAdminLogs()
+            //Converts "any" to null in order to correctly use FindAdminLogsList()
             SeveritySearch = severity != -2 ? severity : null;
 
             var playerUserId = AdminLogRepository.FindPlayerByName(_dbContext.Player, player!).Result?.UserId.ToString();
@@ -83,7 +83,7 @@ public class LogsIndexModel : PageModel
             AllRouteData.Add("severity", severity.ToString());
             AllRouteData.Add("countselect", countselect.ToString());
 
-            Items = await AdminLogRepository.FindAdminLogs(
+            Items = await AdminLogRepository.FindAdminLogsList(
                 _dbContext,
                 _dbContext.AdminLog,
                 playerUserId,

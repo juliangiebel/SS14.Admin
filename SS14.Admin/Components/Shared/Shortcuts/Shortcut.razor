@@ -1,0 +1,21 @@
+﻿@{
+    RegisterShortcode();
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public string Code { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public Action Action { get; set; } = null!;
+
+    [CascadingParameter]
+    public Dictionary<string, List<Action>>? ShortcutHandlers { get; set; }
+
+    private void RegisterShortcode()
+    {
+        var actionList = ShortcutHandlers!.GetValueOrDefault(Code, []);
+        actionList.Add(Action);
+        ShortcutHandlers![Code] = actionList;
+    }
+}

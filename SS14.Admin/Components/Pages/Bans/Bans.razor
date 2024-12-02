@@ -5,7 +5,6 @@
 @using SS14.Admin.Helpers
 @using SS14.Admin.Pages
 @using Microsoft.AspNetCore.Components.QuickGrid
-@rendermode InteractiveServer
 @inject PostgresServerDbContext DbContext
 @inject BanHelper BanHelper
 
@@ -26,7 +25,7 @@
     </AuthorizeView>
 </div>
 
-<QuickGrid Items="BansQuery()" RowClassSelector="HighlightRow" PageSize="50">
+<QuickGrid Items="BansQuery()" RowClassSelector="HighlightRow" Pagination="@_pagination">
     <PropertyColumn Property="@(ban => ban.Player != null ? ban.Player.LastSeenUserName : null)" Title="Name" Sortable="true" />
     <PropertyColumn Property="@(ban => ban.Ban.Reason)" Title="Reason" Sortable="true" />
     <PropertyColumn Property="@(ban => ban.Ban.BanTime)" Title="Ban Time" Format="yyyy-MM-dd HH:mm:ss" Sortable="true" />
@@ -51,10 +50,14 @@
     </TemplateColumn>
 </QuickGrid>
 
+<Paginator State="@_pagination" />
+
 @code {
     private int? ConfirmingUnbanId { get; set; }
     private string? SearchQuery { get; set; }
     private string ShowFilter { get; set; } = "Active";
+
+    private PaginationState _pagination = new() { ItemsPerPage = 10 };
 
     /// <summary>
     /// Fetches and filters bans based on the current filters and search query.

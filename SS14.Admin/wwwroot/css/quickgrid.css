@@ -1,0 +1,4 @@
+﻿.quickgrid[theme="default"] > thead > tr > th
+{
+    height: 32px;
+}

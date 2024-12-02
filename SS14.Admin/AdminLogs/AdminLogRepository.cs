@@ -11,7 +11,7 @@ public static class AdminLogRepository
 {
     private static readonly Regex ParameterRegex = new(Regex.Escape("#"));
 
-    public static async Task<List<AdminLog>> FindAdminLogs(
+    public static async Task<List<AdminLog>> FindAdminLogsList(
         ServerDbContext context,
         DbSet<AdminLog> adminLogs,
         string? playerUserId,
@@ -24,7 +24,26 @@ public static class AdminLogRepository
         LogsIndexModel.OrderColumn sort,
         int limit = 100, int offset = 0)
     {
-        var fromDateValue = fromDate?.ToString("o", CultureInfo.InvariantCulture);
+        var results = FindAdminLogs(context, adminLogs, playerUserId, fromDate, toDate, serverName, type, search, roundId, severity, sort, limit, offset);
+        return await results.ToListAsync();
+    }
+
+    public static IQueryable<AdminLog> FindAdminLogs(
+        ServerDbContext context,
+        DbSet<AdminLog> adminLogs,
+        string? playerUserId,
+        DateTime? fromDate, DateTime? toDate,
+        string? serverName,
+        LogType? type,
+        string? search,
+        int? roundId,
+        int? severity,
+        LogsIndexModel.OrderColumn sort,
+        int limit = 100, int offset = 0)
+    {
+        return null;
+
+        /*var fromDateValue = fromDate?.ToString("o", CultureInfo.InvariantCulture);
         var toDateValue = toDate?.AddHours(23).ToString("o", CultureInfo.InvariantCulture);
         var typeInt = type.HasValue ? Convert.ToInt32(type).ToString() : null;
 
@@ -67,12 +86,11 @@ public static class AdminLogRepository
                 {(roundId != null ? "r.round_id = #::integer AND" : "")}
                 {(severity != null ? "a.impact = #::integer AND" : "")}
                 TRUE
-            ORDER BY {sortStatement} DESC
-            LIMIT #::bigint OFFSET #::bigint
+            --ORDER BY {sortStatement} DESC
+            --LIMIT #::bigint OFFSET #::bigint
         ";
 
-        var result = adminLogs.FromSqlRaw(EnumerateParameters(query), values.ToArray());
-        return await result.ToListAsync();
+        return adminLogs.FromSqlRaw(EnumerateParameters(query), values.ToArray());*/
     }
 
     public static async Task<Player?> FindPlayerByName(DbSet<Player> players, string name)
