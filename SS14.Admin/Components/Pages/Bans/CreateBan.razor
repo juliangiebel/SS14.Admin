@@ -75,10 +75,10 @@
             <label for="severity" class="col-sm-3 col-form-label fw-bold">Severity</label>
             <div class="col-sm-9">
                 <select id="severity" name="severity" class="form-control">
-                    @foreach (var severity in NoteSeverityHelper.SeverityItems)
+                    @*@foreach (var severity in NoteSeverityHelper.SeverityItems)
                     {
                         <option value="@severity.Value" @(Input.Severity == severity.Value ? "selected" : null)>@severity.Text</option>
-                    }
+                    }*@
                 </select>
             </div>
         </div>
