@@ -123,8 +123,15 @@
 
         try
         {
-            var ipAddr = Input.UseLatestIp ? await ResolveIp(Input.NameOrUid) : Input.IP;
-            var hwid = Input.UseLatestHwid ? await ResolveHwid(Input.NameOrUid) : Input.HWid;
+            var lastInfo = await BanHelper.GetLastPlayerInfo(Input.NameOrUid);
+            if (!lastInfo.HasValue)
+            {
+                StatusError = "Player not found.";
+                return;
+            }
+
+            var ipAddr = Input.UseLatestIp ? lastInfo.Value.address.ToString() : Input.IP;
+            var hwid = Input.UseLatestHwid ? lastInfo.Value.address.ToString() : Input.HWid;
 
             var error = await BanHelper.FillBanCommon(
                 ban, Input.NameOrUid, ipAddr, hwid, Input.LengthMinutes, Input.Reason);
@@ -144,17 +151,5 @@
         {
             StatusError = $"An error occurred: {ex.Message}";
         }
-    }
-
-    private async Task<string?> ResolveIp(string? nameOrUid)
-    {
-        var lastInfo = await BanHelper.GetLastPlayerInfo(nameOrUid);
-        return lastInfo?.address.ToString();
-    }
-
-    private async Task<string?> ResolveHwid(string? nameOrUid)
-    {
-        var lastInfo = await BanHelper.GetLastPlayerInfo(nameOrUid);
-        return lastInfo?.hwid is { } hwid ? Convert.ToBase64String(hwid) : null;
     }
 }
