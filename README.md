@@ -52,3 +52,13 @@ authServer: "https://central.spacestation14.io/auth"
 ```
 
 When registering an OAuth app against our auth server, use `/signin-oidc` as redirect URI (relative to whatever path your SS14.Admin thing is at, so for us it's `https://central.spacestation14.io/admin/signin-oidc`).
+
+It is recommended to run, to untrack the dev settings.
+```
+git update-index --assume-unchanged appsettings.Development.yml
+```
+or this command to re track it.
+```
+git update-index --no-assume-unchanged appsettings.Development.yml
+
+```
