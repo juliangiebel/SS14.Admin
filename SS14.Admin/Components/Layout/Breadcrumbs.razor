@@ -48,7 +48,8 @@
     private void UpdateBreadcrumbs()
     {
         var url = Navigation.ToBaseRelativePath(Navigation.Uri);
-        var segments = url.Split("/", StringSplitOptions.RemoveEmptyEntries);
+        var segments = url.Split("?", StringSplitOptions.RemoveEmptyEntries);
+        segments = url.Split("/", StringSplitOptions.RemoveEmptyEntries);
         var cumulativePath = string.Empty;
 
         _breadcrumbs.Clear();
