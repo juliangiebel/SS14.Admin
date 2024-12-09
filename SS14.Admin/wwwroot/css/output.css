@@ -763,6 +763,11 @@ video {
   min-height: 100vh;
 }
 
+.w-14
+{
+  width: 3.5rem;
+}
+
 .w-24
 {
   width: 6rem;
@@ -781,6 +786,11 @@ video {
 .max-w-md
 {
   max-width: 28rem;
+}
+
+.flex-grow
+{
+  flex-grow: 1;
 }
 
 .grow
@@ -890,6 +900,11 @@ video {
 .border
 {
   border-width: 1px;
+}
+
+.border-t
+{
+  border-top-width: 1px;
 }
 
 .border-none
@@ -1223,6 +1238,13 @@ html .prose
 {
   border-style: none;
   border-top: solid 1px silver;
+}
+
+.sticky-pagination
+{
+  position: sticky;
+  bottom: -34px;
+  background-color: white;
 }
 
 .hover\:bg-blue-600:hover

@@ -1,16 +1,11 @@
 ﻿@page "/logs"
-@using Content.Server.Database
 @using Microsoft.AspNetCore.Components.QuickGrid
-@using SS14.Admin.Components.Shared.Shortcuts
 
-<ShortcutHandler>
-    <Shortcut Code="ArrowRight" Action="Test" />
-</ShortcutHandler>
 
 <PageTitle>Logs</PageTitle>
 <h2>Logs</h2>
 
-<QuickGrid Items="LogsQuery()" Pagination="@_pagination" Class="grow">
+<QuickGrid @ref="Grid" Items="LogsQuery()" Pagination="@_pagination" Class="grow">
     <PropertyColumn Property="@(log => log.RoundId)" Title="Name"></PropertyColumn>
     <PropertyColumn Property="@(log => log.Round != null ? log.Round.Server.Name : "")" Title="Server"></PropertyColumn>
     <PropertyColumn Property="@(log => log.Impact)"  Title="Impact" Sortable="true"></PropertyColumn>
@@ -19,4 +14,4 @@
     <PropertyColumn Property="@(log => log.Message)" Title="Message"></PropertyColumn>
 </QuickGrid>
 
-<Paginator State="@_pagination" />
+<Pagination OnRefreshRequired="Refresh" class="py-2 border-t sticky-pagination" State="@_pagination" />

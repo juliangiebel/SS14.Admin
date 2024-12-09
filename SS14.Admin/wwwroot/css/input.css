@@ -134,3 +134,10 @@ html .prose
     border-style: none;
     border-top: solid 1px silver;
 }
+
+.sticky-pagination
+{
+    position: sticky;
+    bottom: -34px;
+    background-color: white;
+}

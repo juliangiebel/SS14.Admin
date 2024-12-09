@@ -1,0 +1,32 @@
+﻿@using SS14.Admin.Components.Shared.Shortcuts
+
+<ShortcutHandler>
+    <Shortcut Code="ArrowLeft" Action="OnShortcutLeft" />
+    <Shortcut Code="ArrowRight" Action="OnShortcutRight" />
+</ShortcutHandler>
+
+<div class="@Class flex w-full gap-2">
+    @if (State.TotalItemCount.HasValue)
+    {
+        <div>
+            <text><strong>@State.TotalItemCount</strong> items</text>
+        </div>
+        <div class="flex-grow"></div>
+        <nav role="navigation" class="flex">
+            <button class="go-first" type="button" @onclick="GoFirstAsync" disabled="@(!CanGoBack)" title="Go to first page" aria-label="Go to first page"><i class="ri-skip-left-line"></i></button>
+            <button class="go-previous" type="button" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="Go to previous page" aria-label="Go to previous page"><i class="ri-arrow-left-s-line"></i></button>
+            <div class="pagination-text">
+                Page <strong>@(State.CurrentPageIndex + 1)</strong>
+                of <strong>@(State.LastPageIndex + 1)</strong>
+            </div>
+            <button class="go-next" type="button" @onclick="GoNextAsync" disabled="@(!CanGoForwards)" title="Go to next page" aria-label="Go to next page"><i class="ri-arrow-right-s-line"></i></button>
+            <button class="go-last" type="button" @onclick="GoLastAsync" disabled="@(!CanGoForwards)" title="Go to last page" aria-label="Go to last page"><i class="ri-skip-right-line"></i></button>
+        </nav>
+        <div>
+            <span>Per page:</span>
+            <InputNumber @bind-Value="@State.ItemsPerPage" class="w-14"></InputNumber>
+        </div>
+        <button @onclick="Refresh" ><i class="ri-refresh-line"></i></button>
+    }
+</div>
+
