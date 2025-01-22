@@ -149,8 +149,10 @@ public sealed class BanHelper
 
         if (!string.IsNullOrWhiteSpace(hwid))
         {
-            if (!ImmutableTypedHwid.TryParse(hwid.Trim(), out var parsedHwid))
+            hwid = hwid.Trim();
+            if (!ImmutableTypedHwid.TryParse(hwid, out var parsedHwid))
                 return "Invalid HWID";
+
             ban.HWId = parsedHwid;
         }
 
