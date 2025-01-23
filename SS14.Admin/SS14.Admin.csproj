@@ -13,9 +13,9 @@
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="9.0.1"/>
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="NetEscapades.Configuration.Yaml" />
     <PackageReference Include="Serilog" />
@@ -48,7 +48,7 @@
     <!-- Write the stamp file, so incremental builds work -->
     <Touch Files="../node_modules/.install-stamp" AlwaysCreate="true" />
   </Target>
-  
+
   <Target Name="BuildTailwind" Inputs="../tailwind.config.js;wwwroot/css/input.css;components/**/*" Outputs="wwwroot/css/output.css" AfterTargets="NpmInstall" BeforeTargets="BeforeBuild">
     <Exec Command="npx tailwindcss -c ../tailwind.config.js -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css" />
   </Target>

@@ -1,4 +1,5 @@
 using Serilog;
+using Serilog.Settings.Configuration;
 
 namespace SS14.Admin
 {
