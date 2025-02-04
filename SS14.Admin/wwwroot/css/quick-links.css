@@ -1,0 +1,62 @@
+﻿/* Dropdown Button */
+.dropdown-button {
+    background-color: var(--background-color);
+    color: var(--text-color-dark);
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--header-color-secondary);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+
+/* Dark Mode */
+.dark .dropdown-button {
+    background-color: var(--background-color);
+    color: var(--text-color-dark);
+    border: 1px solid var(--header-color-secondary);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    z-index: 20;
+    min-width: 12rem;
+    background-color: var(--background-color);
+    border: 1px solid var(--header-color-secondary);
+    border-radius: 0.25rem;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem;
+}
+
+/* Dark Mode */
+.dark .dropdown-menu {
+    background-color: var(--background-color);
+    border: 1px solid var(--header-color-secondary);
+}
+
+/* Dropdown Items */
+.dropdown-item {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: var(--text-color-dark);
+    text-decoration: none;
+    transition: background 0.2s ease-in-out;
+}
+
+/* Dark Mode */
+.dark .dropdown-item {
+    color: var(--text-color-dark);
+}
+
+/* Hover Effect */
+.dropdown-item:hover {
+    background-color: var(--row-color);
+}
+
+/* Dark Mode Hover */
+.dark .dropdown-item:hover {
+    background-color: var(--header-color-secondary);
+    color: var(--text-color-dark);
+}

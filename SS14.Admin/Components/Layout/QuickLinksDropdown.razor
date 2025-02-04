@@ -1,0 +1,50 @@
+﻿@inject NavigationManager Navigation
+
+<div class="relative">
+    <button @onclick="ToggleDropdown" class="flex items-center gap-1 bg-header-secondary text-text-light px-4 py-2 rounded-md focus:outline-none">
+        Quick Links
+        <svg class="w-4 h-4 transition-transform @(IsOpen ? "rotate-180" : "rotate-0")" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+    </button>
+
+    <div class="@DropdownClass">
+        <div class="absolute right-0 mt-2 w-48 bg-background border border-header-secondary shadow-lg rounded-md z-50">
+            <ul class="py-2 text-text dark:text-text-light">
+                @foreach (var link in Links)
+                {
+                    <li>
+                        <a href="@link.Url" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-header-secondary dark:hover:bg-header text-text dark:text-text-light">
+                            @link.Name
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool IsOpen { get; set; } = false;
+
+    private string DropdownClass => IsOpen ? "absolute right-0 mt-2 w-48 bg-background border border-header-secondary shadow-lg rounded-md z-50 opacity-100 transform scale-100 transition duration-200 ease-out"
+                                           : "hidden opacity-0 transform scale-95 transition duration-200 ease-in";
+
+    //Links to Helpful admin tools like graphna, and hedgedoc and the likes
+    private List<(string Name, string Url)> Links = new()
+    {
+        ("Grafana", "https://grafana.spacestation14.com/login"),
+        ("HedgeDoc", "https://hedgedoc.spacestation14.com"),
+    };
+
+    private void ToggleDropdown()
+    {
+        IsOpen = !IsOpen;
+    }
+
+    private void NavigateTo(string url)
+    {
+        IsOpen = false;
+        Navigation.NavigateTo(url);
+    }
+}

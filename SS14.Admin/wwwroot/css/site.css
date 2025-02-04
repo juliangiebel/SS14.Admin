@@ -615,4 +615,20 @@ hr.line-inset {
     margin: 0 1rem;
     padding: 0.25rem 0.5rem;
 }
+/* Quick Links */
+
+.quick-links-dropdown {
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.quick-links-dropdown.open {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.quick-links-dropdown.closed {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
 /* ------------- */
