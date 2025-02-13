@@ -1,4 +1,5 @@
-﻿@page "{userId}"
+﻿@*
+@page "{userId}"
 @using Content.Server.Database
 @using SS14.Admin.Helpers
 @using SS14.Admin.Pages.Tables
@@ -249,3 +250,4 @@
     <h2>Role Bans</h2>
     <partial name="Tables/RoleBansTable" model="@(new RoleBansTableModel(Model.RoleSortState,Model.RoleBanPagination, 0, false))"/>
 </div>
+*@

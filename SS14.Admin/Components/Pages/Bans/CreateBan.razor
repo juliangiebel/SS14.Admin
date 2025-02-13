@@ -1,155 +1,118 @@
 ﻿@page "/bans/createban"
-@using Content.Server.Database
 @using Content.Shared.Database
 @using SS14.Admin.Helpers
-@inject PostgresServerDbContext DbContext
-@inject BanHelper BanHelper
 
-<PageTitle>Create new ban</PageTitle>
+<PageTitle>Create Ban</PageTitle>
 
-<div class="container">
-    <h1>Create new ban</h1>
+<h1 class="text-2xl font-bold mb-4">Create New Ban</h1>
+<h2 class="text-xl font-bold mb-4">Or Choose a Template</h2>
 
-    @if (!string.IsNullOrEmpty(StatusMessage))
+<!-- Ban Templates Dropdown -->
+<div class="relative inline-block text-left mb-4">
+    <button type="button" @onclick="ToggleDropdown"
+            class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+        Ban Templates
+        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+
+    @if (IsDropdownOpen)
     {
-        <div class="alert alert-success">@StatusMessage</div>
+        <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+            <div class="py-1">
+                @foreach (var template in Templates)
+                {
+                    <a href="javascript:void(0)"
+                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                       @onclick="() => UseTemplate(template.Id)">
+                        @template.Title
+                    </a>
+                }
+            </div>
+        </div>
     }
-    @if (!string.IsNullOrEmpty(StatusError))
-    {
-        <div class="alert alert-danger">@StatusError</div>
-    }
-
-    <form id="CreateBanForm" onsubmit="HandleFormSubmit" class="p-4 shadow-lg rounded bg-white border">
-        <div class="form-group row mb-3">
-            <label for="nameOrUid" class="col-sm-3 col-form-label fw-bold">Name or User ID</label>
-            <div class="col-sm-9">
-                <input id="nameOrUid" name="nameOrUid" value="@Input.NameOrUid" class="form-control" />
-            </div>
-        </div>
-
-        <div class="form-group row mb-3">
-            <label for="ipAddress" class="col-sm-3 col-form-label fw-bold">IP Address/CIDR</label>
-            <div class="col-sm-9">
-                <div class="row">
-                    <div class="col-sm">
-                        <input id="ipAddress" name="ipAddress" value="@Input.IP" class="form-control" />
-                    </div>
-                    <div class="col-sm-auto align-items-center d-flex">
-                        <input id="useLatestIp" name="useLatestIp" type="checkbox" @checked(Input.UseLatestIp) class="form-check-input me-2" />
-                        <label for="useLatestIp" class="form-check-label">Use latest</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group row mb-3">
-            <label for="hwid" class="col-sm-3 col-form-label fw-bold">HWID</label>
-            <div class="col-sm-9">
-                <div class="row">
-                    <div class="col-sm">
-                        <input id="hwid" name="hwid" value="@Input.HWid" class="form-control" />
-                    </div>
-                    <div class="col-sm-auto align-items-center d-flex">
-                        <input id="useLatestHwid" name="useLatestHwid" type="checkbox" @checked(Input.UseLatestHwid) class="form-check-input me-2" />
-                        <label for="useLatestHwid" class="form-check-label">Use latest</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group row mb-3">
-            <label for="lengthMinutes" class="col-sm-3 col-form-label fw-bold">Minutes (0: Permanent)</label>
-            <div class="col-sm-9">
-                <input id="lengthMinutes" name="lengthMinutes" value="@Input.LengthMinutes" type="number" class="form-control" />
-            </div>
-        </div>
-
-        <div class="form-group row mb-3">
-            <label for="reason" class="col-sm-3 col-form-label fw-bold">Reason</label>
-            <div class="col-sm-9">
-                <textarea id="reason" name="reason" class="form-control">@Input.Reason</textarea>
-            </div>
-        </div>
-
-        <div class="form-group row mb-3">
-            <label for="severity" class="col-sm-3 col-form-label fw-bold">Severity</label>
-            <div class="col-sm-9">
-                <select id="severity" name="severity" class="form-control">
-                    @*@foreach (var severity in NoteSeverityHelper.SeverityItems)
-                    {
-                        <option value="@severity.Value" @(Input.Severity == severity.Value ? "selected" : null)>@severity.Text</option>
-                    }*@
-                </select>
-            </div>
-        </div>
-
-        <div class="form-group row mb-3">
-            <label for="hidden" class="col-sm-3 col-form-label fw-bold">Hidden from Player</label>
-            <div class="col-sm-9">
-                <input id="hidden" name="hidden" type="checkbox" @checked(Input.Hidden) class="form-check-input me-2" />
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Create</button>
-    </form>
 </div>
 
-@code {
-    private string? StatusMessage { get; set; }
-    private string? StatusError { get; set; }
+<EditForm Model="_banModel" OnValidSubmit="HandleValidSubmit" FormName="CreateBanForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-    private InputModel Input { get; set; } = new();
+    <!-- Name or User ID -->
+    <div class="mb-4">
+        <label class="block mb-1">Name or user ID</label>
+        <InputText @bind-Value="_banModel.NameOrUid" class="border p-2 w-full" />
+    </div>
 
-    public sealed class InputModel
-    {
-        public string? NameOrUid { get; set; }
-        public string? IP { get; set; }
-        public string? HWid { get; set; }
-        public bool UseLatestIp { get; set; }
-        public bool UseLatestHwid { get; set; }
-        public int LengthMinutes { get; set; }
-        public string Reason { get; set; } = string.Empty;
-        public NoteSeverity Severity { get; set; }
-        public bool Hidden { get; set; }
-    }
+    <!-- IP address/CIDR -->
+    <div class="mb-4">
+        <label class="block mb-1">IP Address/CIDR</label>
+        <div class="flex gap-2">
+            <InputText @bind-Value="_banModel.IP" class="border p-2 w-full" />
+            <div class="flex items-center">
+                <InputCheckbox @bind-Value="_banModel.UseLatestIp" class="mr-2" />
+                <label>Use latest</label>
+            </div>
+        </div>
+    </div>
 
-    private async Task HandleFormSubmit()
-    {
-        var ban = new ServerBan
-        {
-            Hidden = Input.Hidden,
-            Severity = Input.Severity
-        };
+    <!-- HWID -->
+    <div class="mb-4">
+        <label class="block mb-1">HWID</label>
+        <div class="flex gap-2">
+            <InputText @bind-Value="_banModel.HWid" class="border p-2 w-full" />
+            <div class="flex items-center">
+                <InputCheckbox @bind-Value="_banModel.UseLatestHwid" class="mr-2" />
+                <label>Use latest</label>
+            </div>
+        </div>
+    </div>
 
-        try
-        {
-            var lastInfo = await BanHelper.GetLastPlayerInfo(Input.NameOrUid);
-            if (!lastInfo.HasValue)
+    <!-- Duration (in minutes) -->
+    <div class="mb-4">
+        <label class="block mb-1">Minutes (0: Permanent)</label>
+        <InputNumber @bind-Value="_banModel.LengthMinutes" class="border p-2 w-full" />
+    </div>
+
+    <!-- Reason -->
+    <div class="mb-4">
+        <label class="block mb-1">Reason</label>
+        <InputTextArea @bind-Value="_banModel.Reason" class="border p-2 w-full" />
+    </div>
+
+    <!-- Severity -->
+    <div class="mb-4">
+        <label class="block mb-1">Severity</label>
+        <InputSelect @bind-Value="_banModel.Severity" class="border p-2 w-full">
+            @foreach (var severity in Enum.GetValues<NoteSeverity>())
             {
-                StatusError = "Player not found.";
-                return;
+                <option value="@severity">@severity</option>
             }
+        </InputSelect>
+    </div>
 
-            var ipAddr = Input.UseLatestIp ? lastInfo.Value.address.ToString() : Input.IP;
-            var hwid = Input.UseLatestHwid ? lastInfo.Value.address.ToString() : Input.HWid;
+    <!-- Settings -->
+    <div class="mb-4">
+        <label class="block mb-1">Settings</label>
+        <div class="flex items-center">
+            <InputCheckbox @bind-Value="_banModel.Hidden" class="mr-2" />
+            <label>Hidden from player</label>
+        </div>
+    </div>
 
-            var error = await BanHelper.FillBanCommon(
-                ban, Input.NameOrUid, ipAddr, hwid, Input.LengthMinutes, Input.Reason);
-
-            if (error != null)
-            {
-                StatusError = error;
-                return;
-            }
-
-            DbContext.Ban.Add(ban);
-            await DbContext.SaveChangesAsync();
-
-            StatusMessage = "Ban created successfully!";
-        }
-        catch (Exception ex)
+    @*<!-- Exemption Flags -->
+    <div class="mb-4">
+        <label class="block mb-1">Exemption Flags</label>
+        @foreach (var (flag, display) in BanExemptions.GetExemptions())
         {
-            StatusError = $"An error occurred: {ex.Message}";
+            <div class="form-check">
+                <InputCheckbox id=@("exemption_" + flag.ToString()) class="form-check-input" @bind-Value="Exemptions[flag]" />
+                <label for=@("exemption_" + flag.ToString()) class="form-check-label">@display</label>
+            </div>
         }
-    }
-}
+    </div>*@
+
+    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+        Create Ban
+    </button>
+</EditForm>

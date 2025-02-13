@@ -1,4 +1,5 @@
-﻿@page
+﻿@*
+@page
 @using SS14.Admin.Pages.Tables
 @using SS14.Admin.Helpers
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -55,3 +56,4 @@
 </form>
 
 <partial name="Tables/BansTable" model="@(new BansTableModel(Model.SortState, Model.Pagination, highlightBan,true))"/>
+*@

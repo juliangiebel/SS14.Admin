@@ -1,4 +1,5 @@
-﻿@model SS14.Admin.Pages.Tables.BansTableModel
+﻿@*
+@model SS14.Admin.Pages.Tables.BansTableModel
 
 @{
     var b = Model.PaginationState;
@@ -33,9 +34,9 @@
         <th title="How many times this ban was 'hit' by somebody trying to connect.">
             <partial name="Tables/SortTabHeaderCore" model="@(new SortTabHeaderModel(Model.SortState, "hits", "Ban hits"))"/>
         </th>
-        @*<th title="If the ban was manually unbanned then the unban time is sorted by">
+        $1$<th title="If the ban was manually unbanned then the unban time is sorted by">
             <partial name="Tables/SortTabHeaderCore" model="@(new SortTabHeaderModel(Model.SortState, "expire_time", "Expiration time"))"/>
-        </th>*@
+        </th>#1#
         <th></th>
     </tr>
     </thead>
@@ -139,4 +140,5 @@
 {
 <partial name="Tables/Pagination" for="Pagination"/>
 }
+*@
 

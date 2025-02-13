@@ -1,4 +1,5 @@
-﻿using Content.Server.Database;
+﻿/*
+using Content.Server.Database;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -142,3 +143,4 @@ namespace SS14.Admin.Pages.Connections
             Player? Player);
     }
 }
+*/

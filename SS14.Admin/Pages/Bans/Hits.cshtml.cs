@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿/*
+using System.Data;
 using Content.Server.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -66,3 +67,4 @@ public class Hits : PageModel
         return Page();
     }
 }
+*/

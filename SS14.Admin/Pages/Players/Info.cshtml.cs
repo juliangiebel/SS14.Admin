@@ -1,4 +1,5 @@
-﻿using Content.Server.Database;
+﻿/*
+using Content.Server.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -99,3 +100,4 @@ public sealed class Info : PageModel
         }
     }
 }
+*/
