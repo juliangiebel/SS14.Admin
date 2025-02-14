@@ -1,2 +1,15 @@
+# Here are your developer settings for SS14.Admin.
+# I highly recommend using postgres here, and below are the defaults for that.
+# Make sure to change to your database name, username, and user password.
 ConnectionStrings:
   DefaultConnection: "Server=127.0.0.1;Port=5432;Database=ss14;User Id=postgres;Password=postgres"
+
+# This is the auth to use in order to use when authenticating accounts on the site.
+# In order for the site to let you in you.
+# 1. Need to be added as an admin in the Database
+# 2. Have this setup below with your Client ID, and Secret
+# Client ID and Secret can be obtained by going to developer settings at https://account.spacestation14.com/
+Auth:
+  Authority: "https://central.spacestation14.com/"
+  ClientId: "YOUR-CLIENT-ID"
+  ClientSecret: "foobar"
