@@ -32,6 +32,7 @@ ConnectionStrings:
     # Connects to the same postgres database as the game server
     DefaultConnection: "Server=127.0.0.1;Port=5432;Database=ss14;User Id=ss14-admin;Password=foobar"
 
+#set to your domain ex: ss14server.com
 AllowedHosts: "central.spacestation14.io"
 
 urls: "http://localhost:27689/"
@@ -45,20 +46,38 @@ ForwardProxies:
 
 Auth:
     Authority: "https://central.spacestation14.io/web/"
-    ClientId: "9e2ce26f-28ba-4232-b4d9-8cc08993b33e"
+    ClientId: "YOUR-CLIENT-ID"
     ClientSecret: "foobar"
 
 authServer: "https://central.spacestation14.io/auth"
 ```
+## Build
+
+To build for a linux based system run the command
+```
+dotnet publish -c Release -r linux-x64 --no-self-contained
+```
+The files will be dropped in the Publish folder as seen in the structure below
+```
+SS14.Admin
+└─bin
+   └─Release
+        └─net9.0
+            └─linux-x64
+                └─publish
+                    │   wwwroot
+                    │   ...Other files
+```
+After adding a properly [configured]() ``` appsettings.yml```, to the publish folder just run ```./SS14.Admin```
+### Extras
 
 When registering an OAuth app against our auth server, use `/signin-oidc` as redirect URI (relative to whatever path your SS14.Admin thing is at, so for us it's `https://central.spacestation14.io/admin/signin-oidc`).
 
-It is recommended to run, to untrack the dev settings.
+It is recommended to run the get commands below, to untrack the development appsettings.
 ```
 git update-index --assume-unchanged appsettings.Development.yml
 ```
 or this command to re track it.
 ```
 git update-index --no-assume-unchanged appsettings.Development.yml
-
 ```
