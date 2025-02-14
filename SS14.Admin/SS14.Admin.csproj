@@ -13,9 +13,9 @@
     <PackageReference Include="CsvHelper" />
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="9.0.1"/>
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid"/>
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3"/>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="NetEscapades.Configuration.Yaml" />
     <PackageReference Include="Serilog" />
