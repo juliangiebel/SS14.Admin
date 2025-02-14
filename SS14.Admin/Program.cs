@@ -1,5 +1,5 @@
 using Serilog;
-using Serilog.Settings.Configuration;
+using SS14.Admin.Services;
 
 namespace SS14.Admin
 {
@@ -24,6 +24,10 @@ namespace SS14.Admin
                     cfg.ReadFrom.Configuration(ctx.Configuration);
                 })
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-                .UseSystemd();
+                .UseSystemd()
+                .ConfigureServices(collection =>
+                {
+                    collection.AddScoped<ClientPreferencesService>();
+                });
     }
 }
