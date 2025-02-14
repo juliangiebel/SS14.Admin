@@ -1,13 +1,8 @@
-@using SS14.Admin.Models
+@using SS14.Admin.Services
 @inherits LayoutComponentBase
+@implements IDisposable
 
-<script>
-    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark')
-    }
-</script>
+@inject ClientPreferencesService ClientPreferences
 
 <noscript>
     <style>
@@ -15,48 +10,79 @@
     </style>
 </noscript>
 
-<header class="Header flex gap-x-8 p-2 pl-0 items-center sticky top-0 bg-background dark:bg-surface header-height z-10 pl-2">
-    <img class="m-3 h-9 md:block" src="https://wiki.spacestation14.io/w/images/logo.svg" alt="space station 14 logo">
-    <h1 class="sr-only">space station 14 admin panel</h1>
-    <div class="sm:flex focus-outline items-center h-9 border border-border px-2 rounded-full bg-surface dark:bg-background">
-        <div class="ri-search-line text-lg text-textSecondary dark:text-textSecondary"></div>
-        <input type="text" class="border-none h-6 appearance-none focus-none bg-transparent text-textPrimary dark:text-textPrimary" placeholder="Search" />
-    </div>
-    <Breadcrumbs />
-    <div class="grow"></div>
-    <div class="mr-3 flex gap-x-2 items-center">
-        <QuickLinksDropdown />
-        <a href="#" class="font-semibold text-textPrimary">adminXY</a>
-        <NavLink href="/Login/Logout" class="text-textPrimary hover:text-textSecondary">Logout</NavLink>
-        <!--<img class="rounded-full h-8 w-8" height="32" alt="@placeholder" src="https://i.pravatar.cc/32" width="32">-->
-    </div>
-    <DarkModeToggle />
-</header>
+<div class="@(_clientPreferences.darkMode ? "dark" : "")">
 
-<div class="flex h-full-content">
-    <NavMenu />
-    <CascadingValue Value="Breadcrumbs">
-        <main class="basis-full p-8 m-2 rounded bg-surface overflow-auto">
-            <div class="flex w-full justify-between">
-                <menu class="flex gap-2 text-textSecondary">
-                    <!--<li><button class="p-2 rounded-md bg-red-600 hover:bg-red-500 text-white">Cancel<i class="ri-close-circle-line ml-1"></i></button></li>
-                <li><button class="p-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white">Merge<i class="ri-git-merge-line ml-1"></i></button></li>-->
-                </menu>
-            </div>
-            <div class="flex w-full h-full gap-4 flex-col">
-                @Body
-            </div>
-        </main>
-    </CascadingValue>
-</div>
+    <header class="Header flex gap-x-8 p-2 pl-0 items-center sticky top-0 bg-white header-height z-10 pl-2">
+        <img class="m-3 h-9 md:block" src="https://wiki.spacestation14.io/w/images/logo.svg" alt="space station 14 logo">
+        <h1 class="sr-only">space station 14 admin panel</h1>
+        <div class="sm:flex focus-outline items-center h-9 border border-border px-2 rounded-full bg-surface dark:bg-background">
+            <div class="ri-search-line text-lg text-textSecondary dark:text-textSecondary"></div>
+            <input type="text" class="border-none h-6 appearance-none focus-none bg-transparent text-textPrimary dark:text-textPrimary" placeholder="Search" />
+        </div>
+        <Breadcrumbs />
+        <div class="grow"></div>
+        <div class="mr-3 flex gap-x-2 items-center">
+            <QuickLinksDropdown />
+            <a href="#" class="font-semibold text-textPrimary">adminXY</a>
+            <NavLink href="/Login/Logout" class="text-textPrimary hover:text-textSecondary">Logout</NavLink>
+            <!--<img class="rounded-full h-8 w-8" height="32" alt="@placeholder" src="https://i.pravatar.cc/32" width="32">-->
+        </div>
+        <DarkModeToggle />
+    </header>
 
-<div id="blazor-error-ui" class="bg-errorBg text-errorText">
-    An unhandled error has occurred.
-    <a href="" class="text-link">Reload</a>
-    <a class="text-textSecondary">🗙</a>
+    <div class="flex h-full-content bg-stone-100">
+        <NavMenu />
+        <CascadingValue Value="Breadcrumbs">
+            <main class="basis-full p-8 m-2 rounded overflow-auto bg-white">
+                <div class="flex w-full justify-between">
+                    <menu class="flex gap-2 text-textSecondary">
+                        <!--<li><button class="p-2 rounded-md bg-red-600 hover:bg-red-500 text-white">Cancel<i class="ri-close-circle-line ml-1"></i></button></li>
+                    <li><button class="p-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white">Merge<i class="ri-git-merge-line ml-1"></i></button></li>-->
+                    </menu>
+                </div>
+                <div class="flex w-full h-full gap-4 flex-col">
+                    @Body
+                </div>
+            </main>
+        </CascadingValue>
+    </div>
+
+    <div id="blazor-error-ui" class="bg-errorBg text-errorText">
+        An unhandled error has occurred.
+        <a href="" class="text-link">Reload</a>
+        <a class="text-textSecondary">🗙</a>
+    </div>
+
 </div>
 
 @code
 {
-public List<Breadcrumb> Breadcrumbs = [];
+    public List<Breadcrumb> Breadcrumbs = [];
+
+    private ClientPreferencesService.ClientPreferences _clientPreferences;
+
+    protected override void OnInitialized()
+    {
+        ClientPreferences.OnChange += OnChange;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _clientPreferences = await ClientPreferences.GetClientPreferences();
+            StateHasChanged();
+        }
+    }
+
+    private void OnChange(ClientPreferencesService.ClientPreferences clientPreferences)
+    {
+        _clientPreferences = clientPreferences;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        ClientPreferences.OnChange -= OnChange;
+    }
 }
