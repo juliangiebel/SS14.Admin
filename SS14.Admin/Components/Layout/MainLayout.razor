@@ -12,7 +12,7 @@
 
 <div class="@(_clientPreferences.darkMode ? "dark" : "")">
 
-    <header class="Header flex gap-x-8 p-2 pl-0 items-center sticky top-0 bg-white header-height z-10 pl-2">
+    <header class="Header flex gap-x-8 p-2 pl-0 items-center sticky top-0 bg-white dark:bg-gray-800 header-height z-10 pl-2">
         <img class="m-3 h-9 md:block" src="https://wiki.spacestation14.io/w/images/logo.svg" alt="space station 14 logo">
         <h1 class="sr-only">space station 14 admin panel</h1>
         <div class="sm:flex focus-outline items-center h-9 border border-border px-2 rounded-full bg-surface dark:bg-background">
@@ -30,10 +30,10 @@
         <DarkModeToggle />
     </header>
 
-    <div class="flex h-full-content bg-stone-100">
+    <div class="flex h-full-content bg-stone-100 dark:bg-gray-700">
         <NavMenu />
         <CascadingValue Value="Breadcrumbs">
-            <main class="basis-full p-8 m-2 rounded overflow-auto bg-white">
+            <main class="basis-full p-8 m-2 rounded overflow-auto bg-white dark:bg-gray-800">
                 <div class="flex w-full justify-between">
                     <menu class="flex gap-2 text-textSecondary">
                         <!--<li><button class="p-2 rounded-md bg-red-600 hover:bg-red-500 text-white">Cancel<i class="ri-close-circle-line ml-1"></i></button></li>
