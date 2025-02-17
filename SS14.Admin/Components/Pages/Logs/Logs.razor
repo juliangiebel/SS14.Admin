@@ -7,12 +7,12 @@
 
 <Filter Model="_model"></Filter>
 <QuickGrid @ref="Grid" Items="LogsQuery()" Pagination="@_pagination" Class="grow">
-    <PropertyColumn Property="@(log => log.RoundId)" Title="Round"></PropertyColumn>
-    <PropertyColumn Property="@(log => log.Round != null ? log.Round.Server.Name : "")" Title="Server"></PropertyColumn>
-    <PropertyColumn Property="@(log => log.Impact)"  Title="Impact" Sortable="true"></PropertyColumn>
-    <PropertyColumn Property="@(log => log.Date)" Title="Date" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending"></PropertyColumn>
-    <PropertyColumn Property="@(log => log.Type)" Title="Type"></PropertyColumn>
-    <PropertyColumn Property="@(log => log.Message)" Title="Message"></PropertyColumn>
+    <PropertyColumn Property="@(log => log.RoundId)" Title="Round" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(log => log.Round != null ? log.Round.Server.Name : "")" Title="Server" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(log => log.Impact)"  Title="Impact" Sortable="true" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(log => log.Date)" Title="Date" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(log => log.Type)" Title="Type" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(log => log.Message)" Title="Message" Class="text-primary-1"></PropertyColumn>
 </QuickGrid>
 
 <Pagination OnRefreshRequired="Refresh" class="py-2 border-t sticky-pagination" State="@_pagination" />
