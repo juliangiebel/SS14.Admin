@@ -2,6 +2,13 @@
 
 /* Colors */
 
+@layer base {
+    p { @apply text-primary-1; }
+    a { @apply text-link-1; }
+    h1, h2, h3, h4, h5, h6 { @apply text-primary-1; }
+    input, textarea, select { @apply text-primary-1 bg-primary-1 p-1; }
+}
+
 @layer components {
     .bg-primary-1 {
         @apply bg-white dark:bg-stone-800;

@@ -4,7 +4,7 @@
     <NavLink href="/" class="text-link-1">SS14.Admin</NavLink>
     @foreach (var crumb in _breadcrumbs)
     {
-        <i class="ri-arrow-right-s-line"></i>
+        <i class="ri-arrow-right-s-line text-primary-1"></i>
         @if (!string.IsNullOrEmpty(crumb.Url))
         {
             <NavLink href="@crumb.Url" class="text-link-1">@crumb.Name</NavLink>

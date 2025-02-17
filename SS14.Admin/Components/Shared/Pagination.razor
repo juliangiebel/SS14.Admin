@@ -9,24 +9,24 @@
     @if (State.TotalItemCount.HasValue)
     {
         <div>
-            <text><strong>@State.TotalItemCount</strong> items</text>
+            <p><strong>@State.TotalItemCount</strong> items</p>
         </div>
         <div class="flex-grow"></div>
         <nav role="navigation" class="flex">
-            <button class="go-first" type="button" @onclick="GoFirstAsync" disabled="@(!CanGoBack)" title="Go to first page" aria-label="Go to first page"><i class="ri-skip-left-line"></i></button>
-            <button class="go-previous" type="button" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="Go to previous page" aria-label="Go to previous page"><i class="ri-arrow-left-s-line"></i></button>
-            <div class="pagination-text">
+            <button class="go-first text-primary-1" type="button" @onclick="GoFirstAsync" disabled="@(!CanGoBack)" title="Go to first page" aria-label="Go to first page"><i class="ri-skip-left-line"></i></button>
+            <button class="go-previous text-primary-1" type="button" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="Go to previous page" aria-label="Go to previous page"><i class="ri-arrow-left-s-line"></i></button>
+            <div class="pagination-text text-primary-1">
                 Page <strong>@(State.CurrentPageIndex + 1)</strong>
                 of <strong>@(State.LastPageIndex + 1)</strong>
             </div>
-            <button class="go-next" type="button" @onclick="GoNextAsync" disabled="@(!CanGoForwards)" title="Go to next page" aria-label="Go to next page"><i class="ri-arrow-right-s-line"></i></button>
-            <button class="go-last" type="button" @onclick="GoLastAsync" disabled="@(!CanGoForwards)" title="Go to last page" aria-label="Go to last page"><i class="ri-skip-right-line"></i></button>
+            <button class="go-next text-primary-1" type="button" @onclick="GoNextAsync" disabled="@(!CanGoForwards)" title="Go to next page" aria-label="Go to next page"><i class="ri-arrow-right-s-line"></i></button>
+            <button class="go-last text-primary-1" type="button" @onclick="GoLastAsync" disabled="@(!CanGoForwards)" title="Go to last page" aria-label="Go to last page"><i class="ri-skip-right-line"></i></button>
         </nav>
-        <div>
+        <div class="text-primary-1">
             <span>Per page:</span>
-            <InputNumber @bind-Value="@State.ItemsPerPage" class="w-14"></InputNumber>
+            <InputNumber @bind-Value="@State.ItemsPerPage" class="w-14 bg-secondary-1"></InputNumber>
         </div>
-        <button @onclick="Refresh" ><i class="ri-refresh-line"></i></button>
+        <button @onclick="Refresh" ><i class="ri-refresh-line text-primary-1"></i></button>
     }
 </div>
 

@@ -1,23 +1,26 @@
 ﻿
 <div class="flex">
-    @foreach (var property in Model.GetType().GetProperties())
+    @foreach (var property in Model.GetType().GetProperties().Where(p => p.CanWrite))
     {
         //TODO: Change this to use code generation :thonk:
         @switch (property.GetValue(Model))
         {
             case string value:
-                <input type="text" name="@property.Name" id="@property.Name" value="@value" @onchange="@(args =>  OnInput(args, property))"  />
+                <input type="text" class="bg-secondary-1 text-primary-1 p-1" name="@property.Name"
+                       id="@property.Name" value="@value" @onchange="@(args =>  OnInput(args, property))"  />
                 break;
 
             case int value:
-                <input type="number" name="@property.Name" id="@property.Name" value="@value" @onchange="@(args =>  OnInput(args, property))"  />
+                <input type="number" class="bg-secondary-1 text-primary-1 p-1" name="@property.Name"
+                       id="@property.Name" value="@value" @onchange="@(args =>  OnInput(args, property))"  />
                 break;
 
             case Enum value:
-                <select name="@property.Name" id="@property.Name" @onchange="@(args => OnInput(args, property))">
+                <select class="bg-secondary-1 text-primary-1 p-1" name="@property.Name"
+                        id="@property.Name" @onchange="@(args => OnEnumInput(args, property))">
                     @foreach (var enumValue in Enum.GetValues(value.GetType()))
                     {
-                        
+                        <option value="@enumValue">@enumValue</option>
                     }
                 </select>
                 break;

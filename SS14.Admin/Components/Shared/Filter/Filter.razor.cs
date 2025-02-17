@@ -15,7 +15,15 @@ public partial class Filter : ComponentBase
 
     private void OnEnumInput(ChangeEventArgs args, PropertyInfo property)
     {
-        throw new NotImplementedException();
+        if (!property.PropertyType.IsEnum)
+            throw new InvalidOperationException($"Property {property.Name} is not an enum type.");
+
+        if (args.Value == null && Nullable.GetUnderlyingType(property.PropertyType) == null)
+                throw new InvalidOperationException($"Property {property.Name} is not nullable.");
+
+
+        Enum.TryParse(property.PropertyType, args.Value?.ToString(), out var enumValue);
+        property.SetValue(Model, enumValue);
     }
 }
 

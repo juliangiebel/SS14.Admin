@@ -117,7 +117,7 @@
   --tw-contain-style:  ;
 }
 
-/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.4.15 | MIT License | https://tailwindcss.com */
 
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
@@ -561,6 +561,83 @@ video {
 
 [hidden]:where(:not([hidden="until-found"])) {
   display: none;
+}
+
+p
+{
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+}
+
+p:is(.dark *)
+{
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+a
+{
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+}
+
+a:hover
+{
+  --tw-text-opacity: 1;
+  color: rgb(225 29 72 / var(--tw-text-opacity, 1));
+}
+
+a:is(.dark *)
+{
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+a:hover:is(.dark *)
+{
+  --tw-text-opacity: 1;
+  color: rgb(225 29 72 / var(--tw-text-opacity, 1));
+}
+
+h1, h2, h3, h4, h5, h6
+{
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+}
+
+h1:is(.dark *), h2:is(.dark *), h3:is(.dark *), h4:is(.dark *), h5:is(.dark *), h6:is(.dark *)
+{
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+input, textarea, select
+{
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+
+input:is(.dark *), textarea:is(.dark *), select:is(.dark *)
+{
+  --tw-bg-opacity: 1;
+  background-color: rgb(41 37 36 / var(--tw-bg-opacity, 1));
+}
+
+input, textarea, select
+{
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+}
+
+input:is(.dark *), textarea:is(.dark *), select:is(.dark *)
+{
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+input, textarea, select
+{
+  padding: 0.25rem;
 }
 
 .container
@@ -2557,6 +2634,25 @@ html .prose
   position: sticky;
   bottom: -34px;
   background-color: white;
+}
+
+#blazor-error-ui {
+  background: lightyellow;
+  bottom: 0;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+  display: none;
+  left: 0;
+  padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+  cursor: pointer;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.5rem;
 }
 
 .hover\:bg-blue-600:hover

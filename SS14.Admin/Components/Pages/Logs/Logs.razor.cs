@@ -38,5 +38,12 @@ public partial class Logs
     public class LogsFilterModel : IFilterModel
     {
         public string Test { get; set; } = "test";
+
+        public TestEnum EnumTest { get; set; } = TestEnum.Test1;
+        public enum TestEnum
+        {
+            Test1,
+            Test2
+        }
     }
 }
