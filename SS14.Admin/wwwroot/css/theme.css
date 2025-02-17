@@ -1,0 +1,29 @@
+﻿/* This file contains the global theme, e.g. the colors and fonts that get used throughout the site */
+
+/* Colors */
+
+@layer components {
+    .bg-primary-1 {
+        @apply bg-white dark:bg-stone-800;
+    }
+
+    .bg-secondary-1
+    {
+        @apply bg-stone-100 dark:bg-stone-900;
+    }
+
+    .text-primary-1
+    {
+        @apply text-black dark:text-white;
+    }
+
+    .text-muted-1
+    {
+        @apply text-neutral-600 dark:text-neutral-400;
+    }
+
+    .text-link-1
+    {
+        @apply text-black hover:text-rose-600 dark:text-white dark:hover:text-rose-600;
+    }
+}

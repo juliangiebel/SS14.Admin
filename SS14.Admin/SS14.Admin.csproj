@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Layout\Navigation\" />
     <Folder Include="wwwroot\fonts\" />
   </ItemGroup>
 

@@ -12,7 +12,7 @@ module.exports = {
         'active-nav-link'
     ],
     darkMode: 'class', // Enable class-based dark mode
-    theme: {
+    /*theme: {
         extend: {
             colors: {
                 background: 'var(--color-background)',
@@ -25,7 +25,7 @@ module.exports = {
                 link: 'var(--color-link)',
             },
         },
-    },
+    },*/
     plugins: [],
 }
 

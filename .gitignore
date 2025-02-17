@@ -10,3 +10,12 @@ riderModule.iml
 *.user
 
 node_modules
+
+
+.idea/SS14.Admin.iml
+.idea/dataSources.local.xml
+.idea/dataSources.xml
+.idea/dataSources/
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml

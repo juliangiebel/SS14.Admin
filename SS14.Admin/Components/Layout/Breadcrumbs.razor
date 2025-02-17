@@ -1,17 +1,17 @@
 ﻿@inject NavigationManager Navigation
 
 <div class="md:flex gap-1">
-    <NavLink href="/" class="hover:text-rose-600">SS14.Admin</NavLink>
+    <NavLink href="/" class="text-link-1">SS14.Admin</NavLink>
     @foreach (var crumb in _breadcrumbs)
     {
         <i class="ri-arrow-right-s-line"></i>
         @if (!string.IsNullOrEmpty(crumb.Url))
         {
-            <NavLink href="@crumb.Url" class="hover:text-rose-600">@crumb.Name</NavLink>
+            <NavLink href="@crumb.Url" class="text-link-1">@crumb.Name</NavLink>
         }
         else
         {
-            <span class="text-neutral-600 cursor-default">@crumb.Name</span>
+            <span class="text-muted-1 cursor-default">@crumb.Name</span>
         }
     }
 </div>
