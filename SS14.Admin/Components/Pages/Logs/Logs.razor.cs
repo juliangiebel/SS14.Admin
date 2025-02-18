@@ -1,4 +1,5 @@
 ﻿using Content.Server.Database;
+using Content.Shared.Database;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,8 @@ public partial class Logs
     public class LogsFilterModel : IFilterModel
     {
         public string Test { get; set; } = "test";
+
+        public LogType? Type { get; set; } = null;
 
         public TestEnum EnumTest { get; set; } = TestEnum.Test1;
         public enum TestEnum

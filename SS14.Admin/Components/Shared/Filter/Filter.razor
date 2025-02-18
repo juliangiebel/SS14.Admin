@@ -3,24 +3,25 @@
     @foreach (var property in Model.GetType().GetProperties().Where(p => p.CanWrite))
     {
         //TODO: Change this to use code generation :thonk:
-        @switch (property.GetValue(Model))
+        var value = property.GetValue(Model);
+        @switch (property.PropertyType.Name)
         {
-            case string value:
+            case nameof(String):
                 <input type="text" class="bg-secondary-1 text-primary-1 p-1" name="@property.Name"
                        id="@property.Name" value="@value" @onchange="@(args =>  OnInput(args, property))"  />
                 break;
 
-            case int value:
+            case nameof(Int32):
                 <input type="number" class="bg-secondary-1 text-primary-1 p-1" name="@property.Name"
                        id="@property.Name" value="@value" @onchange="@(args =>  OnInput(args, property))"  />
                 break;
 
-            case Enum value:
+            case nameof(Enum):
                 <select class="bg-secondary-1 text-primary-1 p-1" name="@property.Name"
                         id="@property.Name" @onchange="@(args => OnEnumInput(args, property))">
-                    @foreach (var enumValue in Enum.GetValues(value.GetType()))
+                    @foreach (var enumValue in Enum.GetValues(property.PropertyType))
                     {
-                        <option value="@enumValue">@enumValue</option>
+                        <option selected="@value?.Equals(enumValue)" value="@enumValue">@enumValue</option>
                     }
                 </select>
                 break;
