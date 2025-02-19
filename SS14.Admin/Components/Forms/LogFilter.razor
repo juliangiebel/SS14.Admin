@@ -1,0 +1,38 @@
+﻿@using Content.Shared.Database
+
+<EditForm Model="@Filter" class="flex">
+    <div>
+        <label for="filter-search">Search</label>
+        <InputText @bind-Value="Filter.Search" id="filter-search" />
+    </div>
+    <div>
+        <label for="filter-type">Type</label>
+        <InputSelect @bind-Value="Filter.Type" id="filter-type">
+            <option selected="@(Filter.Type == null)" value="">All</option>
+            @foreach (var type in Enum.GetValues(typeof(LogType)))
+            {
+                <option selected="@(type.Equals(Filter.Type))" value="@type">@type</option>
+            }
+        </InputSelect>
+    </div>
+    <div>
+        <label for="filter-impact">Impact</label>
+        <InputSelect @bind-Value="Filter.Impact" id="filter-impact">
+            <option selected="@(Filter.Impact == null)" value="">All</option>
+            @foreach (var impact in Enum.GetValues(typeof(LogImpact)))
+            {
+                <option selected="@(impact.Equals(Filter.Impact))" value="@impact">@impact</option>
+            }
+        </InputSelect>
+    </div>
+    <div>
+        <label for="filter-round-id">Round Id</label>
+        <InputNumber @bind-Value="Filter.RoundId" id="filter-round-id" />
+    </div>
+    <button type="submit">Search</button>
+</EditForm>
+
+@code
+{
+    [Parameter] public LogsFilterModel Filter { get; set; } = null!;
+}

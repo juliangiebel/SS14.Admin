@@ -33,15 +33,15 @@
     <div class="form-group row g-0">
         <label class="col-lg-3 col-form-label" for="searchBar">Search name, ID, HWID, IP or admin:</label>
         <div class="col-lg-5">
-            <input type="text" id="searchBar" name="search" value="@Model.CurrentFilter" class="form-control "/>
+            <input type="text" id="searchBar" name="search" value="@Model.CurrentMappedForm" class="form-control "/>
         </div>
         <div class="col-lg-4">
             <div class="row g-0">
                 <div class="col-6">
                     <select class="form-control " name="show">
-                        <option selected="@(Model.Show == BansModel.ShowFilter.Active)" value="">Active bans</option>
-                        <option selected="@(Model.Show == BansModel.ShowFilter.All)" value="all">All bans</option>
-                        <option selected="@(Model.Show == BansModel.ShowFilter.Expired)" value="expired">Expired/unbanned</option>
+                        <option selected="@(Model.Show == BansModel.ShowMappedForm.Active)" value="">Active bans</option>
+                        <option selected="@(Model.Show == BansModel.ShowMappedForm.All)" value="all">All bans</option>
+                        <option selected="@(Model.Show == BansModel.ShowMappedForm.Expired)" value="expired">Expired/unbanned</option>
                     </select>
                 </div>
                 <div class="col-3">

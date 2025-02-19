@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Content.Server.Database;
 using Microsoft.EntityFrameworkCore;
-using SS14.Admin.Components.Shared.Filter;
 using SS14.Admin.Helpers;
 
 namespace SS14.Admin.Components.Pages.Bans;
@@ -15,8 +14,6 @@ public partial class Bans
     public QuickGrid<BanViewModel> Grid { get; set; }
 
     private PaginationState _pagination = new() { ItemsPerPage = 13 };
-
-    private IFilterModel _model = new BansFilterModel();
 
     // Cache of ban data.
     private IQueryable<BanViewModel> _bansQuery = Enumerable.Empty<BanViewModel>().AsQueryable();
@@ -100,11 +97,6 @@ public partial class Bans
         Console.WriteLine($"Reban action confirmed for ban ID {banId}");
         // TODO: Implement reban logic.
         await Task.CompletedTask;
-    }
-
-    public class BansFilterModel : IFilterModel
-    {
-        public string Test { get; set; } = "test";
     }
 
     public class BanViewModel

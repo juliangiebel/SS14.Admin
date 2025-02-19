@@ -1,6 +1,5 @@
 ﻿@page "/bans"
 @using Microsoft.AspNetCore.Components.QuickGrid
-@using SS14.Admin.Components.Shared.Filter
 
 <PageTitle>Bans</PageTitle>
 
@@ -19,7 +18,7 @@
     </AuthorizeView>
 </div>
 
-<Filter Model="_model" />
+<filter Model="_model" />
 
 <div class="w-full shadow rounded-lg overflow-hidden">
     <QuickGrid TItem="BanViewModel"

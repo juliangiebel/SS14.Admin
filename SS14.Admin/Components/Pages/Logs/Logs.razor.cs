@@ -1,9 +1,8 @@
 ﻿using Content.Server.Database;
-using Content.Shared.Database;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.EntityFrameworkCore;
-using SS14.Admin.Components.Shared.Filter;
+using SS14.Admin.Models;
 
 namespace SS14.Admin.Components.Pages.Logs;
 
@@ -20,7 +19,7 @@ public partial class Logs
         .Include(l => l.Round)
         .ThenInclude(l => l.Server);
 
-    private IFilterModel _model = new LogsFilterModel();
+    private LogsFilterModel _model = new();
     /*private async Task Next()
     {
         await _pagination.SetCurrentPageIndexAsync(Math.Min(_pagination.CurrentPageIndex + 1, _pagination.LastPageIndex ?? int.MaxValue));
@@ -34,19 +33,5 @@ public partial class Logs
     }*/
     private async Task Refresh()
     {
-    }
-
-    public class LogsFilterModel : IFilterModel
-    {
-        public string Test { get; set; } = "test";
-
-        public LogType? Type { get; set; } = null;
-
-        public TestEnum EnumTest { get; set; } = TestEnum.Test1;
-        public enum TestEnum
-        {
-            Test1,
-            Test2
-        }
     }
 }

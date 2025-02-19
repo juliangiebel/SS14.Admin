@@ -37,6 +37,10 @@
     <AdditionalFiles Include="Components\Layout\NavMenu.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Shared\MappedForm\MappedForm.razor" />
+  </ItemGroup>
+
   <Target Name="NpmInstall" Inputs="package.json" Outputs="node_modules/.install-stamp">
     <!--
       Use npm install or npm ci depending on RestorePackagesWithLockFile value.

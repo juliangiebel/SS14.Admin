@@ -1,11 +1,11 @@
 ﻿@page "/logs"
 @using Microsoft.AspNetCore.Components.QuickGrid
-@using SS14.Admin.Components.Shared.Filter
+@using SS14.Admin.Components.Forms
 
 
 <PageTitle>Logs</PageTitle>
 
-<Filter Model="_model"></Filter>
+<LogFilter Filter="@_model" />
 <QuickGrid @ref="Grid" Items="LogsQuery()" Pagination="@_pagination" Class="grow">
     <PropertyColumn Property="@(log => log.RoundId)" Title="Round" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(log => log.Round != null ? log.Round.Server.Name : "")" Title="Server" Class="text-primary-1"></PropertyColumn>

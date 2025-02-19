@@ -117,7 +117,7 @@
   --tw-contain-style:  ;
 }
 
-/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.4.15 | MIT License | https://tailwindcss.com */
 
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
@@ -611,31 +611,60 @@ h1:is(.dark *), h2:is(.dark *), h3:is(.dark *), h4:is(.dark *), h5:is(.dark *), 
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
-input, textarea, select
+label, input, textarea, select
 {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
 }
 
-input:is(.dark *), textarea:is(.dark *), select:is(.dark *)
+label:is(.dark *), input:is(.dark *), textarea:is(.dark *), select:is(.dark *)
 {
   --tw-bg-opacity: 1;
   background-color: rgb(41 37 36 / var(--tw-bg-opacity, 1));
 }
 
-input, textarea, select
+label, input, textarea, select
 {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1));
 }
 
-input:is(.dark *), textarea:is(.dark *), select:is(.dark *)
+label:is(.dark *), input:is(.dark *), textarea:is(.dark *), select:is(.dark *)
 {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
-input, textarea, select
+label, input, textarea, select
+{
+  padding: 0.25rem;
+}
+
+button
+{
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+
+button:is(.dark *)
+{
+  --tw-bg-opacity: 1;
+  background-color: rgb(41 37 36 / var(--tw-bg-opacity, 1));
+}
+
+button
+{
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+}
+
+button:is(.dark *)
+{
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+button
 {
   padding: 0.25rem;
 }

@@ -6,8 +6,8 @@ namespace SS14.Admin.Models
 {
     /// <summary>
     /// Deserializes and binds values from a json query parameter to a property
-    /// e.g. public List&lt;AdminLogFilterModel&gt; Filter;
-    /// Filter is the property name and the corresponding query parameter gets parsed into the type. In this example: List&gt;AdminLogFilterModel&gt;
+    /// e.g. public List&lt;AdminLogFilterModel&gt; MappedForm;
+    /// MappedForm is the property name and the corresponding query parameter gets parsed into the type. In this example: List&gt;AdminLogFilterModel&gt;
     /// </summary>
     public class JsonQueryBinder: IModelBinder
     {
