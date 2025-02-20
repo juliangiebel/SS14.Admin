@@ -1,6 +1,5 @@
 ﻿@page "/bans/createban"
-@using Content.Shared.Database
-@using SS14.Admin.Helpers
+@using SS14.Admin.Components.Forms
 
 <PageTitle>Create Ban</PageTitle>
 
@@ -34,85 +33,5 @@
     }
 </div>
 
-<EditForm Model="_banModel" OnValidSubmit="HandleValidSubmit" FormName="CreateBanForm">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <!-- Name or User ID -->
-    <div class="mb-4">
-        <label class="block mb-1">Name or user ID</label>
-        <InputText @bind-Value="_banModel.NameOrUid" class="border p-2 w-full" />
-    </div>
-
-    <!-- IP address/CIDR -->
-    <div class="mb-4">
-        <label class="block mb-1">IP Address/CIDR</label>
-        <div class="flex gap-2">
-            <InputText @bind-Value="_banModel.IP" class="border p-2 w-full" />
-            <div class="flex items-center">
-                <InputCheckbox @bind-Value="_banModel.UseLatestIp" class="mr-2" />
-                <label>Use latest</label>
-            </div>
-        </div>
-    </div>
-
-    <!-- HWID -->
-    <div class="mb-4">
-        <label class="block mb-1">HWID</label>
-        <div class="flex gap-2">
-            <InputText @bind-Value="_banModel.HWid" class="border p-2 w-full" />
-            <div class="flex items-center">
-                <InputCheckbox @bind-Value="_banModel.UseLatestHwid" class="mr-2" />
-                <label>Use latest</label>
-            </div>
-        </div>
-    </div>
-
-    <!-- Duration (in minutes) -->
-    <div class="mb-4">
-        <label class="block mb-1">Minutes (0: Permanent)</label>
-        <InputNumber @bind-Value="_banModel.LengthMinutes" class="border p-2 w-full" />
-    </div>
-
-    <!-- Reason -->
-    <div class="mb-4">
-        <label class="block mb-1">Reason</label>
-        <InputTextArea @bind-Value="_banModel.Reason" class="border p-2 w-full" />
-    </div>
-
-    <!-- Severity -->
-    <div class="mb-4">
-        <label class="block mb-1">Severity</label>
-        <InputSelect @bind-Value="_banModel.Severity" class="border p-2 w-full">
-            @foreach (var severity in Enum.GetValues<NoteSeverity>())
-            {
-                <option value="@severity">@severity</option>
-            }
-        </InputSelect>
-    </div>
-
-    <!-- Settings -->
-    <div class="mb-4">
-        <label class="block mb-1">Settings</label>
-        <div class="flex items-center">
-            <InputCheckbox @bind-Value="_banModel.Hidden" class="mr-2" />
-            <label>Hidden from player</label>
-        </div>
-    </div>
-
-    @*<!-- Exemption Flags -->
-    <div class="mb-4">
-        <label class="block mb-1">Exemption Flags</label>
-        @foreach (var (flag, display) in BanExemptions.GetExemptions())
-        {
-            <div class="form-check">
-                <InputCheckbox id=@("exemption_" + flag.ToString()) class="form-check-input" @bind-Value="Exemptions[flag]" />
-                <label for=@("exemption_" + flag.ToString()) class="form-check-label">@display</label>
-            </div>
-        }
-    </div>*@
-
-    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-        Create Ban
-    </button>
-</EditForm>
+<!-- Use the CreateBanForm component -->
+<CreateBanForm />

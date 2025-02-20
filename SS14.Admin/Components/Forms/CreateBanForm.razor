@@ -1,0 +1,83 @@
+﻿@using Content.Shared.Database
+<EditForm Model="@BanModel" OnValidSubmit="Submit" FormName="CreateBanForm" class="space-y-4">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <!-- Name or User ID -->
+    <div>
+        <label class="block mb-1">Name or user ID</label>
+        <InputText @bind-Value="BanModel.NameOrUid" class="border p-2 w-full" />
+    </div>
+
+    <!-- IP Address/CIDR -->
+    <div>
+        <label class="block mb-1">IP Address/CIDR</label>
+        <div class="flex items-center gap-2">
+            <InputText @bind-Value="BanModel.IP" @oninput="ClearError" class="border p-2 w-full" />
+            <div class="flex items-center">
+                <InputCheckbox @bind-Value="BanModel.UseLatestIp" class="mr-1" />
+                <span class="text-sm">Use latest</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- HWID -->
+    <div>
+        <label class="block mb-1">HWID</label>
+        <div class="flex items-center gap-2">
+            <InputText @bind-Value="BanModel.HWid" class="border p-2 w-full" />
+            <div class="flex items-center">
+                <InputCheckbox @bind-Value="BanModel.UseLatestHwid" class="mr-1" />
+                <span class="text-sm">Use latest</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duration (in minutes) -->
+    <div>
+        <label class="block mb-1">Minutes (0: Permanent)</label>
+        <InputNumber @bind-Value="BanModel.LengthMinutes" class="border p-2 w-full" />
+    </div>
+
+    <!-- Reason -->
+    <div>
+        <label class="block mb-1">Reason</label>
+        <InputTextArea @bind-Value="BanModel.Reason" class="border p-2 w-full" />
+    </div>
+
+    <!-- Severity -->
+    <div>
+        <label class="block mb-1">Severity</label>
+        <InputSelect @bind-Value="BanModel.Severity" class="border p-2 w-full">
+            @foreach (var severity in Enum.GetValues<NoteSeverity>())
+            {
+                <option value="@severity">@severity</option>
+            }
+        </InputSelect>
+    </div>
+
+    <!-- Settings -->
+    <div>
+        <div class="flex items-center gap-2">
+            <InputCheckbox @bind-Value="BanModel.Hidden" class="mr-1" />
+            <span class="text-sm">Hidden from player</span>
+        </div>
+    </div>
+
+    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
+        Create Ban
+    </button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="bg-red-200 text-red-800 p-2 rounded mt-4">
+        @ErrorMessage
+    </div>
+}
+@if (!string.IsNullOrEmpty(SuccessMessage))
+{
+    <div class="bg-green-200 text-green-800 p-2 rounded mt-4">
+        @SuccessMessage
+    </div>
+}

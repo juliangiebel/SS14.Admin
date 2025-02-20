@@ -2,12 +2,16 @@
 using System.Diagnostics.Contracts;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Claims;
 using Content.Server.Database;
 using Content.Shared.Database;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using NpgsqlTypes;
 
 namespace SS14.Admin.Helpers;
+
+
 
 /// <summary>
 /// Shared logic between role and server bans.
@@ -19,19 +23,23 @@ public sealed class BanHelper
     private readonly IConfiguration _configuration;
     private readonly ILogger<BanHelper> _logger;
     private readonly IHttpContextAccessor _httpContext;
+    private readonly AuthenticationStateProvider _authState;
 
     public BanHelper(
         PostgresServerDbContext dbContext,
         PlayerLocator playerLocator,
         IConfiguration configuration,
         ILogger<BanHelper> logger,
-        IHttpContextAccessor httpContext)
+        IHttpContextAccessor httpContext,
+        AuthenticationStateProvider authState)
     {
+
         _dbContext = dbContext;
         _playerLocator = playerLocator;
         _configuration = configuration;
         _logger = logger;
         _httpContext = httpContext;
+        _authState = authState;
     }
 
     public IQueryable<BanJoin<ServerBan, ServerUnban>> CreateServerBanJoin()
@@ -88,7 +96,7 @@ public sealed class BanHelper
         public Player? UnbanAdmin { get; set; }
     }
 
-    public async Task<(IPAddress address, ImmutableTypedHwid? hwid)?> GetLastPlayerInfo(string nameOrUid)
+    public async Task<(IPAddress address, ImmutableTypedHwid? hwid)?> GetLastPlayerInfo(string? nameOrUid)
     {
         nameOrUid = nameOrUid.Trim();
 
@@ -165,7 +173,12 @@ public sealed class BanHelper
             ban.ExpirationTime = null;
         }
 
-        ban.BanningAdmin = _httpContext.HttpContext!.User.Claims.GetUserId();
+        //get banning admin id from blazor
+        var authState = await _authState.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var banningAdminId = user.Claims.GetUserId();
+        ban.BanningAdmin = banningAdminId;
+
         ban.Reason = reason;
         ban.BanTime = DateTime.UtcNow;
         return null;
