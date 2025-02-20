@@ -1,6 +1,29 @@
 ﻿@page "/players"
-<h3>Players</h3>
+@using Microsoft.AspNetCore.Components.QuickGrid
 
-@code {
+<PageTitle>Players</PageTitle>
 
-}
+<h1 class="text-2xl font-bold mb-4">Bans</h1>
+
+<filter Model="_model" />
+
+<div class="w-full shadow rounded-lg overflow-hidden">
+    <QuickGrid TItem="PlayerViewModel"
+               @ref="Grid"
+               Items="@_playersQuery"
+               Pagination="@_pagination"
+               Class="w-full">
+        <PropertyColumn Property="@(ban => ban.LastSeenUsername)" Title="Last Name"></PropertyColumn>
+        <PropertyColumn Property="@(ban => ban.Guid)" Title="User ID"></PropertyColumn>
+        <PropertyColumn Property="@(ban => ban.LastSeen)" Title="Last Seen Time"></PropertyColumn>
+        <PropertyColumn Property="@(ban => ban.LastSeenIPAddress)" Title="Last Seen Address"></PropertyColumn>
+        <PropertyColumn Property="@(ban => ban.LastSeenIPAddress)" Title="Last Seen Hwid"></PropertyColumn>
+        <PropertyColumn Property="@(ban => ban.FirstSeen)" Title="First Seen"></PropertyColumn>
+        <TemplateColumn Title="Actions">
+            <button class="btn btn-secondary">
+                Player Info
+            </button>
+        </TemplateColumn>
+    </QuickGrid>
+    <Pagination OnRefreshRequired="Refresh" class="py-2 border-t sticky-pagination" State="@_pagination" />
+</div>
