@@ -79,12 +79,12 @@
             <tr class="on-click data-log">
                 <td>@entry.RoundId</td>
                 <td>@entry.Round?.Server?.Name</td>
-                <td class="text-center colored" style="--cell-color: var(@entry.Impact.CssColorVarName())">@entry.Impact.ToString()</td>
+                <td class="text-center colored" style="--cell-color: var(@entry.Impact.CssColorClass())">@entry.Impact.ToString()</td>
                 <td>@entry.Date</td>
                 <td>@entry.Type</td>
                 <td>@entry.Message</td>
                 <template>
-                    <div class="log-details-header flex-row" style="--cell-color: var(@entry.Impact.CssColorVarName())">
+                    <div class="log-details-header flex-row" style="--cell-color: var(@entry.Impact.CssColorClass())">
                         <h2>Details</h2>
                         <span class="details-close fa fa-times" onclick="onDetailsClose()"></span>
                     </div>

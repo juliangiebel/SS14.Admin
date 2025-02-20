@@ -1,5 +1,8 @@
 ﻿@page "/logs"
+@using Content.Server.Database
+@using Content.Shared.Database
 @using Microsoft.AspNetCore.Components.QuickGrid
+@using SS14.Admin.AdminLogs
 @using SS14.Admin.Components.Forms
 
 
@@ -10,7 +13,10 @@
     <PropertyColumn Property="@(log => log.RoundId)" Title="Round" Class="text-primary-1"></PropertyColumn>
     @* ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract *@
     <PropertyColumn Property="@(log => log.Round != null ? log.Round.Server.Name : "")" Title="Server" Class="text-primary-1"></PropertyColumn>
-    <PropertyColumn Property="@(log => log.Impact)"  Title="Impact" Sortable="true" Class="text-primary-1"></PropertyColumn>
+    @*<PropertyColumn Property="@(log => log.Impact)" Title="Impact" Sortable="true" Class="text-primary-1"></PropertyColumn>*@
+    <TemplateColumn Title="Impact" SortBy="@(GridSort<AdminLog>.ByAscending(log => log.Impact))">
+        <span class="@context.Impact.CssColorClass() font-bold">@context.Impact</span>
+    </TemplateColumn>
     <PropertyColumn Property="@(log => log.Date)" Title="Date" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(log => log.Type)" Title="Type" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(log => log.Message)" Title="Message" Class="text-primary-1"></PropertyColumn>

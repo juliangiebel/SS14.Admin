@@ -1,4 +1,5 @@
 ﻿@using Content.Shared.Database
+@using SS14.Admin.AdminLogs
 
 <EditForm Model="@Filter" FormName="@FormName" OnSubmit="@Submit" class="flex gap-2 items-end">
     <div class="flex flex-col gap-1">
@@ -17,11 +18,13 @@
     </div>
     <div class="flex flex-col gap-1">
         <label for="filter-impact">Impact</label>
-        <InputSelect @bind-Value="Filter.Impact" id="filter-impact">
-            <option selected="@(Filter.Impact == null)" value="">All</option>
+        <InputSelect @bind-Value="Filter.Impact" id="filter-impact" class="@Filter.Impact?.CssColorClass()">
+            <option selected="@(Filter.Impact == null)" value="" class="text-primary-1">All</option>
             @foreach (var impact in Enum.GetValues(typeof(LogImpact)))
             {
-                <option selected="@(impact.Equals(Filter.Impact))" value="@impact">@impact</option>
+                <option selected="@(impact.Equals(Filter.Impact))" value="@impact" class="@(((LogImpact)impact).CssColorClass())">
+                    @impact
+                </option>
             }
         </InputSelect>
     </div>
