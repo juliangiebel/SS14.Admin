@@ -12,20 +12,15 @@ module.exports = {
         'active-nav-link'
     ],
     darkMode: 'class', // Enable class-based dark mode
-    /*theme: {
+    theme: {
         extend: {
-            colors: {
-                background: 'var(--color-background)',
-                surface: 'var(--color-surface)',
-                border: 'var(--color-border)',
-                textPrimary: 'var(--color-text-primary)',
-                textSecondary: 'var(--color-text-secondary)',
-                errorBg: 'var(--color-error-bg)',
-                errorText: 'var(--color-error-text)',
-                link: 'var(--color-link)',
-            },
+            textColor: {
+                'severity-medium': 'var(--color-severity-medium)',
+                'severity-high': 'var(--color-severity-high)',
+                'severity-extreme': 'var(--color-severity-extreme)'
+            }
         },
-    },*/
+    },
     plugins: [],
 }
 

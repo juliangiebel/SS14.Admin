@@ -2,3 +2,16 @@
 {
     height: 32px;
 }
+
+.quickgrid[theme="default"] > tbody > tr:not([aria-rowindex])
+{
+    display: none;
+}
+
+@layer components
+{
+    .quickgrid[theme="default"] > tbody > tr:not(:last-of-type)
+    {
+        @apply border-b border-neutral-200 dark:border-neutral-700;
+    }
+}
