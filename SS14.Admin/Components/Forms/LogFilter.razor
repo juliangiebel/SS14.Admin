@@ -1,11 +1,11 @@
 ﻿@using Content.Shared.Database
 
-<EditForm Model="@Filter" class="flex">
-    <div>
+<EditForm Model="@Filter" FormName="@FormName" OnSubmit="@Submit" class="flex gap-2 items-end">
+    <div class="flex flex-col gap-1">
         <label for="filter-search">Search</label>
         <InputText @bind-Value="Filter.Search" id="filter-search" />
     </div>
-    <div>
+    <div class="flex flex-col gap-1">
         <label for="filter-type">Type</label>
         <InputSelect @bind-Value="Filter.Type" id="filter-type">
             <option selected="@(Filter.Type == null)" value="">All</option>
@@ -15,7 +15,7 @@
             }
         </InputSelect>
     </div>
-    <div>
+    <div class="flex flex-col gap-1">
         <label for="filter-impact">Impact</label>
         <InputSelect @bind-Value="Filter.Impact" id="filter-impact">
             <option selected="@(Filter.Impact == null)" value="">All</option>
@@ -25,14 +25,20 @@
             }
         </InputSelect>
     </div>
-    <div>
+    <div class="flex flex-col gap-1">
         <label for="filter-round-id">Round Id</label>
         <InputNumber @bind-Value="Filter.RoundId" id="filter-round-id" />
     </div>
-    <button type="submit">Search</button>
+    <div class="grow"></div>
+    <button type="submit" class="h-9 px-6 py-1 bg-sky-400 hover:bg-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700 rounded-md">Search</button>
 </EditForm>
 
 @code
 {
     [Parameter] public LogsFilterModel Filter { get; set; } = null!;
+    [Parameter] public string FormName { get; set; } = null!;
+    [Parameter] public EventCallback<EditContext> OnSubmit { get; set; } = EventCallback<EditContext>.Empty;
+
+    private async Task Submit(EditContext arg) => await OnSubmit.InvokeAsync(arg);
+
 }

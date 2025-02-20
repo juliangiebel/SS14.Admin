@@ -5,9 +5,10 @@
 
 <PageTitle>Logs</PageTitle>
 
-<LogFilter Filter="@_model" />
+<LogFilter Filter="@_filter" FormName="LogsPageFilterForm" OnSubmit="Refresh" />
 <QuickGrid @ref="Grid" Items="LogsQuery()" Pagination="@_pagination" Class="grow">
     <PropertyColumn Property="@(log => log.RoundId)" Title="Round" Class="text-primary-1"></PropertyColumn>
+    @* ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract *@
     <PropertyColumn Property="@(log => log.Round != null ? log.Round.Server.Name : "")" Title="Server" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(log => log.Impact)"  Title="Impact" Sortable="true" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(log => log.Date)" Title="Date" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending" Class="text-primary-1"></PropertyColumn>

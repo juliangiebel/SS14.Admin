@@ -11,7 +11,7 @@
         <h1 class="sr-only">space station 14 admin panel</h1>
         <div class="sm:flex focus-outline items-center h-9 border dark:border-neutral-400 px-2 rounded-full">
             <div class="ri-search-line text-lg text-primary-1"></div>
-            <input type="text" class="border-none h-6 appearance-none focus-none bg-transparent text-muted-1" placeholder="Search" />
+            <input type="text" class="border-none h-6 appearance-none focus-none !bg-transparent text-muted-1" placeholder="Search" />
         </div>
         <Breadcrumbs />
         <div class="grow"></div>
@@ -27,13 +27,7 @@
     <div class="flex h-full-content bg-secondary-1">
         <NavMenu />
         <CascadingValue Value="Breadcrumbs">
-            <main class="basis-full p-8 m-2 rounded overflow-auto bg-primary-1">
-                <div class="flex w-full justify-between">
-                    <menu class="flex gap-2 text-textSecondary">
-                        <!--<li><button class="p-2 rounded-md bg-red-600 hover:bg-red-500 text-white">Cancel<i class="ri-close-circle-line ml-1"></i></button></li>
-                    <li><button class="p-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white">Merge<i class="ri-git-merge-line ml-1"></i></button></li>-->
-                    </menu>
-                </div>
+            <main class="basis-full pt-6 p-8 m-2 rounded overflow-auto bg-primary-1">
                 <div class="flex w-full h-full gap-4 flex-col">
                     @Body
                 </div>
