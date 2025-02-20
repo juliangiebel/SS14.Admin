@@ -1,8 +1,11 @@
+@using SS14.Admin.Helpers
 @using SS14.Admin.Services
 @inherits LayoutComponentBase
 @implements IDisposable
 
 @inject ClientPreferencesService ClientPreferences
+@inject AuthenticationStateProvider _authState
+
 
 <div class="@(_clientPreferences.darkMode ? "dark" : "")">
 
@@ -17,7 +20,7 @@
         <div class="grow"></div>
         <div class="mr-3 flex gap-x-2 items-center">
             <QuickLinksDropdown />
-            <NavLink href="/settings" class="font-semibold text-link-1">adminXY</NavLink>
+            <NavLink href="/settings" class="font-semibold text-link-1">@adminUsername</NavLink>
             <NavLink href="/Login/Logout" class="text-link-1">Logout</NavLink>
             <!--<img class="rounded-full h-8 w-8" height="32" alt="@placeholder" src="https://i.pravatar.cc/32" width="32">-->
         </div>
@@ -45,13 +48,18 @@
 
 @code
 {
+    private string adminUsername = "adminXY";
+
     public List<Breadcrumb> Breadcrumbs = [];
 
     private ClientPreferencesService.ClientPreferences _clientPreferences;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         ClientPreferences.OnChange += OnChange;
+        var authState = await _authState.GetAuthenticationStateAsync();
+        var user = authState.User;
+        adminUsername = user.FindFirst("name")?.Value;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
