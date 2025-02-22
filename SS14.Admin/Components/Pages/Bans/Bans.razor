@@ -1,17 +1,19 @@
 ﻿@page "/bans"
 @using Microsoft.AspNetCore.Components.QuickGrid
+@using SS14.Admin.Admins
+@using SS14.Admin.Helpers
 
 <PageTitle>Bans</PageTitle>
 
 <h1 class="text-2xl font-bold mb-4">Bans</h1>
 
 <div class="flex gap-2 mb-4">
-    <AuthorizeView Roles="MASSBAN">
+    <AuthorizeView Roles="@AdminFlags.MassBan.RoleName()">
         <Authorized>
             <NavLink href="/bans/createmassban" class="button button-primary">Create new Mass Ban</NavLink>
         </Authorized>
     </AuthorizeView>
-    <AuthorizeView Roles="BAN">
+    <AuthorizeView Roles="@AdminFlags.Ban.RoleName()">
         <Authorized>
             <NavLink href="/bans/createban" class="button button-primary">Create new Ban</NavLink>
         </Authorized>

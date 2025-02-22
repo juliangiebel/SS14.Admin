@@ -1,9 +1,30 @@
 ﻿@page "/"
+@using System.Security.Claims
+@using SS14.Admin.Admins
 
 <PageTitle>Home</PageTitle>
 <h3 class="text-primary-1">Welcome, authenticated user!</h3>
 
+@* This is temporary *@
+<h4>Roles:</h4>
+<div>
+@foreach (var role in Enum.GetNames<AdminFlags>())
+{
+    @if(!User.IsInRole(role.ToUpper()))
+        continue;
+
+    <span>@role</span>
+}
+</div>
 
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+    private ClaimsPrincipal User { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        User = (await AuthState!).User;
+    }
 
 }
