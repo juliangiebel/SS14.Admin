@@ -3,9 +3,21 @@
   height: 32px;
 }
 
+.quickgrid[theme="default"] > tbody > tr:not([aria-rowindex])
+{
+  display: none;
+}
+
 /* This file contains the global theme, e.g. the colors and fonts that get used throughout the site */
 
 /* Colors */
+
+:root
+{
+  --color-severity-medium: #F8C630;
+  --color-severity-high: #FA8420;
+  --color-severity-extreme: #C21906;
+}
 
 *, ::before, ::after
 {
@@ -117,7 +129,7 @@
   --tw-contain-style:  ;
 }
 
-/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.4.15 | MIT License | https://tailwindcss.com */
 
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
@@ -733,6 +745,19 @@ button
   }
 }
 
+.quickgrid[theme="default"] > tbody > tr:not(:last-of-type)
+{
+  border-bottom-width: 1px;
+  --tw-border-opacity: 1;
+  border-color: rgb(229 229 229 / var(--tw-border-opacity, 1));
+}
+
+.quickgrid[theme="default"] > tbody > tr:not(:last-of-type):is(.dark *)
+{
+  --tw-border-opacity: 1;
+  border-color: rgb(64 64 64 / var(--tw-border-opacity, 1));
+}
+
 .bg-primary-1
 {
   --tw-bg-opacity: 1;
@@ -815,6 +840,48 @@ button
 {
   --tw-text-opacity: 1;
   color: rgb(225 29 72 / var(--tw-text-opacity, 1));
+}
+
+.text-impact-severity-low
+{
+  --tw-text-opacity: 1;
+  color: rgb(82 82 82 / var(--tw-text-opacity, 1));
+}
+
+.text-impact-severity-low:is(.dark *)
+{
+  --tw-text-opacity: 1;
+  color: rgb(163 163 163 / var(--tw-text-opacity, 1));
+}
+
+.text-impact-severity-medium
+{
+  color: var(--color-severity-medium);
+}
+
+.text-impact-severity-medium:is(.dark *)
+{
+  color: var(--color-severity-medium);
+}
+
+.text-impact-severity-high
+{
+  color: var(--color-severity-high);
+}
+
+.text-impact-severity-high:is(.dark *)
+{
+  color: var(--color-severity-high);
+}
+
+.text-impact-severity-extreme
+{
+  color: var(--color-severity-extreme);
+}
+
+.text-impact-severity-extreme:is(.dark *)
+{
+  color: var(--color-severity-extreme);
 }
 
 .active-nav-link
@@ -1825,6 +1892,11 @@ button
   border-width: 4px;
 }
 
+.border-b
+{
+  border-bottom-width: 1px;
+}
+
 .border-t
 {
   border-top-width: 1px;
@@ -1845,6 +1917,12 @@ button
 {
   --tw-border-opacity: 1;
   border-color: rgb(209 213 219 / var(--tw-border-opacity, 1));
+}
+
+.border-neutral-200
+{
+  --tw-border-opacity: 1;
+  border-color: rgb(229 229 229 / var(--tw-border-opacity, 1));
 }
 
 .border-white
@@ -2449,6 +2527,21 @@ button
 {
   --tw-text-opacity: 1;
   color: rgb(153 27 27 / var(--tw-text-opacity, 1));
+}
+
+.text-severity-extreme
+{
+  color: var(--color-severity-extreme);
+}
+
+.text-severity-high
+{
+  color: var(--color-severity-high);
+}
+
+.text-severity-medium
+{
+  color: var(--color-severity-medium);
 }
 
 .text-white

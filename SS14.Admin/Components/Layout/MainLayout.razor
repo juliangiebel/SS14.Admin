@@ -48,7 +48,7 @@
 
 @code
 {
-    private string adminUsername = "adminXY";
+    private string adminUsername = string.Empty;
 
     public List<Breadcrumb> Breadcrumbs = [];
 
@@ -59,7 +59,7 @@
         ClientPreferences.OnChange += OnChange;
         var authState = await _authState.GetAuthenticationStateAsync();
         var user = authState.User;
-        adminUsername = user.FindFirst("name")?.Value;
+        adminUsername = user.Identity?.Name ?? string.Empty;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

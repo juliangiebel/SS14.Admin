@@ -75,6 +75,7 @@ namespace SS14.Admin
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
                     options.GetClaimsFromUserInfoEndpoint = true;
+                    options.TokenValidationParameters.NameClaimType = "name";
 
                     options.Events.OnTokenValidated = async ctx =>
                     {
