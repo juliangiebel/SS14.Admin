@@ -1,5 +1,7 @@
 ﻿@page "/bans/createban"
+@using Microsoft.AspNetCore.Authorization
 @using SS14.Admin.Components.Forms
+@attribute [Authorize(Roles = "BAN")]
 
 <PageTitle>Create Ban</PageTitle>
 
