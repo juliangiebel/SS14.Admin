@@ -22,35 +22,36 @@
 
 <filter Model="_model" />
 
-<div class="w-full shadow rounded-lg overflow-hidden">
-    <QuickGrid TItem="BanViewModel"
-               @ref="Grid"
-               Items="@_bansQuery"
-               Pagination="@_pagination"
-               Class="w-full">
-        <PropertyColumn Property="@(ban => ban.PlayerName)" Title="Name"></PropertyColumn>
-        <PropertyColumn Property="@(ban => ban.IPAddress)" Title="IP"></PropertyColumn>
-        <PropertyColumn Property="@(ban => ban.Hwid)" Title="HWID"></PropertyColumn>
-        <PropertyColumn Property="@(ban => ban.PlayerUserId)" Title="GUID"></PropertyColumn>
-        <PropertyColumn Property="@(ban => ban.Reason)" Title="Reason"></PropertyColumn>
-        <PropertyColumn Property="@(ban => ban.BanTime)" Title="Ban Time" Format="yyyy-MM-dd HH:mm:ss" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@(ban => ban.ExpirationTime)" Title="Expires" Format="yyyy-MM-dd HH:mm:ss" Sortable="true"></PropertyColumn>
-        <PropertyColumn Property="@(ban => ban.Admin)" Title="Banning Admin"></PropertyColumn>
-        <PropertyColumn Property="@(ban => ban.HitCount)" Title="Hits"></PropertyColumn>
-        <TemplateColumn Title="Actions">
-            @if (!_confirmations.ContainsKey(context.Id) || !_confirmations[context.Id])
-            {
+<QuickGrid TItem="BanViewModel"
+           @ref="Grid"
+           Items="@_bansQuery"
+           Pagination="@_pagination"
+           Class="grow">
+    <PropertyColumn Property="@(ban => ban.PlayerName)" Title="Name"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.IPAddress)" Title="IP"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.Hwid)" Title="HWID"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.PlayerUserId)" Title="GUID"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.Reason)" Title="Reason"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.BanTime)" Title="Ban Time" Format="yyyy-MM-dd HH:mm:ss"
+                    Sortable="true"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.ExpirationTime)" Title="Expires" Format="yyyy-MM-dd HH:mm:ss"
+                    Sortable="true"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.Admin)" Title="Banning Admin"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.HitCount)" Title="Hits"></PropertyColumn>
+    <TemplateColumn Title="Actions">
+        @if (!_confirmations.ContainsKey(context.Id) || !_confirmations[context.Id])
+        {
             <button class="btn btn-secondary" @onclick="() => ShowConfirmation(context.Id, context.Active)">
                 @(context.Active ? "Unban" : "Reban")
             </button>
-            }
-            else
-            {
-            <button class="btn btn-danger bg-red-500 hover:bg-red-600 rounded hover:text-white" @onclick="() => ConfirmAction(context.Id, context.Active)">
+        }
+        else
+        {
+            <button class="btn btn-danger bg-red-500 hover:bg-red-600 rounded hover:text-white"
+                    @onclick="() => ConfirmAction(context.Id, context.Active)">
                 Are you sure?
-                </button>
-            }
-        </TemplateColumn>
-    </QuickGrid>
-    <Pagination OnRefreshRequired="Refresh" class="py-2 border-t sticky-pagination" State="@_pagination" />
-</div>
+            </button>
+        }
+    </TemplateColumn>
+</QuickGrid>
+<Pagination OnRefreshRequired="Refresh" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>

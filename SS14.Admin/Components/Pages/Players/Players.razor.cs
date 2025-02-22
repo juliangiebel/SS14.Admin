@@ -16,6 +16,10 @@ public partial class Players
 
     private IQueryable<PlayerViewModel> _playersQuery = Enumerable.Empty<PlayerViewModel>().AsQueryable();
 
+    protected override async Task OnInitializedAsync()
+    {
+        await Refresh();
+    }
     private IQueryable<PlayerViewModel> GetPlayersQuery() =>
         from player in Context.Player.AsNoTracking()
     orderby player.LastSeenUserName
