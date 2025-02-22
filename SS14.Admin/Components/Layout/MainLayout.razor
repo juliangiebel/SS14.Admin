@@ -4,8 +4,6 @@
 @implements IDisposable
 
 @inject ClientPreferencesService ClientPreferences
-@inject AuthenticationStateProvider _authState
-
 
 <div class="@(_clientPreferences.darkMode ? "dark" : "")">
 
@@ -48,6 +46,9 @@
 
 @code
 {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+
     private string adminUsername = string.Empty;
 
     public List<Breadcrumb> Breadcrumbs = [];
@@ -57,7 +58,7 @@
     protected override async Task OnInitializedAsync()
     {
         ClientPreferences.OnChange += OnChange;
-        var authState = await _authState.GetAuthenticationStateAsync();
+        var authState = await AuthState!;
         var user = authState.User;
         adminUsername = user.Identity?.Name ?? string.Empty;
     }

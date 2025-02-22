@@ -10,7 +10,7 @@
 }
 
 @layer base {
-    p { @apply text-primary-1; }
+    p, span { @apply text-primary-1; }
     a { @apply text-link-1; }
     h1, h2, h3, h4, h5, h6 { @apply text-primary-1; }
     label { @apply text-primary-1 font-bold text-xs; }
