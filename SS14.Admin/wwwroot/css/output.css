@@ -1760,6 +1760,11 @@ button
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
 }
 
+.self-center
+{
+  align-self: center;
+}
+
 .overflow-auto
 {
   overflow: auto;
@@ -2396,6 +2401,11 @@ button
 .font-bold
 {
   font-weight: 700;
+}
+
+.font-light
+{
+  font-weight: 300;
 }
 
 .font-medium
