@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\Tables\" />
     <Folder Include="wwwroot\fonts\" />
   </ItemGroup>
 

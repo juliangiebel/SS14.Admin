@@ -129,7 +129,7 @@
   --tw-contain-style:  ;
 }
 
-/* ! tailwindcss v3.4.15 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */
 
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
@@ -1664,6 +1664,16 @@ button
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
+}
+
+.grid-cols-3
+{
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-rows-2
+{
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 .flex-row

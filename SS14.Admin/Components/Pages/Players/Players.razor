@@ -16,12 +16,12 @@
     <PropertyColumn Property="@(ban => ban.Guid)" Title="User ID"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.LastSeen)" Title="Last Seen Time"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.LastSeenIPAddress)" Title="Last Seen Address"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.LastSeenIPAddress)" Title="Last Seen Hwid"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.LastSeenHwid)" Title="Last Seen Hwid"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.FirstSeen)" Title="First Seen"></PropertyColumn>
-    <TemplateColumn Title="Actions">
-        <button class="btn btn-secondary">
-            Player Info
-        </button>
+    <TemplateColumn Title="Actions" Context="player">
+                <NavLink href="@($"players/{player.Guid}")" class="btn btn-primary">
+                    <i class="ri-info-card-line"></i>
+                </NavLink>
     </TemplateColumn>
 </QuickGrid>
 <Pagination OnRefreshRequired="Refresh" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>
