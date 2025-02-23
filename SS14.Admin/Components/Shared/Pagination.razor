@@ -5,7 +5,7 @@
     <Shortcut Code="ArrowRight" Action="OnShortcutRight" />
 </ShortcutHandler>
 
-<div class="@Class flex w-full gap-2">
+<div class="@Class flex w-full gap-2 bg-primary-1 font-light">
     @if (State.TotalItemCount.HasValue)
     {
         <div>
@@ -15,7 +15,7 @@
         <nav role="navigation" class="flex">
             <button class="go-first text-primary-1" type="button" @onclick="GoFirstAsync" disabled="@(!CanGoBack)" title="Go to first page" aria-label="Go to first page"><i class="ri-skip-left-line"></i></button>
             <button class="go-previous text-primary-1" type="button" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="Go to previous page" aria-label="Go to previous page"><i class="ri-arrow-left-s-line"></i></button>
-            <div class="pagination-text text-primary-1">
+            <div class="pagination-text text-primary-1 self-center">
                 Page <strong>@(State.CurrentPageIndex + 1)</strong>
                 of <strong>@(State.LastPageIndex + 1)</strong>
             </div>

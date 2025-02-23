@@ -18,6 +18,39 @@ public partial class Logs
 
     private PaginationState _pagination = new() { ItemsPerPage = 13 };
 
+    private GridItemsProvider<AdminLog>? _logsProvider;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _logsProvider = async request =>
+        {
+
+            // 🤡
+            // Increase the count by one if it's not unlimited so we can check if there is a next page available
+            var limit  = request.Count + 1;
+            var query = LogsQuery();
+            query = request.ApplySorting(query);
+            query = query.Skip(request.StartIndex);
+
+            if (limit != null)
+                query = query.Take(limit.Value);
+
+            var page = await query.ToListAsync();
+
+            // We asume that there's at least another page worth of items left if the amount of returned items
+            // is more than the requested amount.
+            var hasNextPage = request.Count != null && page.Count > request.Count;
+
+            // Return the current count plus twice to returned items to signify that there is at least one more page.
+            // If there is no next page, we return the current count plus the returned amount of items once.
+            // This total item count mustn't be shown to the user but be used to decide if the next button gets disabled.
+            var totalItemCount = request.StartIndex + (hasNextPage ?  (page.Count - 1) * 2 : page.Count - 1);
+
+            return GridItemsProviderResult.From(page,  totalItemCount);
+        };
+
+    }
+
     private IQueryable<AdminLog> LogsQuery()
     {
         var query = Context!.AdminLog
@@ -67,5 +100,10 @@ public partial class Logs
     }*/
     private async Task Refresh()
     {
+    }
+
+    private async Task RefreshFilter()
+    {
+        await Grid.RefreshDataAsync();
     }
 }
