@@ -1,4 +1,7 @@
-﻿<nav class="basis-48 px-2 py-4 overflow-auto">
+﻿@using SS14.Admin.Admins
+@using SS14.Admin.Helpers
+
+<nav class="basis-48 px-2 py-4 overflow-auto">
     <ul class="text-neutral-800">
         <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.All" href="/" class="nav-link">
             <i class="ri-home-2-fill"></i> Dashboard
@@ -24,6 +27,13 @@
         <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/whitelist" class="nav-link">
             <i class="ri-pages-fill"></i> Whitelist
         </NavLink></li>
+        <AuthorizeView Roles="@AdminFlags.Permissions.RoleName()">
+            <Authorized>
+                <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/permissions" class="nav-link">
+                        <i class="ri-pages-fill"></i> Permissions
+                    </NavLink></li>
+            </Authorized>
+        </AuthorizeView>
         <li><NavLink ActiveClass="active-nav-link" Match="NavLinkMatch.Prefix" href="/settings" class="nav-link">
             <i class="ri-settings-5-fill"></i> Settings
         </NavLink></li>

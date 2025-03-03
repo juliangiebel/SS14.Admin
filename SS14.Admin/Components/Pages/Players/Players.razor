@@ -12,12 +12,12 @@
            Items="@_playersQuery"
            Pagination="@_pagination"
            Class="grow">
-    <PropertyColumn Property="@(ban => ban.LastSeenUsername)" Title="Last Name"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.Guid)" Title="User ID"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.LastSeen)" Title="Last Seen Time"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.LastSeenIPAddress)" Title="Last Seen Address"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.LastSeenHwid)" Title="Last Seen Hwid"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.FirstSeen)" Title="First Seen"></PropertyColumn>
+    <PropertyColumn Property="@(player => player.LastSeenUsername)" Title="Last Name"></PropertyColumn>
+    <PropertyColumn Property="@(player => player.Guid)" Title="User ID"></PropertyColumn>
+    <PropertyColumn Property="@(player => player.LastSeen)" Title="Last Seen Time"></PropertyColumn>
+    <PropertyColumn Property="@(player => player.LastSeenIPAddress)" Title="Last Seen Address"></PropertyColumn>
+    <PropertyColumn Property="@(player => player.LastSeenHwid)" Title="Last Seen Hwid"></PropertyColumn>
+    <PropertyColumn Property="@(player => player.FirstSeen)" Title="First Seen"></PropertyColumn>
     <TemplateColumn Title="Actions" Context="player">
                 <NavLink href="@($"players/{player.Guid}")" class="btn btn-primary">
                     <i class="ri-info-card-line"></i>
