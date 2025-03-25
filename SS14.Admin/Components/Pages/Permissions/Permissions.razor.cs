@@ -49,7 +49,7 @@ public partial class Permissions : ComponentBase
         public string Title { get; set; } = "none";
         public string? Rank { get; set; }
 
-        public Dictionary<string,bool> flags { get; set; }
+        public Dictionary<string, bool> Flags { get; set; } = new();
     }
 
 }
