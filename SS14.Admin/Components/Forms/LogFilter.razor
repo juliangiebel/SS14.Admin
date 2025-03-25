@@ -16,7 +16,7 @@
             }
         </InputSelect>
     </div>
-    <div class="flex flex-col gap-1">
+    @*<div class="flex flex-col gap-1">
         <label for="filter-impact">Impact</label>
         <InputSelect @bind-Value="Filter.Impact" id="filter-impact" class="@Filter.Impact?.CssColorClass()">
             <option selected="@(Filter.Impact == null)" value="" class="text-primary-1">All</option>
@@ -27,10 +27,14 @@
                 </option>
             }
         </InputSelect>
-    </div>
+    </div>*@
     <div class="flex flex-col gap-1">
         <label for="filter-round-id">Round Id</label>
         <InputNumber @bind-Value="Filter.RoundId" id="filter-round-id" />
+    </div>
+    <div class="flex flex-col gap-1">
+        <label>Date</label>
+        <DatePicker></DatePicker>
     </div>
     <div class="grow"></div>
     <button type="submit" class="h-9 px-6 py-1 bg-sky-400 hover:bg-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700 rounded-md">Search</button>
