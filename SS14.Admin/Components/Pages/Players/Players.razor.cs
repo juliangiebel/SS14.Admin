@@ -20,6 +20,11 @@ public partial class Players
     {
         await Refresh();
     }
+    private async Task Refresh()
+    {
+        _playersQuery = GetPlayersQuery();
+        await InvokeAsync(StateHasChanged);
+    }
     private IQueryable<PlayerViewModel> GetPlayersQuery() =>
         from player in Context.Player.AsNoTracking()
     orderby player.LastSeenUserName
@@ -35,12 +40,6 @@ public partial class Players
             ? player.LastSeenHWId.ToImmutable().ToString()
             : ""
     };
-
-    private async Task Refresh()
-    {
-        _playersQuery = GetPlayersQuery();
-        await InvokeAsync(StateHasChanged);
-    }
 
     public class PlayerViewModel
     {

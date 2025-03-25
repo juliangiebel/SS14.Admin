@@ -1,0 +1,90 @@
+﻿@page "/players/{userId:guid}"
+@using Content.Server.Database
+@using Content.Shared.Database
+@using SS14.Admin.Helpers
+@using SS14.Admin.Pages.Tables
+@inject PostgresServerDbContext DbContext
+@inject BanHelper BanHelper
+@inject NavigationManager NavigationManager
+
+<PageTitle>Player Info for @PlayerModel?.LastSeenUsername</PageTitle>
+
+<div class="container">
+    <h1>Player information for @PlayerModel?.LastSeenUsername</h1>
+    <div class="grid grid-cols-3 grid-rows-2 gap-4 p-4">
+        <!-- Top Left: Play Info -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+            <h2 class="text-lg font-bold mb-2">Play Info</h2>
+            <dl class="row">
+                <dt class="col-sm-2">User ID:</dt>
+                <dd class="col-sm-10 font-monospace">@PlayerModel?.Guid</dd>
+                <dt class="col-sm-2">Last seen username:</dt>
+                <dd class="col-sm-10">@PlayerModel?.LastSeenUsername</dd>
+                <dt class="col-sm-2">First seen time:</dt>
+                <dd class="col-sm-10">@PlayerModel?.FirstSeen</dd>
+                <dt class="col-sm-2">Last seen time:</dt>
+                <dd class="col-sm-10">@PlayerModel?.LastSeen</dd>
+                <AuthorizeView Roles="PII">
+                    <Authorized>
+                        <dt class="col-sm-2">Last seen address:</dt>
+                        <dd class="col-sm-10 font-monospace">
+                            @PlayerModel?.LastSeenIPAddress
+                            @*<NavLink href="@($"/connections?search={Player?.LastSeenAddress}")">
+                        @Player?.LastSeenAddress
+                    </NavLink>*@
+                        </dd>
+                        <dt class="col-sm-2">Last seen HWID:</dt>
+                        <dd class="col-sm-10 font-monospace">
+                            @PlayerModel?.LastSeenHwid
+                            @*<NavLink href="@($"/connections?search={BanHelper.FormatHwid(Player?.LastSeenHWId)}")">
+                        @BanHelper.FormatHwid(Player?.LastSeenHWId)
+                    </NavLink>*@
+                        </dd>
+                    </Authorized>
+                </AuthorizeView>
+                <dt class="col-sm-2">Whitelisted:</dt>
+                <dd class="col-sm-10 font-monospace">
+                    whitelist goes here TODO
+                    @*@if (Whitelisted)
+            {
+                <strong>✔️ yes</strong> (<NavLink href="@($"/whitelist/remove/{Player?.UserId}")">remove</NavLink>)
+            }
+            else
+            {
+                <strong>❌ no</strong> (<NavLink href="@($"/whitelist/add/{Player?.UserId}")">add</NavLink>)
+            }*@
+                </dd>
+            </dl>
+        </div>
+
+        <!-- Top Middle: Playtime -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+            <h2 class="text-lg font-bold mb-2">Playtime</h2>
+            <p>Placeholder for playtime data.</p>
+        </div>
+
+        <!-- Top Right: Characters -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+            <h2 class="text-lg font-bold mb-2">Characters</h2>
+            <p>Placeholder for character info.</p>
+        </div>
+
+        <!-- Bottom Left: Notes -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+            <h2 class="text-lg font-bold mb-2">Notes</h2>
+            <p>Placeholder for notes details.</p>
+        </div>
+
+        <!-- Bottom Middle: Bans -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+            <h2 class="text-lg font-bold mb-2">Bans</h2>
+            <p>Placeholder for ban records.</p>
+        </div>
+
+        <!-- Bottom Right: Role Bans -->
+        <div class="bg-gray-100 p-4 rounded shadow">
+            <h2 class="text-lg font-bold mb-2">Role Bans</h2>
+            <p>Placeholder for role ban details.</p>
+        </div>
+    </div>
+</div>
