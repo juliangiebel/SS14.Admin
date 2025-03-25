@@ -6,6 +6,7 @@ namespace SS14.Admin.Components.Shared;
 
 public partial class Pagination : ComponentBase
 {
+    [Parameter] public bool ShowPerPage { get; set; } = true;
     [Parameter] public EventCallback OnRefreshRequired { get; set; }
 
     [Parameter, EditorRequired] public PaginationState State { get; set; } = default!;

@@ -1,12 +1,13 @@
-﻿.quickgrid[theme="default"] > thead > tr > th
+﻿.quickgrid[theme="default"] > tbody > tr,
+.quickgrid[theme="default"] > thead > tr > th
 {
-    height: 32px;
+    height: 40px;
 }
 
-.quickgrid[theme="default"] > tbody > tr:not([aria-rowindex])
+/*.quickgrid[theme="default"] > tbody > tr:not([aria-rowindex])
 {
     display: none;
-}
+}*/
 
 @layer components
 {

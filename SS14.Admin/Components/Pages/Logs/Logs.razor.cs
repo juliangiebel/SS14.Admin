@@ -14,9 +14,9 @@ public partial class Logs
 
     private readonly LogsFilterModel _filter = new();
 
-    public QuickGrid<AdminLog> Grid { get; set; }
+    public QuickGrid<AdminLog>? Grid { get; set; }
 
-    private PaginationState _pagination = new() { ItemsPerPage = 13 };
+    private PaginationState _pagination = new() { ItemsPerPage = 50 };
 
     private GridItemsProvider<AdminLog>? _logsProvider;
 
@@ -36,6 +36,9 @@ public partial class Logs
                 query = query.Take(limit.Value);
 
             var page = await query.ToListAsync();
+
+            if (page.Count == 0)
+                GridItemsProviderResult.From(page,  request.StartIndex);
 
             // We asume that there's at least another page worth of items left if the amount of returned items
             // is more than the requested amount.
@@ -70,9 +73,9 @@ public partial class Logs
             query = query.Where(log => log.Type == _filter.Type);
         }
 
-        if (_filter.Impact != null)
+        if (_filter.RoundId != null)
         {
-            query = query.Where(log => log.Impact == _filter.Impact);
+            query = query.Where(log => log.RoundId == _filter.RoundId);
         }
 
         if (_filter.DateFrom != null)
