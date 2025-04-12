@@ -27,7 +27,12 @@ public partial class DatePicker : ComponentBase, IAsyncDisposable
 
         var module = await _js.InvokeAsync<IJSObjectReference>("import", "./Components/Forms/DatePicker.razor.js");
 
-        _instance = await module.InvokeAsync<IJSObjectReference>("DatePicker.init", DotNetObjectReference.Create(this), _id);
+        var options = new
+        {
+            rangeStart = DateTime.Now,
+        };
+
+        _instance = await module.InvokeAsync<IJSObjectReference>("DatePicker.init", DotNetObjectReference.Create(this), _id, options);
         await module.DisposeAsync();
     }
 
