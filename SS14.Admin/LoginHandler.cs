@@ -38,7 +38,7 @@ namespace SS14.Admin
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(a => a.UserId == guid);
 
-            if (adminData == null)
+            if (adminData == null || adminData.Suspended)
             {
                 ctx.Response.Redirect(_linkGenerator.GetUriByPage(ctx.HttpContext, "/LoginFailed")!);
 
