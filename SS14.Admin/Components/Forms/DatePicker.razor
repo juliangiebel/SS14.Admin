@@ -1,81 +1,33 @@
-﻿<!-- ====== Date range picker Section Start -->
-<section id="@_id" class="dark:bg-dark">
-    <div class="container mx-auto">
-        <div class="mx-4 flex flex-wrap">
-            <div class="w-full px-4 md:w-1/2 lg:w-1/3">
-                <div class="relative">
-                    <!-- Datepicker Input with Icons -->
-                    <div class="relative flex items-center">
-                        <i class="absolute left-0 pl-5 ri-calendar-2-line text-primary-1"></i>
-                        <input
-                            id="datepicker"
-                            type="text"
-                            class="w-full rounded-lg border border-stroke bg-transparent py-2.5 pl-[50px] pr-8 text-primary-1 outline-none transition focus:border-primary dark:border-dark-3 dark:text-dark-6 dark:focus:border-primary"
-                            placeholder="Select a date"
-                            readonly
-                        />
-                        <span class="datepicker-toggle absolute right-0 cursor-pointer pr-4">
-                            <i class="ri-arrow-down-s-line text-primary-1"></i>
-                        </span>
-                    </div>
+﻿<div id="@_id">
+    <div class="flex">
+        <button class="datepicker-toggle"><i class="ri-calendar-2-fill"></i></button>
+        <input type="text" readonly>
+    </div>
+    <div class="datepicker-container floating-ui hidden
+                bg-primary-1 shadow-lg border border-black text-primary-1 rounded
+                w-80 p-2">
 
-                    <!-- Datepicker Container -->
-                    <div class="datepicker-container shadow-datepicker absolute mt-2 hidden rounded-xl border border-stroke bg-white pt-5 dark:border-dark-3 dark:bg-dark-2">
-                        <div class="flex items-center justify-between px-5">
-                            <button class="prev-month rounded-md px-2 py-2 text-primary-1 hover:bg-gray-2 dark:hover:bg-dark">
-                                <i class="ri-arrow-left-s-line"></i>
-                            </button>
-                            <div class="current-month text-lg font-medium text-black"></div>
-                            <button class="next-month rounded-md px-2 py-2 text-primary-1 hover:bg-gray-2 dark:hover:bg-dark">
-                                <i class="ri-arrow-left-s-line"></i>
-                            </button>
-                        </div>
-                        <div class="mb-4 mt-6 grid grid-cols-7 px-5">
-                            <div class="text-center text-sm font-medium text-secondary-color">
-                                Sun
-                            </div>
-                            <div class="text-center text-sm font-medium text-secondary-color">
-                                Mon
-                            </div>
-                            <div class="text-center text-sm font-medium text-secondary-color">
-                                Tue
-                            </div>
-                            <div class="text-center text-sm font-medium text-secondary-color">
-                                Wed
-                            </div>
-                            <div  class="text-center text-sm font-medium text-secondary-color">
-                                Thu
-                            </div>
-                            <div  class="text-center text-sm font-medium text-secondary-color">
-                                Fri
-                            </div>
-                            <div  class="text-center text-sm font-medium text-secondary-color">
-                                Sat
-                            </div>
-                        </div>
-                        <div class="days-container mt-2 grid grid-cols-7 gap-y-0.5 px-5">
-
-                        </div>
-                        <!-- Buttons -->
-                        <div
-                            class="mt-5 flex justify-end space-x-2.5 border-t border-stroke p-5 dark:border-dark-3"
-                        >
-                            <button
-                                id="cancelButton"  class="rounded-lg border border-primary px-5 py-2.5 text-base font-medium text-primary hover:bg-blue-light-5"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                id="applyButton"
-                                class="rounded-lg bg-primary px-5 py-2.5 text-base font-medium text-white hover:bg-[#1B44C8]"
-                            >
-                                Apply
-                            </button>
-                        </div>
-                    </div>
-                </div>
+        <div class="flex justify-between pb-2">
+            <button class="prev"><i class="ri-arrow-left-line"></i></button>
+            <div class="current-month"></div>
+            <button class="next"><i class="ri-arrow-right-line"></i></button>
+        </div>
+        <div class="days-container grid grid-cols-7 grid-rows-5 justify-items-center h-32"></div>
+        <div class="flex gap-1 my-3 flex-col">
+            <div class="flex justify-between gap-1">
+                <span class="block w-11">From:</span>
+                <input type="date" class="from-date-input" max="@(DateTime.Now.ToString("yyyy-MM-dd"))">
+                <input type="time" class="from-time-input">
+            </div>
+            <div class="flex justify-between gap-1">
+                <span class="block w-11">To:</span>
+                <input type="date" class="to-date-input" max="@(DateTime.Now.ToString("yyyy-MM-dd"))">
+                <input type="time" class="to-time-input">
             </div>
         </div>
+        <div class="flex justify-end gap-2 px-2">
+            <button class="cancel-button">Cancel</button>
+            <button class="ok-button">Ok</button>
+        </div>
     </div>
-</section>
-<!-- ====== Date range picker Section End -->
+</div>

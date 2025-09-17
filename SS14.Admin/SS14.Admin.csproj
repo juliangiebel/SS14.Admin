@@ -89,6 +89,7 @@
     <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.js" />
     <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.min.js" />
     <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\LICENSE.md" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\popper\popper.min.js" />
   </ItemGroup>
 
   <Target Name="NpmInstall" Inputs="package.json" Outputs="node_modules/.install-stamp">

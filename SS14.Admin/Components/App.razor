@@ -17,5 +17,17 @@
     <script src="_framework/blazor.web.js"></script>
     <script type="module" src="Components/Shared/Shortcuts/ShortcutHandler.razor.js"></script>
     <script src="js/dark-mode.js"></script>
+    <script src="@Assets["lib/luxon.min.js"]"></script>@*Deprecated*@
+    <script src="@Assets["lib/dayjs/dayjs.min.js"]"></script>
+    <script src="@Assets["lib/dayjs/plugin/utc.js"]"></script>
+    <script src="@Assets["lib/dayjs/plugin/isSameOrAfter.js"]"></script>
+    <script src="@Assets["lib/dayjs/plugin/isSameOrBefore.js"]"></script>
+    <script>
+        dayjs.extend(window.dayjs_plugin_utc);
+        dayjs.extend(window.dayjs_plugin_isSameOrAfter);
+        dayjs.extend(window.dayjs_plugin_isSameOrBefore);
+    </script>
+    <script src="@Assets["lib/floating-ui.core.min.js"]"></script>
+    <script src="@Assets["lib/floating-ui.dom.min.js"]"></script>
 </body>
 </html>

@@ -26,6 +26,21 @@
     {
         @apply focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none
     }
+
+    .floating-ui
+    {
+        @apply absolute w-max top-0 left-0 z-10
+    }
+
+    .day-selected
+    {
+        @apply bg-rose-600 rounded-full
+    }
+
+    .day-text-nudge
+    {
+        padding-right: 2px;
+    }
 }
 
 

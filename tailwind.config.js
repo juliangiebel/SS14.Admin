@@ -9,7 +9,8 @@ module.exports = {
       './wwwroot/**/*.{razor,html,css}', //Static html
     ],
     safelist: [
-        'active-nav-link'
+        'active-nav-link',
+        'cursor-pointer'
     ],
     darkMode: 'class', // Enable class-based dark mode
     theme: {
