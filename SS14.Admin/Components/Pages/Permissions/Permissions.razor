@@ -18,8 +18,8 @@
     <PropertyColumn Property="@(admin => admin.Rank)" Title="Rank"></PropertyColumn>
     <PropertyColumn Property="@(admin => admin.Flags)" Title="Flags"></PropertyColumn>
     <TemplateColumn Title="Edit Permissions" Context="admin">
-        <NavLink href="@($"permissions/{admin.UserId}")" class="btn btn-primary">
-            <i class="ri-info-card-line"></i>
+        <NavLink href="@($"/permissions/{admin.UserId}")" class="btn btn-primary">
+            Edit
         </NavLink>
     </TemplateColumn>
 </QuickGrid>

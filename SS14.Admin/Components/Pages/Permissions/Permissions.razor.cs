@@ -1,10 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Content.Server.Database;
 using Microsoft.EntityFrameworkCore;
-using SS14.Admin.Helpers;
-using  SS14.Admin.Admins;
 
 namespace SS14.Admin.Components.Pages.Permissions;
 
@@ -29,7 +27,7 @@ public partial class Permissions : ComponentBase
         await InvokeAsync(StateHasChanged);
     }
     private IQueryable<AdminViewModel> GetAdminQuery() =>
-        from admin in Context.Admin.AsNoTracking()
+        from admin in Context!.Admin.AsNoTracking()
         join player in Context.Player.AsNoTracking() on admin.UserId equals player.UserId
         join rank in Context.AdminRank.AsNoTracking() on admin.AdminRankId equals rank.Id into rankJoin
         from r in rankJoin.DefaultIfEmpty()
@@ -53,4 +51,3 @@ public partial class Permissions : ComponentBase
     }
 
 }
-

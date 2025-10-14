@@ -1,0 +1,120 @@
+@page "/permissions/{UserId:guid}"
+@using Microsoft.AspNetCore.Components.Forms
+@using SS14.Admin.Admins
+@using SS14.Admin.Helpers
+
+<PageTitle>Edit Permissions for @Model?.Username</PageTitle>
+
+<div class="container mx-auto px-4 py-6">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">Edit Permissions for @Model?.Username</h1>
+
+    @if (Model == null)
+    {
+        <div class="flex items-center justify-center py-12">
+            <div class="text-lg text-gray-600 dark:text-gray-400">Loading...</div>
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit" class="space-y-6">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6" />
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-6">
+                <div class="space-y-2">
+                    <label for="username" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Username</label>
+                    <input id="username"
+                           readonly
+                           value="@Model.Username"
+                           class="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 cursor-not-allowed" />
+                </div>
+
+                <div class="space-y-2">
+                    <label for="title" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Title</label>
+                    <InputText id="title"
+                               @bind-Value="Model.Title"
+                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                </div>
+
+                <div class="space-y-2">
+                    <label for="rank" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Rank</label>
+                    <InputSelect id="rank"
+                                 @bind-Value="Model.AdminRankId"
+                                 @bind-Value:after="@UpdateRankFlags"
+                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">No Rank</option>
+                        @foreach (var rank in Ranks)
+                        {
+                            <option value="@rank.Id">@rank.Name</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Permission Flags</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Select flag behavior: <span class="font-semibold">I</span> (Inherited from rank),
+                    <span class="font-semibold">+</span> (Force Enable),
+                    <span class="font-semibold">-</span> (Force Disable)
+                </p>
+
+                <div class="space-y-3">
+                    @foreach (var flag in AdminFlagsHelper.AllFlags)
+                    {
+                        var flagName = flag.ToString();
+                        var upperFlagName = flagName.ToUpper();
+                        var hasInherited = Model.RankFlags?.Contains(upperFlagName) == true;
+                        var hasPositive = Model.PosFlags.Contains(upperFlagName);
+                        var hasNegative = Model.NegFlags.Contains(upperFlagName);
+                        var isInherited = !hasPositive && !hasNegative;
+
+                        <div class="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <span class="font-semibold text-gray-700 dark:text-gray-300 w-40">@flagName</span>
+
+                            <div class="flex items-center gap-6 flex-1">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio"
+                                           name="flag-@flagName"
+                                           checked="@isInherited"
+                                           @onchange="@(e => OnInheritedFlagChanged(flagName))"
+                                           class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        I <span class="text-xs text-gray-500 dark:text-gray-400">(Inherited@(hasInherited ? " from rank" : ""))</span>
+                                    </span>
+                                </label>
+
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio"
+                                           name="flag-@flagName"
+                                           checked="@hasPositive"
+                                           @onchange="@(e => OnPositiveFlagChanged(flagName))"
+                                           class="w-4 h-4 text-green-600 focus:ring-2 focus:ring-green-500" />
+                                    <span class="text-sm font-medium text-green-700 dark:text-green-400">+ <span class="text-xs">(Force Enable)</span></span>
+                                </label>
+
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio"
+                                           name="flag-@flagName"
+                                           checked="@hasNegative"
+                                           @onchange="@(e => OnNegativeFlagChanged(flagName))"
+                                           class="w-4 h-4 text-red-600 focus:ring-2 focus:ring-red-500" />
+                                    <span class="text-sm font-medium text-red-700 dark:text-red-400">- <span class="text-xs">(Force Disable)</span></span>
+                                </label>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Save Changes
+                </button>
+                <NavLink href="/Permissions" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition-colors focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                    Cancel
+                </NavLink>
+            </div>
+        </EditForm>
+    }
+</div>

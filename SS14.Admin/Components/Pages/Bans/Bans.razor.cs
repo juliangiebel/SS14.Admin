@@ -39,7 +39,7 @@ public partial class Bans
             PlayerUserId = ban.PlayerUserId.ToString(),
             PlayerName = p != null ? p.LastSeenUserName : "",
             IPAddress = ban.Address != null ? ban.Address.ToString() : "",
-            Hwid = ban.HWId != null ? ban.HWId.ToImmutable().ToString() : null,
+            Hwid = ban.HWId != null ? ban.HWId.ToString() : "",
             Reason = ban.Reason,
             BanTime = ban.BanTime,
             ExpirationTime = ban.ExpirationTime,
