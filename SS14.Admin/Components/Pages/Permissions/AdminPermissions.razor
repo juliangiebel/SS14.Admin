@@ -1,0 +1,30 @@
+@page "/Permissions/Admins"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Content.Server.Database
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using SS14.Admin.AdminLogs
+@using SS14.Admin.Components.Forms
+
+<PageTitle>Admin Permissions</PageTitle>
+
+<h1 class="text-2xl font-bold mb-4">Manage Permissions</h1>
+
+<AdminFilter Filter="@_filter" FormName="AdminPermissionsPageFilterForm" OnSubmit="RefreshFilter" />
+
+<QuickGrid
+           @ref="Grid"
+           ItemsProvider="@_adminProvider"
+           Pagination="@_pagination"
+           Class="grow">
+    <PropertyColumn Property="@(admin => admin.Username)" Title="Username"></PropertyColumn>
+    <PropertyColumn Property="@(admin => admin.Title)" Title="Title"></PropertyColumn>
+    <PropertyColumn Property="@(admin => admin.Rank)" Title="Rank"></PropertyColumn>
+    <PropertyColumn Property="@(admin => admin.Flags)" Title="Flags"></PropertyColumn>
+    <TemplateColumn Title="Edit Permissions" Context="admin">
+        <NavLink href="@($"/permissions/{admin.UserId}")" class="btn btn-primary">
+            Edit
+        </NavLink>
+    </TemplateColumn>
+</QuickGrid>
+
+<Pagination OnRefreshRequired="Refresh" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>

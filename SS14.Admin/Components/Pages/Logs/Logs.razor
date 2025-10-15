@@ -8,7 +8,13 @@
 <PageTitle>Logs</PageTitle>
 @*Remove ability to filter and sort by impact*@
 <LogFilter Filter="@_filter" FormName="LogsPageFilterForm" OnSubmit="RefreshFilter" />
-<QuickGrid @ref="Grid" ItemsProvider="@_logsProvider" Pagination="@_pagination" Class="grow">
+
+<QuickGrid
+    @ref="Grid"
+    ItemsProvider="@_logsProvider"
+    Pagination="@_pagination"
+    Class="grow">
+
     <PropertyColumn Property="@(log => log.RoundId)" Title="Round" Class="text-primary-1"></PropertyColumn>
     @* ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract *@
     <PropertyColumn Property="@(log => log.Round != null ? log.Round.Server.Name : "")" Title="Server" Class="text-primary-1"></PropertyColumn>
@@ -20,6 +26,7 @@
     <PropertyColumn Property="@(log => log.Type)" Title="Type" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(log => log.Message)" Title="Message" Class="text-primary-1"></PropertyColumn>
 </QuickGrid>
+
 @*@if (!Grid?.Items?.Any() ?? true)
 {
     <div class="grow-[100] flex justify-center items-center">

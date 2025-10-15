@@ -1,0 +1,23 @@
+@page "/Permissions/Ranks"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Content.Server.Database
+
+<PageTitle>Manage Ranks</PageTitle>
+
+<h1 class="text-2xl font-bold mb-4">Manage Ranks</h1>
+
+<QuickGrid
+           @ref="Grid"
+           ItemsProvider="@_rankProvider"
+           Pagination="@_pagination"
+           Class="grow">
+    <PropertyColumn Property="@(rank => rank.Name)" Title="Rank Name"></PropertyColumn>
+    <PropertyColumn Property="@(rank => rank.Flags)" Title="Flags"></PropertyColumn>
+    <TemplateColumn Title="Edit Rank" Context="rank">
+        <NavLink href="@($"/permissions/ranks/{rank.Id}")" class="btn btn-primary">
+            Edit
+        </NavLink>
+    </TemplateColumn>
+</QuickGrid>
+
+<Pagination OnRefreshRequired="Refresh" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>

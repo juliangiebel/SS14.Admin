@@ -11,9 +11,7 @@ public partial class Logs
     [Inject]
     private PostgresServerDbContext? Context { get; set; }
 
-
     private readonly LogsFilterModel _filter = new();
-
     public QuickGrid<AdminLog>? Grid { get; set; }
 
     private PaginationState _pagination = new() { ItemsPerPage = 50 };

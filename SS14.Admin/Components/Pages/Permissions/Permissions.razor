@@ -1,26 +1,35 @@
 ﻿@page "/Permissions"
-@using Microsoft.AspNetCore.Components.QuickGrid
-
 
 <PageTitle>Permissions Management</PageTitle>
 
-<h1 class="text-2xl font-bold mb-4">Manage Permissions</h1>
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8 text-gray-800 dark:text-gray-100">Permissions Management</h1>
 
-<filter Model="_model" />
-
-<QuickGrid TItem="PlayerViewModel"
-           @ref="Grid"
-           Items="@_adminQuery"
-           Pagination="@_pagination"
-           Class="grow">
-    <PropertyColumn Property="@(admin => admin.Username)" Title="Username"></PropertyColumn>
-    <PropertyColumn Property="@(admin => admin.Title)" Title="Title"></PropertyColumn>
-    <PropertyColumn Property="@(admin => admin.Rank)" Title="Rank"></PropertyColumn>
-    <PropertyColumn Property="@(admin => admin.Flags)" Title="Flags"></PropertyColumn>
-    <TemplateColumn Title="Edit Permissions" Context="admin">
-        <NavLink href="@($"/permissions/{admin.UserId}")" class="btn btn-primary">
-            Edit
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <!-- Edit Permissions Button -->
+        <NavLink href="/permissions/admins" class="block">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 p-8 text-white">
+                <div class="flex flex-col items-center justify-center space-y-4">
+                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    <h2 class="text-2xl font-bold">Edit Admin Permissions</h2>
+                    <p class="text-blue-100 text-center">Manage individual admin permissions and flags</p>
+                </div>
+            </div>
         </NavLink>
-    </TemplateColumn>
-</QuickGrid>
-<Pagination OnRefreshRequired="Refresh" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>
+
+        <!-- Manage Ranks Button -->
+        <NavLink href="/permissions/ranks" class="block">
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 p-8 text-white">
+                <div class="flex flex-col items-center justify-center space-y-4">
+                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                    <h2 class="text-2xl font-bold">Manage Ranks</h2>
+                    <p class="text-purple-100 text-center">Create and edit permission ranks</p>
+                </div>
+            </div>
+        </NavLink>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+@page "/permissions/ranks/{RankId:int}"
+
+<PageTitle>Edit Rank</PageTitle>
+
+<div class="container mx-auto px-4 py-6">
+    <div class="flex items-center mb-6">
+        <NavLink href="/Permissions/Ranks" class="mr-4 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+        </NavLink>
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Edit Rank</h1>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
+        @if (RankId == null)
+        {
+            <div class="flex items-center justify-center py-12">
+                <div class="text-lg text-gray-600 dark:text-gray-400">Invalid Rank ID</div>
+            </div>
+        }
+        else
+        {
+            <div class="space-y-6">
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+                    <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-200 mb-2">Coming Soon</h2>
+                    <p class="text-blue-700 dark:text-blue-300">
+                        This page will allow you to edit rank details, including:
+                    </p>
+                    <ul class="list-disc list-inside mt-3 text-blue-700 dark:text-blue-300 space-y-1">
+                        <li>Rank name</li>
+                        <li>Permission flags</li>
+                        <li>WIP:Rank description</li>
+                        <li>Associated administrators</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Rank Information</h3>
+                    <div class="text-gray-600 dark:text-gray-400">
+                        <p><strong>Rank ID:</strong> @RankId</p>
+                        <p class="mt-2 text-sm">Editing functionality WIP</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <NavLink href="/Permissions/Ranks" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition-colors focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                        Back to Ranks
+                    </NavLink>
+                </div>
+            </div>
+        }
+    </div>
+</div>

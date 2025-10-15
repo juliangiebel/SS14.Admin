@@ -29,6 +29,7 @@ public partial class EditPermissions : ComponentBase
             .Include(a => a.Flags)
             .Include(a => a.AdminRank)
             .ThenInclude(r => r.Flags)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(a => a.UserId == UserId);
 
         if (adminEntity == null)
