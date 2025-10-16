@@ -1,31 +1,94 @@
 ﻿@page "/unauthorized"
-<main class="h-screen bg-gray-100 flex items-center justify-center">
+@using SS14.Admin.Services
+@inject ClientPreferencesService ClientPreferences
+@implements IDisposable
 
-<!-- Full Page Background -->
-  <div class="absolute inset-0 bg-gray-400">
-    <div class="absolute inset-0 bg-gray-500 bg-opacity-30 backdrop-blur-lg"></div>
-  </div>
+<div class="@(_clientPreferences.darkMode ? "dark" : "")">
+    <main class="h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center relative overflow-hidden">
 
-  <!-- Centered Login Box -->
-  <div class="relative z-10 flex flex-col items-center justify-center w-full max-w-md p-6 bg-primary-1 shadow-xl rounded-xl">
-      <!-- Logo Section -->
-      <div class="mb-6">
-          <img class="w-24 h-24 mx-auto" src="https://wiki.spacestation14.io/w/images/logo.svg" alt="space station 14 logo">
-      </div>
-      <form action="./login">
-          <!-- Login Button -->
-          <div>
-              <button
-                  type="submit"
-                  class="w-full px-4 py-2 font-semibold text-white bg-blue-500 rounded-md shadow-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-300"
-              >
-                  Login
-              </button>
-          </div>
-      </form>
-  </div>
-</main>
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-1/2 -left-1/2 w-full h-full bg-blue-500/10 dark:bg-blue-400/5 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute -bottom-1/2 -right-1/2 w-full h-full bg-purple-500/10 dark:bg-purple-400/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+
+        <!-- Dark Mode Toggle - Top Right -->
+        <div class="absolute top-4 right-4 z-20">
+            <button @onclick="ToggleDarkMode" type="button" class="text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 transition-colors">
+                <svg class="@(_clientPreferences.darkMode ? "hidden" : "block") w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                <svg class="@(_clientPreferences.darkMode ? "block" : "hidden") w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+
+        <!-- Centered Login Box -->
+        <div class="relative z-10 flex flex-col items-center justify-center w-full max-w-md mx-4">
+            <div class="w-full p-8 bg-white dark:bg-gray-800 shadow-2xl rounded-2xl border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
+                <!-- Logo Section -->
+                <div class="mb-8 text-center">
+                    <img class="w-24 h-24 mx-auto mb-4 drop-shadow-lg" src="https://wiki.spacestation14.io/w/images/logo.svg" alt="Space Station 14 logo">
+                    <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Space Station 14</h1>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Admin Panel</p>
+                </div>
+
+                <!-- Login Form -->
+                <form action="./login" class="space-y-4">
+                    <div class="text-center mb-6">
+                        <p class="text-gray-600 dark:text-gray-300 text-sm">
+                            Please authenticate to access the admin panel
+                        </p>
+                    </div>
+
+                    <!-- Login Button -->
+                    <button
+                        type="submit"
+                        class="w-full px-6 py-3 font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        <span class="flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                            </svg>
+                            Login via Wizden Keycloak
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Footer Info -->
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <p class="text-xs text-center text-gray-500 dark:text-gray-400">
+                        See ya, Space Cowboy
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
 
 @code {
+    private ClientPreferencesService.ClientPreferences _clientPreferences;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _clientPreferences = await ClientPreferences.GetClientPreferences();
+            ClientPreferences.OnChange += OnChange;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleDarkMode()
+    {
+        await ClientPreferences.ToggleDarkMode();
+    }
+
+    private void OnChange(ClientPreferencesService.ClientPreferences clientPreferences)
+    {
+        _clientPreferences = clientPreferences;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        ClientPreferences.OnChange -= OnChange;
+    }
 }
