@@ -33,6 +33,7 @@ public partial class AdminPermissions
                 query = query.Take(limit.Value);
 
             // Materialize the query immediately to avoid DbContext disposal issues
+            // if not it will grab a disposed context and break
             var page = await query.ToListAsync();
 
             if (page.Count == 0)
@@ -66,7 +67,7 @@ public partial class AdminPermissions
                         Rank = r != null ? r.Name : null
                     };
 
-        // Apply filters
+        // Apply filters this should reflect AdminFilter.cs params
         if (!string.IsNullOrWhiteSpace(_filter.Search))
         {
             query = query.Where(a => a.Username.Contains(_filter.Search));
@@ -88,8 +89,6 @@ public partial class AdminPermissions
     {
         await Grid.RefreshDataAsync();
     }
-
-
 
     public class AdminViewModel
     {

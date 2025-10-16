@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Content.Server.Database;
-using SS14.Admin.Admins;
-using SS14.Admin.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace SS14.Admin.Components.Pages.Permissions;
@@ -34,7 +32,7 @@ public partial class EditPermissions : ComponentBase
 
         if (adminEntity == null)
         {
-            // Handle not found
+            // Handle not found or not im lazy
             return;
         }
 
@@ -120,6 +118,7 @@ public partial class EditPermissions : ComponentBase
         adminEntity.AdminRankId = Model.AdminRankId;
 
         // Clear existing flags
+        // This is unfortunatly how it is handled in game now, yes it creates needless more ids
         adminEntity.Flags.Clear();
 
         // Add new pos flags (ensure uppercase)

@@ -16,6 +16,7 @@ public partial class Ranks
 
     private GridItemsProvider<RankViewModel>? _rankProvider;
 
+    //shamelessly stole this from julian
     protected override async Task OnInitializedAsync()
     {
         _rankProvider = async request =>
