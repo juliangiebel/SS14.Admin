@@ -1,6 +1,7 @@
-@page "/permissions/ranks/{RankId:int}"
+@page "/permissions/ranks/{RankName}"
+@using SS14.Admin.Admins
 
-<PageTitle>Edit Rank</PageTitle>
+<PageTitle>Edit Admin Rank</PageTitle>
 
 <div class="container mx-auto px-4 py-6">
     <div class="flex items-center mb-6">
@@ -9,46 +10,76 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
         </NavLink>
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Edit Rank</h1>
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Edit Admin Rank</h1>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
-        @if (RankId == null)
-        {
-            <div class="flex items-center justify-center py-12">
-                <div class="text-lg text-gray-600 dark:text-gray-400">Invalid Rank ID</div>
-            </div>
-        }
-        else
-        {
-            <div class="space-y-6">
-                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-                    <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-200 mb-2">Coming Soon</h2>
-                    <p class="text-blue-700 dark:text-blue-300">
-                        This page will allow you to edit rank details, including:
-                    </p>
-                    <ul class="list-disc list-inside mt-3 text-blue-700 dark:text-blue-300 space-y-1">
-                        <li>Rank name</li>
-                        <li>Permission flags</li>
-                        <li>WIP:Rank description</li>
-                        <li>Associated administrators</li>
-                    </ul>
+    @if (RankName == null)
+    {
+        <div class="flex items-center justify-center py-12">
+            <div class="text-lg text-gray-600 dark:text-gray-400">Invalid Rank Name</div>
+        </div>
+    }
+    else if (Model == null)
+    {
+        <div class="flex items-center justify-center py-12">
+            <div class="text-lg text-gray-600 dark:text-gray-400">Loading...</div>
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit" class="space-y-6">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6" />
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-6">
+                <div class="space-y-2">
+                    <label for="rankname" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Rank Name</label>
+                    <InputText id="rankname"
+                               @bind-Value="Model.Name"
+                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
                 </div>
 
-                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Rank Information</h3>
-                    <div class="text-gray-600 dark:text-gray-400">
-                        <p><strong>Rank ID:</strong> @RankId</p>
-                        <p class="mt-2 text-sm">Editing functionality WIP</p>
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Permission Flags</h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Select the permission flags that this rank should have.
+                    </p>
+
+                    <div class="space-y-2">
+                        @foreach (var flag in AdminFlagsHelper.AllFlags)
+                        {
+                            var flagName = flag.ToString();
+                            var upperFlagName = flagName.ToUpper();
+                            var isChecked = Model.Flags.Contains(upperFlagName);
+
+                            <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                <label class="flex items-center gap-3 cursor-pointer flex-1">
+                                    <input type="checkbox"
+                                           checked="@isChecked"
+                                           @onchange="@(e => OnFlagChanged(flagName, (bool)(e.Value ?? false)))"
+                                           class="w-5 h-5 text-blue-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-blue-500" />
+                                    <span class="font-semibold text-gray-700 dark:text-gray-300">@flagName</span>
+                                </label>
+                            </div>
+                        }
                     </div>
                 </div>
-
-                <div class="flex gap-3">
-                    <NavLink href="/Permissions/Ranks" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition-colors focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                        Back to Ranks
-                    </NavLink>
-                </div>
             </div>
-        }
-    </div>
+
+            <div class="flex gap-3">
+                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Save
+                </button>
+                @if (!Model.IsNew)
+                {
+                    <button type="button" @onclick="HandleDelete" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition-colors focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                        Remove
+                    </button>
+                }
+                <NavLink href="/Permissions/Ranks" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition-colors focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                    Cancel
+                </NavLink>
+            </div>
+        </EditForm>
+    }
 </div>

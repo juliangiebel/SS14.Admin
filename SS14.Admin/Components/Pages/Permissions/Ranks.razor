@@ -3,7 +3,12 @@
 
 <PageTitle>Manage Ranks</PageTitle>
 
-<h1 class="text-2xl font-bold mb-4">Manage Ranks</h1>
+<div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">Manage Ranks</h1>
+    <NavLink href="/permissions/ranks/new" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+        Add New Rank
+    </NavLink>
+</div>
 
 <QuickGrid
            @ref="Grid"
@@ -13,7 +18,7 @@
     <PropertyColumn Property="@(rank => rank.Name)" Title="Rank Name"></PropertyColumn>
     <PropertyColumn Property="@(rank => rank.Flags)" Title="Flags"></PropertyColumn>
     <TemplateColumn Title="Edit Rank" Context="rank">
-        <NavLink href="@($"/permissions/ranks/{rank.Id}")" class="btn btn-primary">
+        <NavLink href="@($"/permissions/ranks/{rank.Name}")" class="btn btn-primary">
             Edit
         </NavLink>
     </TemplateColumn>
