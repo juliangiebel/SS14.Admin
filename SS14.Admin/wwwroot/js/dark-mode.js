@@ -3,12 +3,15 @@
  * @returns {ClientPreferences}
  */
 window.getClientPreferences = () => {
-    let darkModeString = localStorage.getItem("darkMode");
+    let darkModeOverride = localStorage.getItem("darkModeOverride");
     let darkMode;
-    if (darkModeString === null) {
-        darkMode = window.matchMedia("(prefers-color-scheme: dark-mode)").matches;
+
+    if (darkModeOverride === null) {
+        // No override set, use system preference
+        darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
     } else {
-        darkMode = darkModeString === "true";
+        // User has explicitly set a preference
+        darkMode = darkModeOverride === "true";
     }
 
     return {

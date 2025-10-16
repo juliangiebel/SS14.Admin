@@ -16,12 +16,13 @@ public sealed class ClientPreferencesService(IJSRuntime jsRuntime)
 
     /// <summary>
     /// Toggles the current state of dark mode, raising the appropriate event.
+    /// This sets an explicit override, ignoring system preference.
     /// </summary>
     public async Task ToggleDarkMode()
     {
         var clientPreferences = await GetClientPreferences();
         var newClientPreferences = new ClientPreferences{darkMode = !clientPreferences.darkMode};
-        await jsRuntime.InvokeVoidAsync("localStorage.setItem", "darkMode", newClientPreferences.darkMode ? "true" : "false");
+        await jsRuntime.InvokeVoidAsync("localStorage.setItem", "darkModeOverride", newClientPreferences.darkMode ? "true" : "false");
         OnChange?.Invoke(newClientPreferences);
     }
 

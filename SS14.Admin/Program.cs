@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Serilog;
 using SS14.Admin;
 using SS14.Admin.Components;
+using SS14.Admin.Data;
 using SS14.Admin.Helpers;
 using SS14.Admin.Services;
 using SS14.Admin.SignIn;
@@ -38,6 +39,14 @@ if (connStr == null)
     throw new InvalidOperationException("Need to specify DefaultConnection connection string");
 
 builder.Services.AddDbContext<PostgresServerDbContext>(options => options.UseNpgsql(connStr));
+
+// dummy implementation
+// Configure this for actually use
+builder.Services.AddDbContext<PreferencesDbContext>(options =>
+    options.UseSqlite("Data Source=preferences.db"));
+
+// dummy implementation
+builder.Services.AddScoped<IUserPreferencesService, UserPreferencesService>();
 
 builder.Services.AddControllers();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
