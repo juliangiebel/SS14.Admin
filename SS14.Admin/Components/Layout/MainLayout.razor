@@ -1,5 +1,7 @@
 @using SS14.Admin.Helpers
 @using SS14.Admin.Services
+@using Content.Server.Database
+@using Microsoft.EntityFrameworkCore
 @inherits LayoutComponentBase
 @implements IDisposable
 
@@ -18,7 +20,13 @@
         <div class="grow"></div>
         <div class="mr-3 flex gap-x-2 items-center">
             <QuickLinksDropdown />
-            <NavLink href="/settings" class="font-semibold text-link-1">@adminUsername</NavLink>
+            <div class="flex flex-col gap-0">
+                <NavLink href="/settings" class="font-semibold text-link-1 leading-tight">@adminUsername</NavLink>
+                @if (!string.IsNullOrEmpty(adminSubtitle))
+                {
+                    <span class="text-xs text-muted-1 leading-tight">@adminSubtitle</span>
+                }
+            </div>
             <NavLink href="/Login/Logout" class="text-link-1">Logout</NavLink>
             <!--<img class="rounded-full h-8 w-8" height="32" alt="@placeholder" src="https://i.pravatar.cc/32" width="32">-->
         </div>
@@ -49,7 +57,11 @@
     [CascadingParameter]
     private Task<AuthenticationState>? AuthState { get; set; }
 
+    [Inject]
+    private PostgresServerDbContext? Context { get; set; }
+
     private string adminUsername = string.Empty;
+    private string adminSubtitle = string.Empty;
 
     public List<Breadcrumb> Breadcrumbs = [];
 
@@ -61,6 +73,25 @@
         var authState = await AuthState!;
         var user = authState.User;
         adminUsername = user.Identity?.Name ?? string.Empty;
+
+        // Little bit of fun to show the admin title
+        var userId = user.Claims.GetUserId();
+        var adminData = await Context.Admin
+            .Include(a => a.AdminRank)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.UserId == userId);
+
+        if (adminData != null)
+        {
+            if (!string.IsNullOrEmpty(adminData.Title))
+            {
+                adminSubtitle = adminData.Title;
+            }
+            else if (adminData.AdminRank != null)
+            {
+                adminSubtitle = adminData.AdminRank.Name;
+            }
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
