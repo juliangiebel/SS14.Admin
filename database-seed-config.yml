@@ -1,0 +1,45 @@
+# Database Seeding Configuration for SS14.Admin
+# This file configures the database seeding process
+
+database:
+  name: ss14
+  host: localhost
+  port: 5432
+  username: postgres
+  password: postgres
+
+# Admin user to be created - this will have full admin permissions
+admin:
+  guid: 00000000-0000-0000-0000-000000000001
+  username: geekyhobo
+  title: Hobomin
+  rank: HOBO
+
+# Seeding options
+seeding:
+  # Number of random players to generate
+  player_count: 50
+
+  # Number of random admins to generate (in addition to your admin) (DOESNTWORK)
+  admin_count: 5
+
+  # Number of servers to generate
+  server_count: 3
+
+  # Number of rounds per server
+  rounds_per_server: 10
+
+  # Number of profiles per player (max 10) (DOESNTWORK)
+  profiles_per_player: 3
+
+  # Number of admin logs per round (DOESNTWORK)
+  logs_per_round: 20
+
+  # Number of connection logs to generate (DOESNTWORK)
+  connection_logs_count: 200
+
+  # Number of bans to generate (DOESNTWORK)
+  ban_count: 10
+
+  # Number of admin notes to generate
+  admin_notes_count: 5
