@@ -26,7 +26,7 @@ Serilog:
 
     #Loki:
     #    Address: "http://localhost:3102"
-    #    Name: "centcomm"
+    #    Name: "centcom"
 
 ConnectionStrings:
     # Connects to the same postgres database as the game server
@@ -51,6 +51,20 @@ Auth:
 
 authServer: "https://central.spacestation14.io/auth"
 ```
+## Dev Enviroment Setup
+### Requirments
+- Node.js
+
+1. Clone the Repo
+2. CD into the repo and run ```git submodule update --init --recursive```
+3. Then CD in the SS14 Submodule and also run ```git submodule update --init --recursive```
+4. While in the SS14 submodule also run ```python RUN_THIS.py```
+5. Back to the root run this command to install tailwind
+```
+npm install -D tailwindcss postcss autoprefixer
+```
+6. Build and be happy :)
+
 ## Build
 
 To build for a linux based system run the command
