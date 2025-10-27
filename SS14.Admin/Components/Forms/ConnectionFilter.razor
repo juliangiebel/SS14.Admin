@@ -1,0 +1,60 @@
+
+<EditForm Model="@Filter" FormName="@FormName" OnSubmit="@Submit" class="flex gap-2 items-end flex-wrap mb-4">
+    <div class="flex flex-col gap-1">
+        <label for="filter-search">Search</label>
+        <InputText @bind-Value="Filter.Search" id="filter-search" placeholder="Username, GUID, IP, HWID" class="px-2 py-1 border rounded" />
+    </div>
+    <div class="flex flex-col gap-1">
+        <label for="filter-date-from">Date From</label>
+        <InputDate @bind-Value="Filter.DateFrom" id="filter-date-from" class="px-2 py-1 border rounded" />
+    </div>
+    <div class="flex flex-col gap-1">
+        <label for="filter-date-to">Date To</label>
+        <InputDate @bind-Value="Filter.DateTo" id="filter-date-to" class="px-2 py-1 border rounded" />
+    </div>
+    <div class="flex flex-col gap-1">
+        <label for="filter-server">Server ID</label>
+        <InputNumber @bind-Value="Filter.ServerId" id="filter-server" class="px-2 py-1 border rounded" />
+    </div>
+    <div class="flex gap-4 items-center border rounded px-3 py-1">
+        <span class="font-semibold">Connection Types:</span>
+        <label class="flex items-center gap-1">
+            <InputCheckbox @bind-Value="Filter.ShowAccepted" id="show-accepted" />
+            Accepted
+        </label>
+        <label class="flex items-center gap-1">
+            <InputCheckbox @bind-Value="Filter.ShowBanned" id="show-banned" />
+            Banned
+        </label>
+        <label class="flex items-center gap-1">
+            <InputCheckbox @bind-Value="Filter.ShowWhitelist" id="show-whitelist" />
+            Whitelist
+        </label>
+        <label class="flex items-center gap-1">
+            <InputCheckbox @bind-Value="Filter.ShowFull" id="show-full" />
+            Full
+        </label>
+        <label class="flex items-center gap-1">
+            <InputCheckbox @bind-Value="Filter.ShowPanic" id="show-panic" />
+            Panic
+        </label>
+        <label class="flex items-center gap-1">
+            <InputCheckbox @bind-Value="Filter.ShowBabyJail" id="show-babyjail" />
+            BabyJail
+        </label>
+        <label class="flex items-center gap-1">
+            <InputCheckbox @bind-Value="Filter.ShowIPChecks" id="show-ipchecks" />
+            IPChecks
+        </label>
+    </div>
+    <button type="submit" class="h-9 px-6 py-1 bg-sky-400 hover:bg-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700 rounded-md">Search</button>
+</EditForm>
+
+@code
+{
+    [Parameter] public ConnectionsFilterModel Filter { get; set; } = null!;
+    [Parameter] public string FormName { get; set; } = null!;
+    [Parameter] public EventCallback<EditContext> OnSubmit { get; set; } = EventCallback<EditContext>.Empty;
+
+    private async Task Submit(EditContext arg) => await OnSubmit.InvokeAsync(arg);
+}
