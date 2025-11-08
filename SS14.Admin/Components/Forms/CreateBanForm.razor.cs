@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Content.Server.Database;
+﻿using Content.Server.Database;
 using Content.Shared.Database;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -38,8 +37,6 @@ namespace SS14.Admin.Components.Forms
         /// </summary>
         protected async Task Submit(EditContext editContext)
         {
-
-
             // Clear previous messages.
             ErrorMessage = null;
             SuccessMessage = null;
@@ -76,6 +73,7 @@ namespace SS14.Admin.Components.Forms
             // Create a new ban instance.
             var ban = new ServerBan
             {
+                ExemptFlags = BanModel.ExemptFlags,
                 Hidden = BanModel.Hidden,
                 Severity = BanModel.Severity,
                 BanHits = new List<ServerBanHit>()
@@ -109,7 +107,14 @@ namespace SS14.Admin.Components.Forms
             await DbContext.SaveChangesAsync();
 
             SuccessMessage = "Ban created successfully.";
-            await OnSubmit.InvokeAsync(editContext);
+
+            // Navigate to bans list after successful creation
+            NavigationManager.NavigateTo("/bans");
+        }
+
+        protected void SetDuration(int minutes)
+        {
+            BanModel.LengthMinutes = minutes;
         }
 
         /// <summary>
@@ -126,8 +131,9 @@ namespace SS14.Admin.Components.Forms
             public string Reason { get; set; } = "";
             public bool Hidden { get; set; }
             public NoteSeverity Severity { get; set; }
-            public DateTime? ExpirationTime { get; set; }
+            public ServerBanExemptFlags ExemptFlags { get; set; }
         }
+
         private void ClearError(ChangeEventArgs e)
         {
             ErrorMessage = null;

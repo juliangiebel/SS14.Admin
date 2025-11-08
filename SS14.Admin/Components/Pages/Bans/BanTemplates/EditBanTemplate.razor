@@ -1,0 +1,156 @@
+@page "/bans/templates/edit/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
+@using Content.Shared.Database
+@using SS14.Admin.Helpers
+@attribute [Authorize(Roles = "BAN")]
+
+<PageTitle>Edit Ban Template</PageTitle>
+
+<div class="max-w-4xl mx-auto p-6">
+    @if (_template == null)
+    {
+        <div class="text-center py-8">
+            <p class="text-gray-600 dark:text-gray-400">Loading template...</p>
+        </div>
+    }
+    else
+    {
+        <h1 class="text-3xl font-bold mb-6">Ban Template: @_template.Title</h1>
+
+        @if (!string.IsNullOrEmpty(SuccessMessage))
+        {
+            <div class="bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 text-green-700 dark:text-green-300 p-4 rounded mb-4">
+                <p class="font-semibold">Success</p>
+                <p>@SuccessMessage</p>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 rounded mb-4">
+                <p class="font-semibold">Error</p>
+                <p>@ErrorMessage</p>
+            </div>
+        }
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <EditForm Model="@_inputModel" OnValidSubmit="HandleSave" FormName="EditTemplateForm">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded mb-4" />
+
+                <!-- Template Name -->
+                <div class="form-group mb-6">
+                    <label class="block text-sm font-semibold mb-2">Template Name</label>
+                    <InputText @bind-Value="_inputModel.Title" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" />
+                </div>
+
+                <!-- Duration -->
+                <div class="form-group mb-6">
+                    <label class="block text-sm font-semibold mb-2">Minutes (0: Permanent)</label>
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <InputNumber @bind-Value="_inputModel.LengthMinutes" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" />
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" @onclick="() => SetDuration(60)"
+                                    class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded">1h</button>
+                            <button type="button" @onclick="() => SetDuration(1440)"
+                                    class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded">1d</button>
+                            <button type="button" @onclick="() => SetDuration(10080)"
+                                    class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded">1w</button>
+                            <button type="button" @onclick="() => SetDuration(43200)"
+                                    class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded">1M</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reason -->
+                <div class="form-group mb-6">
+                    <label class="block text-sm font-semibold mb-2">Reason</label>
+                    <InputTextArea @bind-Value="_inputModel.Reason" rows="4" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" />
+                </div>
+
+                <!-- Severity -->
+                <div class="form-group mb-6">
+                    <label class="block text-sm font-semibold mb-2">Severity</label>
+                    <InputSelect @bind-Value="_inputModel.Severity" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700">
+                        @foreach (var severity in Enum.GetValues<NoteSeverity>())
+                        {
+                            <option value="@severity">@severity</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <!-- Settings -->
+                <div class="form-group mb-6">
+                    <fieldset class="border border-gray-300 dark:border-gray-600 rounded-md p-4">
+                        <legend class="text-sm font-semibold px-2">Settings</legend>
+                        <div class="flex items-center gap-2">
+                            <InputCheckbox @bind-Value="_inputModel.Hidden" id="hidden-checkbox" class="w-4 h-4" />
+                            <label for="hidden-checkbox" class="text-sm">Hidden from player</label>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <!-- Exemption Flags -->
+                <div class="form-group mb-6">
+                    <fieldset class="border border-gray-300 dark:border-gray-600 rounded-md p-4">
+                        <legend class="text-sm font-semibold px-2">Exemption Flags</legend>
+                        <div class="space-y-2">
+                            @foreach (var (flag, display) in BanExemptions.GetExemptions())
+                            {
+                                var flagValue = flag;
+                                var isChecked = (_inputModel.ExemptFlags & flagValue) != 0;
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox"
+                                        checked="@isChecked"
+                                        @onchange="@((ChangeEventArgs e) => ToggleExemptFlag(flagValue, (bool)(e.Value ?? false)))"
+                                        class="w-4 h-4" />
+                                    <label class="text-sm">@display</label>
+                                </div>
+                            }
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="flex gap-3 justify-between">
+                    <div class="flex gap-3">
+                        <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow transition">
+                            Save Changes
+                        </button>
+                        <button type="button" @onclick='() => NavigationManager.NavigateTo("/bans/createban")'
+                                class="px-6 py-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold rounded-md shadow transition">
+                            Back to Bans
+                        </button>
+                    </div>
+                    <button type="button" @onclick="ShowDeleteConfirmation"
+                            class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md shadow transition">
+                        Delete Template
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    }
+</div>
+
+@if (_showDeleteConfirmation)
+{
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md mx-4">
+            <h3 class="text-xl font-bold mb-4">Confirm Deletion</h3>
+            <p class="text-gray-700 dark:text-gray-300 mb-6">
+                Are you sure you want to delete the template "<strong>@_template?.Title</strong>"? This action cannot be undone.
+            </p>
+            <div class="flex gap-3 justify-end">
+                <button type="button" @onclick="CancelDelete"
+                        class="px-4 py-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold rounded-md transition">
+                    Cancel
+                </button>
+                <button type="button" @onclick="ConfirmDelete"
+                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+}

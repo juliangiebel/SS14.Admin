@@ -1,0 +1,39 @@
+@page "/bans/templates/create"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "BAN")]
+
+<PageTitle>Create Ban Template</PageTitle>
+
+<div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Create New Ban Template</h1>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 rounded mb-4">
+            <p class="font-semibold">Error</p>
+            <p>@ErrorMessage</p>
+        </div>
+    }
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <EditForm Model="@_templateModel" OnValidSubmit="HandleCreate" FormName="CreateTemplateForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded mb-4" />
+
+            <div class="form-group mb-6">
+                <label class="block text-sm font-semibold mb-2">Template Name</label>
+                <InputText @bind-Value="_templateModel.Title" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" />
+            </div>
+
+            <div class="flex gap-3">
+                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow transition">
+                    Create Template
+                </button>
+                <button type="button" @onclick='() => NavigationManager.NavigateTo("/bans/createban")'
+                        class="px-6 py-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold rounded-md shadow transition">
+                    Cancel
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>

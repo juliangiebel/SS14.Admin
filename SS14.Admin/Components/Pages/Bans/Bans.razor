@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using SS14.Admin.Admins
 @using SS14.Admin.Helpers
+@using SS14.Admin.Components.Forms
 
 <PageTitle>Bans</PageTitle>
 
@@ -20,7 +21,7 @@
     </AuthorizeView>
 </div>
 
-<filter Model="_model" />
+<BanFilter Filter="_model" FormName="banFilter" OnSubmit="@OnFilterSubmit" />
 
 <QuickGrid TItem="BanViewModel"
            @ref="Grid"
@@ -39,18 +40,26 @@
     <PropertyColumn Property="@(ban => ban.Admin)" Title="Banning Admin"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.HitCount)" Title="Hits"></PropertyColumn>
     <TemplateColumn Title="Actions">
-        @if (!_confirmations.ContainsKey(context.Id) || !_confirmations[context.Id])
+        @if (context.Active)
         {
-            <button class="btn btn-secondary" @onclick="() => ShowConfirmation(context.Id, context.Active)">
-                @(context.Active ? "Unban" : "Reban")
-            </button>
+            @if (!_confirmations.ContainsKey(context.Id) || !_confirmations[context.Id])
+            {
+                <button class="btn btn-secondary px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white rounded"
+                        @onclick="() => ShowConfirmation(context.Id, context.Active)">
+                    Unban
+                </button>
+            }
+            else
+            {
+                <button class="btn btn-danger px-3 py-1 bg-red-500 hover:bg-red-600 rounded text-white"
+                        @onclick="() => ConfirmAction(context.Id, context.Active)">
+                    Are you sure?
+                </button>
+            }
         }
         else
         {
-            <button class="btn btn-danger bg-red-500 hover:bg-red-600 rounded hover:text-white"
-                    @onclick="() => ConfirmAction(context.Id, context.Active)">
-                Are you sure?
-            </button>
+            <span class="text-gray-500 italic">Already unbanned/expired</span>
         }
     </TemplateColumn>
 </QuickGrid>

@@ -5,35 +5,49 @@
 
 <PageTitle>Create Ban</PageTitle>
 
-<h1 class="text-2xl font-bold mb-4">Create New Ban</h1>
-<h2 class="text-xl font-bold mb-4">Or Choose a Template</h2>
+<div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Create New Ban</h1>
 
-<!-- Ban Templates Dropdown -->
-<div class="relative inline-block text-left mb-4">
-    <button type="button" @onclick="ToggleDropdown"
-            class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-primary-1 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
-        Ban Templates
-        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
-    </button>
-
-    @if (IsDropdownOpen)
-    {
-        <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-primary-1 ring-1 ring-black ring-opacity-5">
-            <div class="py-1">
+    <!-- Ban Templates Section -->
+    <div class="mb-8 p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Ban Templates</h2>
+            <a href="/bans/templates/create" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded transition">
+                Create New Template
+            </a>
+        </div>
+        @if (Templates.Any())
+        {
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach (var template in Templates)
                 {
-                    <a href="javascript:void(0)"
-                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                       @onclick="() => UseTemplate(template.Id)">
-                        @template.Title
-                    </a>
+                    <div class="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition">
+                        <h3 class="font-semibold text-lg mb-2">@template.Title</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">@template.Reason</p>
+                        <div class="flex gap-2 text-xs text-gray-500 dark:text-gray-500 mb-3">
+                            <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">@GetDurationDisplay(template.Length)</span>
+                            <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">@template.Severity</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" @onclick="() => UseTemplate(template)"
+                                    class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded transition">
+                                Use Template
+                            </button>
+                            <a href="/bans/templates/edit/@template.Id"
+                               class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-semibold rounded transition flex items-center">
+                                Edit
+                            </a>
+                        </div>
+                    </div>
                 }
             </div>
-        </div>
-    }
-</div>
+        }
+        else
+        {
+            <p class="text-gray-600 dark:text-gray-400 text-center py-4">No templates yet. Create your first template to get started!</p>
+        }
+    </div>
 
-<!-- Use the CreateBanForm component -->
-<CreateBanForm />
+    <!-- Ban Creation Form -->
+    <CreateBanForm BanModel="@_banModel" />
+</div>

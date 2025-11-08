@@ -1,54 +1,71 @@
 ﻿@using Content.Shared.Database
-<EditForm Model="@BanModel" OnValidSubmit="Submit" FormName="CreateBanForm" class="space-y-4">
+@using SS14.Admin.Helpers
+@using Content.Server.Database
+
+<EditForm Model="@BanModel" OnValidSubmit="Submit" FormName="CreateBanForm" class="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md space-y-6">
     <DataAnnotationsValidator />
-    <ValidationSummary />
+    <ValidationSummary class="text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded" />
 
     <!-- Name or User ID -->
-    <div>
-        <label class="block mb-1">Name or user ID</label>
-        <InputText @bind-Value="BanModel.NameOrUid" class="border p-2 w-full" />
+    <div class="form-group">
+        <label class="block text-sm font-semibold mb-2">Name or User ID</label>
+        <InputText @bind-Value="BanModel.NameOrUid" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" />
     </div>
 
     <!-- IP Address/CIDR -->
-    <div>
-        <label class="block mb-1">IP Address/CIDR</label>
-        <div class="flex items-center gap-2">
-            <InputText @bind-Value="BanModel.IP" @oninput="ClearError" class="border p-2 w-full" />
-            <div class="flex items-center">
-                <InputCheckbox @bind-Value="BanModel.UseLatestIp" class="mr-1" />
+    <div class="form-group">
+        <label class="block text-sm font-semibold mb-2">IP Address/CIDR</label>
+        <div class="flex gap-3 items-center">
+            <InputText @bind-Value="BanModel.IP" @oninput="ClearError" class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" />
+            <label class="flex items-center gap-2 whitespace-nowrap">
+                <InputCheckbox @bind-Value="BanModel.UseLatestIp" class="w-4 h-4" />
                 <span class="text-sm">Use latest</span>
-            </div>
+            </label>
         </div>
     </div>
 
     <!-- HWID -->
-    <div>
-        <label class="block mb-1">HWID</label>
-        <div class="flex items-center gap-2">
-            <InputText @bind-Value="BanModel.HWid" class="border p-2 w-full" />
-            <div class="flex items-center">
-                <InputCheckbox @bind-Value="BanModel.UseLatestHwid" class="mr-1" />
+    <div class="form-group">
+        <label class="block text-sm font-semibold mb-2">HWID</label>
+        <div class="flex gap-3 items-center">
+            <InputText @bind-Value="BanModel.HWid" class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" />
+            <label class="flex items-center gap-2 whitespace-nowrap">
+                <InputCheckbox @bind-Value="BanModel.UseLatestHwid" class="w-4 h-4" />
                 <span class="text-sm">Use latest</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Duration -->
+    <div class="form-group">
+        <label class="block text-sm font-semibold mb-2">Minutes (0: Permanent)</label>
+        <div class="flex gap-3">
+            <div class="flex-1">
+                <InputNumber @bind-Value="BanModel.LengthMinutes" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" />
+            </div>
+            <div class="flex gap-2">
+                <button type="button" @onclick="() => SetDuration(60)"
+                        class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded">1h</button>
+                <button type="button" @onclick="() => SetDuration(1440)"
+                        class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded">1d</button>
+                <button type="button" @onclick="() => SetDuration(10080)"
+                        class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded">1w</button>
+                <button type="button" @onclick="() => SetDuration(43200)"
+                        class="px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded">1M</button>
             </div>
         </div>
     </div>
 
-    <!-- Duration (in minutes) -->
-    <div>
-        <label class="block mb-1">Minutes (0: Permanent)</label>
-        <InputNumber @bind-Value="BanModel.LengthMinutes" class="border p-2 w-full" />
-    </div>
-
     <!-- Reason -->
-    <div>
-        <label class="block mb-1">Reason</label>
-        <InputTextArea @bind-Value="BanModel.Reason" class="border p-2 w-full" />
+    <div class="form-group">
+        <label class="block text-sm font-semibold mb-2">Reason</label>
+        <InputTextArea @bind-Value="BanModel.Reason" rows="4" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700" />
     </div>
 
     <!-- Severity -->
-    <div>
-        <label class="block mb-1">Severity</label>
-        <InputSelect @bind-Value="BanModel.Severity" class="border p-2 w-full">
+    <div class="form-group">
+        <label class="block text-sm font-semibold mb-2">Severity</label>
+        <InputSelect @bind-Value="BanModel.Severity" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700">
             @foreach (var severity in Enum.GetValues<NoteSeverity>())
             {
                 <option value="@severity">@severity</option>
@@ -57,27 +74,73 @@
     </div>
 
     <!-- Settings -->
-    <div>
-        <div class="flex items-center gap-2">
-            <InputCheckbox @bind-Value="BanModel.Hidden" class="mr-1" />
-            <span class="text-sm">Hidden from player</span>
-        </div>
+    <div class="form-group">
+        <fieldset class="border border-gray-300 dark:border-gray-600 rounded-md p-4">
+            <legend class="text-sm font-semibold px-2">Settings</legend>
+            <div class="flex items-center gap-2">
+                <InputCheckbox @bind-Value="BanModel.Hidden" id="hidden-checkbox" class="w-4 h-4" />
+                <label for="hidden-checkbox" class="text-sm">Hidden from player</label>
+            </div>
+        </fieldset>
     </div>
 
-    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">
-        Create Ban
-    </button>
+    <!-- Exemption Flags -->
+    <div class="form-group">
+        <fieldset class="border border-gray-300 dark:border-gray-600 rounded-md p-4">
+            <legend class="text-sm font-semibold px-2">Exemption Flags</legend>
+            <div class="space-y-2">
+                @foreach (var (flag, display) in BanExemptions.GetExemptions())
+                {
+                    var flagValue = flag;
+                    var isChecked = (BanModel.ExemptFlags & flagValue) != 0;
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox"
+                            checked="@isChecked"
+                            @onchange="@((ChangeEventArgs e) => ToggleExemptFlag(flagValue, (bool)(e.Value ?? false)))"
+                            class="w-4 h-4" />
+                        <label class="text-sm">@display</label>
+                    </div>
+                }
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="flex gap-3 pt-4">
+        <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow transition">
+            Create Ban
+        </button>
+        <button type="button" @onclick='() => NavigationManager.NavigateTo("/bans")'
+                class="px-6 py-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 font-semibold rounded-md shadow transition">
+            Cancel
+        </button>
+    </div>
 </EditForm>
 
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {
-    <div class="bg-red-200 text-red-800 p-2 rounded mt-4">
-        @ErrorMessage
+    <div class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 rounded mt-4">
+        <p class="font-semibold">Error</p>
+        <p>@ErrorMessage</p>
     </div>
 }
 @if (!string.IsNullOrEmpty(SuccessMessage))
 {
-    <div class="bg-green-200 text-green-800 p-2 rounded mt-4">
-        @SuccessMessage
+    <div class="bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 text-green-700 dark:text-green-300 p-4 rounded mt-4">
+        <p class="font-semibold">Success</p>
+        <p>@SuccessMessage</p>
     </div>
+}
+
+@code {
+    private void ToggleExemptFlag(ServerBanExemptFlags flag, bool isChecked)
+    {
+        if (isChecked)
+        {
+            BanModel.ExemptFlags |= flag;
+        }
+        else
+        {
+            BanModel.ExemptFlags &= ~flag;
+        }
+    }
 }
