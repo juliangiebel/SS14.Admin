@@ -67,11 +67,40 @@ public partial class Connections
         if (_filter.ShowIPChecks)
             acceptableDenies.Add(ConnectionDenyReason.IPChecks);
 
-        var query = from connection in Context!.ConnectionLog
+        // Start with the base query
+        var connectionQuery = Context!.ConnectionLog
             .AsNoTracking()
             .Include(c => c.Server)
             .Include(c => c.BanHits)
-            where acceptableDenies.Contains(connection.Denied)
+            .Where(c => acceptableDenies.Contains(c.Denied));
+
+        // Apply filters on the entity before projection
+        if (!string.IsNullOrWhiteSpace(_filter.Search))
+        {
+            var searchUpper = _filter.Search.ToUpper();
+            connectionQuery = connectionQuery.Where(c =>
+                c.UserName.ToUpper().Contains(searchUpper) ||
+                EF.Functions.Like(c.UserId.ToString(), $"%{_filter.Search}%")
+            );
+        }
+
+        if (_filter.DateFrom != null)
+        {
+            connectionQuery = connectionQuery.Where(c => c.Time >= _filter.DateFrom);
+        }
+
+        if (_filter.DateTo != null)
+        {
+            connectionQuery = connectionQuery.Where(c => c.Time <= _filter.DateTo);
+        }
+
+        if (_filter.ServerId != null)
+        {
+            connectionQuery = connectionQuery.Where(c => c.ServerId == _filter.ServerId);
+        }
+
+        // Now project to the view model
+        var query = from connection in connectionQuery
             join player in Context.Player on connection.UserId equals player.UserId into playerJoin
             from p in playerJoin.DefaultIfEmpty()
             select new ConnectionViewModel
@@ -88,32 +117,6 @@ public partial class Connections
                 BanHitCount = connection.BanHits.Count,
                 PlayerLastSeenName = p != null ? p.LastSeenUserName : null
             };
-
-        if (!string.IsNullOrWhiteSpace(_filter.Search))
-        {
-            var searchUpper = _filter.Search.ToUpper();
-            query = query.Where(c =>
-                c.UserName.ToUpper().Contains(searchUpper) ||
-                c.UserId.ToString().ToUpper().Contains(searchUpper) ||
-                (c.Address != null && c.Address.ToUpper().Contains(searchUpper)) ||
-                (c.HWId != null && c.HWId.ToUpper().Contains(searchUpper))
-            );
-        }
-
-        if (_filter.DateFrom != null)
-        {
-            query = query.Where(c => c.Time >= _filter.DateFrom);
-        }
-
-        if (_filter.DateTo != null)
-        {
-            query = query.Where(c => c.Time <= _filter.DateTo);
-        }
-
-        if (_filter.ServerId != null)
-        {
-            query = query.Where(c => c.ServerId == _filter.ServerId);
-        }
 
         return query;
     }
