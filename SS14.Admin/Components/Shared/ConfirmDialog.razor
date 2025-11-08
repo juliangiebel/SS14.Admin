@@ -1,0 +1,47 @@
+@if (IsVisible)
+{
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @onclick="Cancel">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4" @onclick:stopPropagation="true">
+            <div class="p-6">
+                <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">@Title</h3>
+                <p class="text-gray-700 dark:text-gray-300 mb-6">@Message</p>
+
+                <div class="flex gap-3 justify-end">
+                    <button
+                        @onclick="Cancel"
+                        class="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white rounded hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors">
+                        @CancelText
+                    </button>
+                    <button
+                        @onclick="Confirm"
+                        class="px-4 py-2 @ConfirmButtonClass rounded hover:opacity-90 transition-colors">
+                        @ConfirmText
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public string Title { get; set; } = "Confirm Action";
+    [Parameter] public string Message { get; set; } = "Are you sure you want to proceed?";
+    [Parameter] public string ConfirmText { get; set; } = "Confirm";
+    [Parameter] public string CancelText { get; set; } = "Cancel";
+    [Parameter] public string ConfirmButtonClass { get; set; } = "bg-red-600 text-white hover:bg-red-700";
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private async Task Confirm()
+    {
+        IsVisible = false;
+        await OnConfirm.InvokeAsync();
+    }
+
+    private async Task Cancel()
+    {
+        IsVisible = false;
+        await OnCancel.InvokeAsync();
+    }
+}

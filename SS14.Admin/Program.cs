@@ -31,6 +31,7 @@ builder.Services.AddScoped<LoginHandler>();
 builder.Services.AddScoped<BanHelper>();
 builder.Services.AddScoped<PlayerLocator>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 builder.Services.AddScoped<ClientPreferencesService>();
 
