@@ -1,5 +1,33 @@
 ﻿@page "/characters"
-<h3>Characters</h3>
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using SS14.Admin.Components.Forms
+@using SS14.Admin.Models
+@using SS14.Admin.Components.Shared
 
+<PageTitle>Characters</PageTitle>
 
+<h1 class="text-2xl font-bold mb-4">Characters</h1>
 
+<CharacterFilter Filter="_filterModel" FormName="CharacterFilter" OnSubmit="OnFilterSubmit" />
+
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+    <QuickGrid TItem="CharacterViewModel"
+               @ref="Grid"
+               Items="@_characterQuery"
+               Pagination="@_pagination"
+               Class="w-full">
+        <PropertyColumn Property="@(c => c.CharacterName)" Title="Character Name" Sortable="true" />
+        <PropertyColumn Property="@(c => c.PlayerName)" Title="Player Name" Sortable="true" />
+        <PropertyColumn Property="@(c => c.Slot)" Title="Slot" Sortable="true" />
+        <PropertyColumn Property="@(c => c.Species)" Title="Species" Sortable="true" />
+        <PropertyColumn Property="@(c => c.Age)" Title="Age" Sortable="true" />
+        <PropertyColumn Property="@(c => c.Sex)" Title="Sex" Sortable="true" />
+        <PropertyColumn Property="@(c => c.Gender)" Title="Gender" Sortable="true" />
+        <TemplateColumn Title="Actions" Context="character">
+            <NavLink href="@($"players/{character.PlayerUserId}")" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                View Player
+            </NavLink>
+        </TemplateColumn>
+    </QuickGrid>
+    <Pagination OnRefreshRequired="RefreshAsync" class="py-2 border-t bg-primary-1 sticky-pagination" State="@_pagination"/>
+</div>
