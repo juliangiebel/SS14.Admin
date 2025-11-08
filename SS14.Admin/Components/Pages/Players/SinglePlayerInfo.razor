@@ -1,90 +1,562 @@
 ﻿@page "/players/{userId:guid}"
-@using Content.Server.Database
 @using Content.Shared.Database
-@using SS14.Admin.Helpers
-@using SS14.Admin.Pages.Tables
-@inject PostgresServerDbContext DbContext
-@inject BanHelper BanHelper
-@inject NavigationManager NavigationManager
+
 
 <PageTitle>Player Info for @PlayerModel?.LastSeenUsername</PageTitle>
 
-<div class="container">
-    <h1>Player information for @PlayerModel?.LastSeenUsername</h1>
-    <div class="grid grid-cols-3 grid-rows-2 gap-4 p-4">
-        <!-- Top Left: Play Info -->
-        <div class="bg-gray-100 p-4 rounded shadow">
-            <h2 class="text-lg font-bold mb-2">Play Info</h2>
-            <dl class="row">
-                <dt class="col-sm-2">User ID:</dt>
-                <dd class="col-sm-10 font-monospace">@PlayerModel?.Guid</dd>
-                <dt class="col-sm-2">Last seen username:</dt>
-                <dd class="col-sm-10">@PlayerModel?.LastSeenUsername</dd>
-                <dt class="col-sm-2">First seen time:</dt>
-                <dd class="col-sm-10">@PlayerModel?.FirstSeen</dd>
-                <dt class="col-sm-2">Last seen time:</dt>
-                <dd class="col-sm-10">@PlayerModel?.LastSeen</dd>
-                <AuthorizeView Roles="PII">
-                    <Authorized>
-                        <dt class="col-sm-2">Last seen address:</dt>
-                        <dd class="col-sm-10 font-monospace">
-                            @PlayerModel?.LastSeenIPAddress
-                            @*<NavLink href="@($"/connections?search={Player?.LastSeenAddress}")">
-                        @Player?.LastSeenAddress
-                    </NavLink>*@
-                        </dd>
-                        <dt class="col-sm-2">Last seen HWID:</dt>
-                        <dd class="col-sm-10 font-monospace">
-                            @PlayerModel?.LastSeenHwid
-                            @*<NavLink href="@($"/connections?search={BanHelper.FormatHwid(Player?.LastSeenHWId)}")">
-                        @BanHelper.FormatHwid(Player?.LastSeenHWId)
-                    </NavLink>*@
-                        </dd>
-                    </Authorized>
-                </AuthorizeView>
-                <dt class="col-sm-2">Whitelisted:</dt>
-                <dd class="col-sm-10 font-monospace">
-                    whitelist goes here TODO
-                    @*@if (Whitelisted)
-            {
-                <strong>✔️ yes</strong> (<NavLink href="@($"/whitelist/remove/{Player?.UserId}")">remove</NavLink>)
-            }
-            else
-            {
-                <strong>❌ no</strong> (<NavLink href="@($"/whitelist/add/{Player?.UserId}")">add</NavLink>)
-            }*@
-                </dd>
-            </dl>
+<div class="player-info-container">
+    @if (_isLoading)
+    {
+        <div class="loading-spinner">
+            <p>Loading player information...</p>
+        </div>
+    }
+    else if (PlayerModel == null)
+    {
+        <div class="alert alert-danger">
+            <strong>Player not found!</strong> The requested player does not exist.
+        </div>
+    }
+    else
+    {
+        <div class="player-header">
+            <h1>
+                Player Information for <span class="player-name">@PlayerModel.LastSeenUsername</span>
+                @if (HasActiveBan)
+                {
+                    <span class="ml-3 px-3 py-1 bg-red-600 text-white rounded-md text-base font-semibold">
+                        <i class="fas fa-ban"></i> BANNED
+                    </span>
+                }
+            </h1>
         </div>
 
-        <!-- Top Middle: Playtime -->
-        <div class="bg-gray-100 p-4 rounded shadow">
-            <h2 class="text-lg font-bold mb-2">Playtime</h2>
-            <p>Placeholder for playtime data.</p>
+        <!-- Basic Player Information -->
+        <div class="info-card">
+            <div class="card-header">
+                <h2><i class="fas fa-user"></i> Basic Information</h2>
+            </div>
+            <div class="card-body">
+                <dl class="info-grid">
+                    <dt>User ID:</dt>
+                    <dd><code>@PlayerModel.Guid</code></dd>
+
+                    <dt>Last seen username:</dt>
+                    <dd>@PlayerModel.LastSeenUsername</dd>
+
+                    <dt>Account created:</dt>
+                    <dd>
+                        @if (AccountCreationDate.HasValue)
+                        {
+                            @AccountCreationDate.Value.ToString("yyyy-MM-dd HH:mm:ss") @("UTC")
+                        }
+                        else
+                        {
+                            <span class="text-muted">Unknown</span>
+                        }
+                    </dd>
+
+                    <dt>First seen time:</dt>
+                    <dd>@PlayerModel.FirstSeen.ToString("yyyy-MM-dd HH:mm:ss") UTC</dd>
+
+                    <dt>Last seen time:</dt>
+                    <dd>@PlayerModel.LastSeen.ToString("yyyy-MM-dd HH:mm:ss") UTC</dd>
+
+                    <AuthorizeView Roles="PII">
+                        <Authorized>
+                            <dt>Last seen address:</dt>
+                            <dd>
+                                <code>
+                                    <a href="/connections?search=@PlayerModel.LastSeenIPAddress">
+                                        @PlayerModel.LastSeenIPAddress
+                                    </a>
+                                </code>
+                            </dd>
+
+                            <dt>Last seen HWID:</dt>
+                            <dd>
+                                <code>
+                                    <a href="/connections?search=@PlayerModel.LastSeenHwid">
+                                        @PlayerModel.LastSeenHwid
+                                    </a>
+                                </code>
+                            </dd>
+                        </Authorized>
+                    </AuthorizeView>
+
+                    <dt>Whitelisted:</dt>
+                    <dd>
+                        @if (Whitelisted)
+                        {
+                            <span class="badge badge-success"><i class="fas fa-check-circle"></i> Yes</span>
+                            <button @onclick="ToggleWhitelistAsync" class="ml-2 px-2 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                                Remove
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="badge badge-danger"><i class="fas fa-times-circle"></i> No</span>
+                            <button @onclick="ToggleWhitelistAsync" class="ml-2 px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700">
+                                Add
+                            </button>
+                        }
+                    </dd>
+                </dl>
+            </div>
         </div>
 
-        <!-- Top Right: Characters -->
-        <div class="bg-gray-100 p-4 rounded shadow">
-            <h2 class="text-lg font-bold mb-2">Characters</h2>
-            <p>Placeholder for character info.</p>
+        <!-- Play Time Section -->
+        <div class="info-card">
+            <div class="card-header">
+                <h2><i class="fas fa-clock"></i> Play Time</h2>
+            </div>
+            <div class="card-body">
+                @if (PlayTimes.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Timer</th>
+                                    <th>Time Played (h:mm)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var tracker in PlayTimes)
+                                {
+                                    <tr>
+                                        <td class="font-weight-bold">@tracker.Tracker</td>
+                                        <td>@((int)tracker.TimeSpent.TotalHours):@tracker.TimeSpent.Minutes.ToString("D2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="no-data">No play time data available.</p>
+                }
+            </div>
         </div>
 
-        <!-- Bottom Left: Notes -->
-        <div class="bg-gray-100 p-4 rounded shadow">
-            <h2 class="text-lg font-bold mb-2">Notes</h2>
-            <p>Placeholder for notes details.</p>
+        <!-- Character Profiles Section -->
+        <div class="info-card">
+            <div class="card-header">
+                <h2><i class="fas fa-id-card"></i> Character Profiles</h2>
+            </div>
+            <div class="card-body">
+                @if (Profiles.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Sex</th>
+                                    <th>Gender</th>
+                                    <th>Species</th>
+                                    <th>Favorite Job</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var profile in Profiles)
+                                {
+                                    <tr>
+                                        <td class="font-weight-bold">@profile.CharacterName</td>
+                                        <td>@profile.Age</td>
+                                        <td>@profile.Sex</td>
+                                        <td>@profile.Gender</td>
+                                        <td>@profile.Species</td>
+                                        <td>@profile.FavoriteJob</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="no-data">No character profiles found.</p>
+                }
+            </div>
         </div>
 
-        <!-- Bottom Middle: Bans -->
-        <div class="bg-gray-100 p-4 rounded shadow">
-            <h2 class="text-lg font-bold mb-2">Bans</h2>
-            <p>Placeholder for ban records.</p>
+        <!-- Notes Section -->
+        <div class="info-card">
+            <div class="card-header">
+                <h2><i class="fas fa-sticky-note"></i> Notes</h2>
+                <span class="badge badge-info">Total: @Remarks.Count</span>
+            </div>
+            <div class="card-body">
+                @if (Remarks.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="data-table notes-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Message</th>
+                                    <th>Round</th>
+                                    <th>Severity</th>
+                                    <th>Visible/Seen</th>
+                                    <th>Playtime</th>
+                                    <th>Expires (UTC)</th>
+                                    <th>Created (UTC)</th>
+                                    <th>Edited (UTC)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var remark in Remarks)
+                                {
+                                    <tr class="remark-@remark.Type.ToLower()">
+                                        <td>
+                                            @switch (remark.Type)
+                                            {
+                                                case "Message":
+                                                    <span class="badge badge-message"><i class="fas fa-envelope"></i> Message</span>
+                                                    break;
+                                                case "Note":
+                                                    <span class="badge badge-note"><i class="fas fa-clipboard"></i> Note</span>
+                                                    break;
+                                                case "Watchlist":
+                                                    <span class="badge badge-watchlist"><i class="fas fa-eye"></i> Watchlist</span>
+                                                    break;
+                                            }
+                                        </td>
+                                        <td class="message-cell">@remark.Message</td>
+                                        <td>@remark.RoundId</td>
+                                        <td>
+                                            @if (remark.Severity.HasValue)
+                                            {
+                                                switch (remark.Severity.Value)
+                                                {
+                                                    case NoteSeverity.None:
+                                                        <span class="severity-none"><i class="fas fa-check-circle"></i> None</span>
+                                                        break;
+                                                    case NoteSeverity.Minor:
+                                                        <span class="severity-minor"><i class="fas fa-minus-circle"></i> Minor</span>
+                                                        break;
+                                                    case NoteSeverity.Medium:
+                                                        <span class="severity-medium"><i class="fas fa-exclamation-circle"></i> Medium</span>
+                                                        break;
+                                                    case NoteSeverity.High:
+                                                        <span class="severity-high"><i class="fas fa-exclamation-triangle"></i> High</span>
+                                                        break;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (remark.Type == "Message")
+                                            {
+                                                if (remark.Seen == true)
+                                                {
+                                                    <span class="status-seen"><i class="fas fa-eye"></i> Seen</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="status-unseen"><i class="fas fa-eye-slash"></i> Not seen</span>
+                                                }
+                                            }
+                                            else if (remark.Type == "Note")
+                                            {
+                                                if (remark.IsSecret == true)
+                                                {
+                                                    <span class="status-secret"><i class="fas fa-user-secret"></i> Secret</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="status-visible"><i class="fas fa-eye"></i> Visible</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                        <td>@((int)remark.PlaytimeAtNote.TotalHours):@remark.PlaytimeAtNote.Minutes.ToString("D2")</td>
+                                        <td>
+                                            @if (remark.ExpirationTime.HasValue)
+                                            {
+                                                var utc = remark.ExpirationTime.Value.ToUniversalTime();
+                                                var diff = utc - DateTime.UtcNow;
+                                                <text>@utc.ToString("yyyy-MM-dd HH:mm:ss")</text><br/>
+                                                <small class="text-muted">(in @diff.Days days @diff.Hours:@diff.Minutes.ToString("D2"))</small>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-permanent">Permanent</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @remark.CreatedAt.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss")<br/>
+                                            <small class="text-muted">by @remark.CreatedByUsername</small>
+                                        </td>
+                                        <td>
+                                            @if (remark.LastEditedAt.HasValue && remark.LastEditedAt > remark.CreatedAt)
+                                            {
+                                                @remark.LastEditedAt.Value.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss")<br/>
+                                                <small class="text-muted">by @remark.LastEditedByUsername</small>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="no-data">No notes found.</p>
+                }
+            </div>
         </div>
 
-        <!-- Bottom Right: Role Bans -->
-        <div class="bg-gray-100 p-4 rounded shadow">
-            <h2 class="text-lg font-bold mb-2">Role Bans</h2>
-            <p>Placeholder for role ban details.</p>
+        <!-- Bans Section -->
+        <div class="info-card">
+            <div class="card-header">
+                <h2><i class="fas fa-ban"></i> Bans</h2>
+                <span class="badge badge-info">Total: @Bans.Count</span>
+            </div>
+            <div class="card-body">
+                @if (Bans.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Reason</th>
+                                    <th>Banned By</th>
+                                    <th>Ban Time (UTC)</th>
+                                    <th>Expires (UTC)</th>
+                                    <AuthorizeView Roles="PII">
+                                        <Authorized>
+                                            <th>Address</th>
+                                            <th>HWID</th>
+                                        </Authorized>
+                                    </AuthorizeView>
+                                    <th>Unban Info</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ban in Bans)
+                                {
+                                    <tr class="@(ban.IsActive ? "ban-active" : "ban-inactive")">
+                                        <td>
+                                            @if (ban.IsActive)
+                                            {
+                                                <span class="badge badge-danger"><i class="fas fa-exclamation-circle"></i> Active</span>
+                                            }
+                                            else if (ban.UnbanTime.HasValue)
+                                            {
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Unbanned</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-secondary"><i class="fas fa-clock"></i> Expired</span>
+                                            }
+                                        </td>
+                                        <td class="message-cell">@ban.Reason</td>
+                                        <td>@ban.AdminName</td>
+                                        <td>@ban.BanTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                        <td>
+                                            @if (ban.ExpirationTime.HasValue)
+                                            {
+                                                var utc = ban.ExpirationTime.Value.ToUniversalTime();
+                                                var diff = utc - DateTime.UtcNow;
+                                                @utc.ToString("yyyy-MM-dd HH:mm:ss")
+                                                @if (ban.IsActive && diff.TotalMinutes > 0)
+                                                {
+                                                    <br/>
+                                                    <small class="text-muted">(in @diff.Days days @diff.Hours:@diff.Minutes.ToString("D2"))</small>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-permanent">Permanent</span>
+                                            }
+                                        </td>
+                                        <AuthorizeView Roles="PII">
+                                            <Authorized>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(ban.Address))
+                                                    {
+                                                        <code>@ban.Address</code>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">N/A</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(ban.Hwid))
+                                                    {
+                                                        <code>@ban.Hwid</code>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">N/A</span>
+                                                    }
+                                                </td>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                        <td>
+                                            @if (ban.UnbanTime.HasValue)
+                                            {
+                                                @ban.UnbanTime.Value.ToString("yyyy-MM-dd HH:mm:ss")<br/>
+                                                <small class="text-muted">by @(ban.UnbanAdminName ?? "System")</small>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="no-data">No bans found.</p>
+                }
+            </div>
         </div>
-    </div>
+
+        <!-- Role Bans Section -->
+        <div class="info-card">
+            <div class="card-header">
+                <h2><i class="fas fa-user-slash"></i> Role Bans</h2>
+                <span class="badge badge-info">Total: @RoleBans.Count</span>
+            </div>
+            <div class="card-body">
+                @if (RoleBans.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Role</th>
+                                    <th>Reason</th>
+                                    <th>Banned By</th>
+                                    <th>Ban Time (UTC)</th>
+                                    <th>Expires (UTC)</th>
+                                    <AuthorizeView Roles="PII">
+                                        <Authorized>
+                                            <th>Address</th>
+                                            <th>HWID</th>
+                                        </Authorized>
+                                    </AuthorizeView>
+                                    <th>Unban Info</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ban in RoleBans)
+                                {
+                                    <tr class="@(ban.IsActive ? "ban-active" : "ban-inactive")">
+                                        <td>
+                                            @if (ban.IsActive)
+                                            {
+                                                <span class="badge badge-danger"><i class="fas fa-exclamation-circle"></i> Active</span>
+                                            }
+                                            else if (ban.UnbanTime.HasValue)
+                                            {
+                                                <span class="badge badge-success"><i class="fas fa-check-circle"></i> Unbanned</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-secondary"><i class="fas fa-clock"></i> Expired</span>
+                                            }
+                                        </td>
+                                        <td><span class="role-badge">@ban.Role</span></td>
+                                        <td class="message-cell">@ban.Reason</td>
+                                        <td>@ban.AdminName</td>
+                                        <td>@ban.BanTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                        <td>
+                                            @if (ban.ExpirationTime.HasValue)
+                                            {
+                                                var utc = ban.ExpirationTime.Value.ToUniversalTime();
+                                                var diff = utc - DateTime.UtcNow;
+                                                @utc.ToString("yyyy-MM-dd HH:mm:ss")
+                                                @if (ban.IsActive && diff.TotalMinutes > 0)
+                                                {
+                                                    <br/>
+                                                    <small class="text-muted">(in @diff.Days days @diff.Hours:@diff.Minutes.ToString("D2"))</small>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-permanent">Permanent</span>
+                                            }
+                                        </td>
+                                        <AuthorizeView Roles="PII">
+                                            <Authorized>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(ban.Address))
+                                                    {
+                                                        <code>@ban.Address</code>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">N/A</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(ban.Hwid))
+                                                    {
+                                                        <code>@ban.Hwid</code>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">N/A</span>
+                                                    }
+                                                </td>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                        <td>
+                                            @if (ban.UnbanTime.HasValue)
+                                            {
+                                                @ban.UnbanTime.Value.ToString("yyyy-MM-dd HH:mm:ss")<br/>
+                                                <small class="text-muted">by @(ban.UnbanAdminName ?? "System")</small>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="no-data">No role bans found.</p>
+                }
+            </div>
+        </div>
+    }
 </div>
+
+<ConfirmDialog
+    IsVisible="@_showWhitelistDialog"
+    Title="@_whitelistDialogTitle"
+    Message="@_whitelistDialogMessage"
+    ConfirmText="@_whitelistConfirmText"
+    CancelText="Cancel"
+    ConfirmButtonClass="@_whitelistButtonClass"
+    OnConfirm="ConfirmToggleWhitelistAsync"
+    OnCancel="CancelToggleWhitelist" />
