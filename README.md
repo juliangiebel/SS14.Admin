@@ -52,6 +52,9 @@ Auth:
 authServer: "https://central.spacestation14.io/auth"
 ```
 ## Dev Enviroment Setup
+
+# THIS IS ALL WIP AND NEEDS TO BE UPDATEDED
+
 ### Requirments
 - Node.js
 

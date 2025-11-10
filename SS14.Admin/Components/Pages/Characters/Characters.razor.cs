@@ -9,7 +9,7 @@ namespace SS14.Admin.Components.Pages.Characters;
 
 public partial class Characters
 {
-    [Inject] private PostgresServerDbContext Context { get; set; } = null!;
+    [Inject] private IDbContextFactory<PostgresServerDbContext> ContextFactory { get; set; } = null!;
 
     [SupplyParameterFromForm(FormName = "CharacterFilter")]
     private CharactersFilterModel _filterModel { get; set; } = new();
@@ -26,9 +26,11 @@ public partial class Characters
 
     private async Task RefreshAsync()
     {
-        var query = from profile in Context.Profile.AsNoTracking()
-                    join pref in Context.Preference.AsNoTracking() on profile.PreferenceId equals pref.Id
-                    join player in Context.Player.AsNoTracking() on pref.UserId equals player.UserId into playerJoin
+        await using var context = await ContextFactory.CreateDbContextAsync();
+
+        var query = from profile in context.Profile.AsNoTracking()
+                    join pref in context.Preference.AsNoTracking() on profile.PreferenceId equals pref.Id
+                    join player in context.Player.AsNoTracking() on pref.UserId equals player.UserId into playerJoin
                     from p in playerJoin.DefaultIfEmpty()
                     select new CharacterViewModel
                     {

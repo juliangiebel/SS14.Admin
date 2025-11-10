@@ -11,7 +11,7 @@ namespace SS14.Admin.Components.Pages.Players
 {
     public partial class SinglePlayerInfo : ComponentBase
     {
-    [Inject] private PostgresServerDbContext? Context { get; set; }
+    [Inject] private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
     [Inject] private BanHelper? BanHelper { get; set; }
     [Inject] private AuthenticationStateProvider? AuthStateProvider { get; set; }
     [Inject] private IHttpClientFactory? HttpClientFactory { get; set; }
@@ -49,7 +49,9 @@ namespace SS14.Admin.Components.Pages.Players
             var authState = await AuthStateProvider!.GetAuthenticationStateAsync();
             _user = authState.User;
 
-            var player = await Context.Player.AsNoTracking()
+            await using var context = await ContextFactory!.CreateDbContextAsync();
+
+            var player = await context.Player.AsNoTracking()
                 .SingleOrDefaultAsync(p => p.UserId == userId);
 
             if (player == null)
@@ -73,10 +75,10 @@ namespace SS14.Admin.Components.Pages.Players
             await FetchAccountCreationDateAsync(userId);
 
             // Load whitelist status
-            Whitelisted = await WhitelistHelper.IsWhitelistedAsync(Context, userId);
+            Whitelisted = await WhitelistHelper.IsWhitelistedAsync(context, userId);
 
             // Load play times
-            PlayTimes = await Context.PlayTime
+            PlayTimes = await context.PlayTime
                 .Where(pt => pt.PlayerId == userId)
                 .Select(pt => new PlayTimeViewModel
                 {
@@ -86,7 +88,7 @@ namespace SS14.Admin.Components.Pages.Players
                 .ToListAsync();
 
             // Load character profiles
-            Profiles = await Context.Profile
+            Profiles = await context.Profile
                 .AsNoTracking()
                 .Where(p => p.Preference.UserId == userId)
                 .OrderBy(p => p.Slot)
@@ -104,7 +106,7 @@ namespace SS14.Admin.Components.Pages.Players
                 .ToListAsync();
 
             // Load remarks (notes, messages, watchlist)
-            var notes = await Context.AdminNotes
+            var notes = await context.AdminNotes
                 .Where(n => n.PlayerUserId == userId && !n.Deleted && (n.ExpirationTime == null || n.ExpirationTime > DateTime.UtcNow))
                 .Include(n => n.CreatedBy)
                 .Include(n => n.LastEditedBy)
@@ -124,7 +126,7 @@ namespace SS14.Admin.Components.Pages.Players
                 })
                 .ToListAsync();
 
-            var messages = await Context.AdminMessages
+            var messages = await context.AdminMessages
                 .Where(m => m.PlayerUserId == userId && !m.Deleted && (m.ExpirationTime == null || m.ExpirationTime > DateTime.UtcNow))
                 .Include(m => m.CreatedBy)
                 .Include(m => m.LastEditedBy)
@@ -143,7 +145,7 @@ namespace SS14.Admin.Components.Pages.Players
                 })
                 .ToListAsync();
 
-            var watchlist = await Context.AdminWatchlists
+            var watchlist = await context.AdminWatchlists
                 .Where(w => w.PlayerUserId == userId && !w.Deleted && (w.ExpirationTime == null || w.ExpirationTime > DateTime.UtcNow))
                 .Include(w => w.CreatedBy)
                 .Include(w => w.LastEditedBy)
@@ -166,7 +168,7 @@ namespace SS14.Admin.Components.Pages.Players
                 .ToList();
 
             // Load bans
-            var serverBansQuery = BanHelper!.CreateServerBanJoin().AsNoTracking();
+            var serverBansQuery = BanHelper!.CreateServerBanJoin(context).AsNoTracking();
             var serverBans = SearchHelper.SearchServerBans(serverBansQuery, userId.ToString(), _user!);
 
             Bans = await serverBans
@@ -187,7 +189,7 @@ namespace SS14.Admin.Components.Pages.Players
                 .ToListAsync();
 
             // Load role bans
-            var roleBansQuery = BanHelper!.CreateRoleBanJoin().AsNoTracking();
+            var roleBansQuery = BanHelper!.CreateRoleBanJoin(context).AsNoTracking();
             var roleBans = SearchHelper.SearchRoleBans(roleBansQuery, userId.ToString(), _user!);
 
             RoleBans = await roleBans
@@ -236,13 +238,15 @@ namespace SS14.Admin.Components.Pages.Players
 
             try
             {
+                await using var context = await ContextFactory!.CreateDbContextAsync();
+
                 if (Whitelisted)
                 {
-                    await WhitelistHelper.RemoveWhitelistAsync(Context, userId);
+                    await WhitelistHelper.RemoveWhitelistAsync(context, userId);
                 }
                 else
                 {
-                    await WhitelistHelper.AddWhitelistAsync(Context, userId);
+                    await WhitelistHelper.AddWhitelistAsync(context, userId);
                 }
 
                 Whitelisted = !Whitelisted;

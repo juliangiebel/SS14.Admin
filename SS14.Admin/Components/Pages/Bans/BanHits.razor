@@ -1,0 +1,131 @@
+@page "/bans/{BanId:int}/hits"
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+<PageTitle>Ban Hits</PageTitle>
+
+<div class="container mx-auto px-4 py-6">
+    @if (Ban != null)
+    {
+        <h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">Ban Hits for Ban #@Ban.Id</h1>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Name:</dt>
+                    <dd class="text-base text-gray-900 dark:text-gray-100 mt-1">@(Ban.PlayerName ?? "Unknown")</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">User ID:</dt>
+                    <dd class="text-base font-mono text-gray-900 dark:text-gray-100 mt-1">@Ban.PlayerUserId</dd>
+                </div>
+                @if (ShowPII)
+                {
+                    <div>
+                        <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">IP:</dt>
+                        <dd class="text-base font-mono text-gray-900 dark:text-gray-100 mt-1">@Ban.IPAddress</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">HWID:</dt>
+                        <dd class="text-base font-mono text-gray-900 dark:text-gray-100 mt-1">@Ban.Hwid</dd>
+                    </div>
+                }
+                <div>
+                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Reason:</dt>
+                    <dd class="text-base text-gray-900 dark:text-gray-100 mt-1">@(Ban.Reason ?? "No reason provided")</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Ban Time:</dt>
+                    <dd class="text-base text-gray-900 dark:text-gray-100 mt-1">@Ban.BanTime.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Expires:</dt>
+                    <dd class="text-base text-gray-900 dark:text-gray-100 mt-1">
+                        @if (Ban.ExpirationTime.HasValue)
+                        {
+                            @Ban.ExpirationTime.Value.ToString("yyyy-MM-dd HH:mm:ss")
+                            @if (Ban.ExpirationTime < DateTime.UtcNow)
+                            {
+                                <span class="ml-2 px-2 py-1 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded text-sm font-medium">Expired</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="px-2 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded text-sm font-semibold">PERMANENT</span>
+                        }
+                        @if (Ban.UnbanTime.HasValue)
+                        {
+                            <div class="mt-1">
+                                <span class="font-semibold">Unbanned:</span> @Ban.UnbanTime.Value.ToString("yyyy-MM-dd HH:mm:ss")
+                                @if (!string.IsNullOrEmpty(Ban.UnbanAdmin))
+                                {
+                                    <span>by @Ban.UnbanAdmin</span>
+                                }
+                            </div>
+                        }
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Banning Admin:</dt>
+                    <dd class="text-base text-gray-900 dark:text-gray-100 mt-1">@(Ban.Admin ?? "Unknown")</dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="mb-4">
+            <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">Connection Hits</h2>
+
+            <div class="mb-4">
+                <input type="text"
+                       @bind="_searchText"
+                       @bind:event="oninput"
+                       placeholder="Search by username or user ID..."
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" />
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+            <QuickGrid TItem="ConnectionHitViewModel"
+                       @ref="Grid"
+                       Items="@GetFilteredConnections()"
+                       Pagination="@_pagination"
+                       Class="w-full">
+                <PropertyColumn Property="@(c => c.UserName)" Title="Username" Sortable="true" />
+                <PropertyColumn Property="@(c => c.UserId)" Title="User ID" Sortable="true" />
+                @if (ShowPII)
+                {
+                    <PropertyColumn Property="@(c => c.Address)" Title="IP Address" />
+                    <PropertyColumn Property="@(c => c.HWId)" Title="HWID" />
+                }
+                <PropertyColumn Property="@(c => c.Time)" Title="Connection Time" Format="yyyy-MM-dd HH:mm:ss" Sortable="true" />
+                <PropertyColumn Property="@(c => c.ServerName)" Title="Server" Sortable="true" />
+                <TemplateColumn Title="Status">
+                    @if (context.Denied.HasValue)
+                    {
+                        <span class="px-2 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded text-sm font-medium">
+                            @context.Denied.Value.ToString()
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-sm font-medium">
+                            Accepted
+                        </span>
+                    }
+                </TemplateColumn>
+            </QuickGrid>
+            <Pagination State="@_pagination" OnRefreshRequired="@RefreshGrid" class="py-2 border-t bg-primary-1 sticky-pagination" />
+        </div>
+    }
+    else if (_loading)
+    {
+        <div class="flex items-center justify-center py-12">
+            <div class="text-gray-600 dark:text-gray-400">Loading ban information...</div>
+        </div>
+    }
+    else
+    {
+        <div class="flex items-center justify-center py-12">
+            <div class="text-red-600 dark:text-red-400 text-xl">Ban not found</div>
+        </div>
+    }
+</div>

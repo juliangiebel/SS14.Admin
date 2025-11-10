@@ -2,7 +2,6 @@
 using System.Diagnostics.Contracts;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Claims;
 using Content.Server.Database;
 using Content.Shared.Database;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -18,7 +17,7 @@ namespace SS14.Admin.Helpers;
 /// </summary>
 public sealed class BanHelper
 {
-    private readonly PostgresServerDbContext _dbContext;
+    private readonly IDbContextFactory<PostgresServerDbContext> _contextFactory;
     private readonly PlayerLocator _playerLocator;
     private readonly IConfiguration _configuration;
     private readonly ILogger<BanHelper> _logger;
@@ -26,7 +25,7 @@ public sealed class BanHelper
     private readonly AuthenticationStateProvider _authState;
 
     public BanHelper(
-        PostgresServerDbContext dbContext,
+        IDbContextFactory<PostgresServerDbContext> contextFactory,
         PlayerLocator playerLocator,
         IConfiguration configuration,
         ILogger<BanHelper> logger,
@@ -34,7 +33,7 @@ public sealed class BanHelper
         AuthenticationStateProvider authState)
     {
 
-        _dbContext = dbContext;
+        _contextFactory = contextFactory;
         _playerLocator = playerLocator;
         _configuration = configuration;
         _logger = logger;
@@ -42,29 +41,29 @@ public sealed class BanHelper
         _authState = authState;
     }
 
-    public IQueryable<BanJoin<ServerBan, ServerUnban>> CreateServerBanJoin()
+    public IQueryable<BanJoin<ServerBan, ServerUnban>> CreateServerBanJoin(PostgresServerDbContext context)
     {
-        return CreateBanJoin<ServerBan, ServerUnban>(_dbContext.Ban);
+        return CreateBanJoin<ServerBan, ServerUnban>(context, context.Ban);
     }
 
-    public IQueryable<BanJoin<ServerRoleBan, ServerRoleUnban>> CreateRoleBanJoin()
+    public IQueryable<BanJoin<ServerRoleBan, ServerRoleUnban>> CreateRoleBanJoin(PostgresServerDbContext context)
     {
-        return CreateBanJoin<ServerRoleBan, ServerRoleUnban>(_dbContext.RoleBan);
+        return CreateBanJoin<ServerRoleBan, ServerRoleUnban>(context, context.RoleBan);
     }
 
-    private IQueryable<BanJoin<TBan, TUnban>> CreateBanJoin<TBan, TUnban>(DbSet<TBan> bans)
+    private IQueryable<BanJoin<TBan, TUnban>> CreateBanJoin<TBan, TUnban>(PostgresServerDbContext context, DbSet<TBan> bans)
         where TBan : class, IBanCommon<TUnban>
         where TUnban : IUnbanCommon
     {
         return bans
             .Include(b => b.Unban)
-            .LeftJoin(_dbContext.Player,
+            .LeftJoin(context.Player,
                 ban => ban.PlayerUserId, player => player.UserId,
                 (ban, player) => new { ban, player })
-            .LeftJoin(_dbContext.Player,
+            .LeftJoin(context.Player,
                 ban => ban.ban.BanningAdmin, admin => admin.UserId,
                 (ban, admin) => new { ban.ban, ban.player, admin })
-            .LeftJoin(_dbContext.Player,
+            .LeftJoin(context.Player,
                 ban => ban.ban.Unban!.UnbanningAdmin, unbanAdmin => unbanAdmin.UserId,
                 (ban, unbanAdmin) => new BanJoin<TBan, TUnban>
                 {
@@ -98,16 +97,18 @@ public sealed class BanHelper
 
     public async Task<(IPAddress address, ImmutableTypedHwid? hwid)?> GetLastPlayerInfo(string? nameOrUid)
     {
+        await using var context = await _contextFactory.CreateDbContextAsync();
+
         nameOrUid = nameOrUid.Trim();
 
         Player? player;
         if (Guid.TryParse(nameOrUid, out var guid))
         {
-            player = await _dbContext.Player.SingleOrDefaultAsync(p => p.UserId == guid);
+            player = await context.Player.SingleOrDefaultAsync(p => p.UserId == guid);
         }
         else
         {
-            player = await _dbContext.Player
+            player = await context.Player
                 .OrderByDescending(p => p.LastSeenTime)
                 .FirstOrDefaultAsync(p => p.LastSeenUserName.ToUpper() == nameOrUid.ToUpper());
         }

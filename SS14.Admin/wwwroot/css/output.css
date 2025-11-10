@@ -1442,6 +1442,11 @@ button
   max-width: 28rem;
 }
 
+.max-w-xs
+{
+  max-width: 20rem;
+}
+
 .flex-1
 {
   flex: 1 1 0%;
@@ -1732,6 +1737,13 @@ button
 .overflow-hidden
 {
   overflow: hidden;
+}
+
+.truncate
+{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .whitespace-nowrap
@@ -2445,6 +2457,12 @@ button
   color: rgb(30 64 175 / var(--tw-text-opacity, 1));
 }
 
+.text-gray-400
+{
+  --tw-text-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-text-opacity, 1));
+}
+
 .text-gray-500
 {
   --tw-text-opacity: 1;
@@ -3060,6 +3078,11 @@ html .prose
   color: rgb(225 29 72 / var(--tw-text-opacity, 1));
 }
 
+.hover\:underline:hover
+{
+  text-decoration-line: underline;
+}
+
 .hover\:opacity-90:hover
 {
   opacity: 0.9;
@@ -3077,6 +3100,12 @@ html .prose
   --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.focus\:border-blue-500:focus
+{
+  --tw-border-opacity: 1;
+  border-color: rgb(59 130 246 / var(--tw-border-opacity, 1));
 }
 
 .focus\:border-transparent:focus

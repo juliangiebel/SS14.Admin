@@ -9,7 +9,7 @@ namespace SS14.Admin.Components.Pages.Logs;
 public partial class Logs
 {
     [Inject]
-    private PostgresServerDbContext? Context { get; set; }
+    private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
     private readonly LogsFilterModel _filter = new();
     public QuickGrid<AdminLog>? Grid { get; set; }
@@ -22,11 +22,12 @@ public partial class Logs
     {
         _logsProvider = async request =>
         {
+            await using var context = await ContextFactory!.CreateDbContextAsync();
 
             // 🤡
             // Increase the count by one if it's not unlimited so we can check if there is a next page available
             var limit  = request.Count + 1;
-            var query = LogsQuery();
+            var query = LogsQuery(context);
             query = request.ApplySorting(query);
             query = query.Skip(request.StartIndex);
 
@@ -52,9 +53,9 @@ public partial class Logs
 
     }
 
-    private IQueryable<AdminLog> LogsQuery()
+    private IQueryable<AdminLog> LogsQuery(PostgresServerDbContext context)
     {
-        var query = Context!.AdminLog
+        var query = context.AdminLog
             .Include(l => l.Round)
             .ThenInclude(l => l.Server)
             .Where(log => true);

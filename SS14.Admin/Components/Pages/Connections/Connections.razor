@@ -30,9 +30,17 @@
             <span class="text-red-600 dark:text-red-400 font-bold">@context.Denied</span>
         }
     </TemplateColumn>
-    <PropertyColumn Property="@(c => c.BanHitCount)" Title="Ban Hits" Sortable="true" Class="text-primary-1"></PropertyColumn>
-    <TemplateColumn Title="Actions">
-        <a href="/connections/hits?connection=@context.Id" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">View Hits</a>
+    <TemplateColumn Title="Ban Hits">
+        @if (context.BanHitCount > 0)
+        {
+            <NavLink href="@($"/connections/{context.Id}/hits")" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+                @context.BanHitCount
+            </NavLink>
+        }
+        else
+        {
+            <span class="text-gray-500">0</span>
+        }
     </TemplateColumn>
 </QuickGrid>
 

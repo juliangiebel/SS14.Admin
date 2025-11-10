@@ -8,7 +8,7 @@ namespace SS14.Admin.Components.Pages.Permissions;
 public partial class Ranks
 {
     [Inject]
-    private PostgresServerDbContext? Context { get; set; }
+    private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
     public QuickGrid<RankViewModel>? Grid { get; set; }
 
@@ -21,9 +21,11 @@ public partial class Ranks
     {
         _rankProvider = async request =>
         {
+            await using var context = await ContextFactory!.CreateDbContextAsync();
+
             // Increase the count by one if it's not unlimited so we can check if there is a next page available
             var limit = request.Count + 1;
-            var query = GetRankQuery();
+            var query = GetRankQuery(context);
             query = request.ApplySorting(query);
             query = query.Skip(request.StartIndex);
 
@@ -49,9 +51,9 @@ public partial class Ranks
         };
     }
 
-    private IQueryable<RankViewModel> GetRankQuery()
+    private IQueryable<RankViewModel> GetRankQuery(PostgresServerDbContext context)
     {
-        var query = from rank in Context.AdminRank.AsNoTracking()
+        var query = from rank in context.AdminRank.AsNoTracking()
                     orderby rank.Name
                     select new RankViewModel
                     {

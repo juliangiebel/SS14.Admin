@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Content.Server.Database;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Authorization;
 using SS14.Admin.Helpers;
 
-namespace SS14.Admin.Components.Pages.Bans;
+namespace SS14.Admin.Components.Pages.RoleBans;
 
-public partial class Bans
+public partial class RoleBans
 {
     [Inject]
     private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
@@ -17,15 +17,15 @@ public partial class Bans
     [Inject]
     private AuthenticationStateProvider? AuthStateProvider { get; set; }
 
-    [SupplyParameterFromForm(FormName = "banFilter")]
-    public BansFilterModel _model { get; set; } = new();
+    [SupplyParameterFromForm(FormName = "roleBanFilter")]
+    public RoleBansFilterModel _model { get; set; } = new();
 
-    public QuickGrid<BanViewModel> Grid { get; set; }
+    public QuickGrid<RoleBanViewModel> Grid { get; set; }
 
     private PaginationState _pagination = new() { ItemsPerPage = 13 };
 
-    // Cache of ban data.
-    private List<BanViewModel> _bansList = new();
+    // Cache of role ban data.
+    private List<RoleBanViewModel> _roleBansList = new();
 
     // Tracks confirmation state for each ban.
     private Dictionary<int, bool> _confirmations = new();
@@ -35,12 +35,12 @@ public partial class Bans
         await Refresh();
     }
 
-    private IQueryable<BanViewModel> GetBansQuery(PostgresServerDbContext context)
+    private IQueryable<RoleBanViewModel> GetRoleBansQuery(PostgresServerDbContext context)
     {
         var now = DateTime.UtcNow;
 
-        // Start with base ban query with joins for search capability, including Unban
-        var baseQuery = from ban in context.Ban.AsNoTracking().Include(b => b.BanHits).Include(b => b.Unban)
+        // Start with base role ban query with joins for search capability, including Unban
+        var baseQuery = from ban in context.RoleBan.AsNoTracking().Include(b => b.Unban)
                         join player in context.Player.AsNoTracking() on ban.PlayerUserId equals player.UserId into playerJoin
                         from p in playerJoin.DefaultIfEmpty()
                         join admin in context.Player.AsNoTracking() on ban.BanningAdmin equals admin.UserId into adminJoin
@@ -55,8 +55,18 @@ public partial class Bans
                 (x.p != null && x.p.LastSeenUserName.ToLower().Contains(search)) ||
                 EF.Functions.Like(x.ban.PlayerUserId.ToString().ToLower(), $"%{search}%") ||
                 (x.ban.Reason != null && x.ban.Reason.ToLower().Contains(search)) ||
-                (x.a != null && x.a.LastSeenUserName.ToLower().Contains(search))
+                (x.a != null && x.a.LastSeenUserName.ToLower().Contains(search)) ||
+                (x.ban.RoleId != null && x.ban.RoleId.ToLower().Contains(search)) ||
+                (x.ban.Address != null && EF.Functions.Like(x.ban.Address.ToString().ToLower(), $"%{search}%")) ||
+                (x.ban.HWId != null && EF.Functions.Like(x.ban.HWId.ToString().ToLower(), $"%{search}%"))
             );
+        }
+
+        // Apply role filter
+        if (!string.IsNullOrWhiteSpace(_model.RoleFilter))
+        {
+            var roleFilter = _model.RoleFilter.ToLower();
+            baseQuery = baseQuery.Where(x => x.ban.RoleId.ToLower().Contains(roleFilter));
         }
 
         // Apply date filters at the database level
@@ -97,12 +107,12 @@ public partial class Bans
         else if (!_model.ShowActive && !_model.ShowExpired)
         {
             // Neither selected - return empty
-            return Enumerable.Empty<BanViewModel>().AsQueryable();
+            return Enumerable.Empty<RoleBanViewModel>().AsQueryable();
         }
         // If both are true, show all (no filter needed)
 
         // Now do the final projection
-        var query = baseQuery.Select(x => new BanViewModel
+        var query = baseQuery.Select(x => new RoleBanViewModel
         {
             Id = x.ban.Id,
             PlayerUserId = x.ban.PlayerUserId.ToString(),
@@ -112,20 +122,20 @@ public partial class Bans
             Reason = x.ban.Reason,
             BanTime = x.ban.BanTime,
             ExpirationTime = x.ban.ExpirationTime,
-            HitCount = x.ban.BanHits.Count,
             Admin = x.a != null ? x.a.LastSeenUserName : "",
+            RoleId = x.ban.RoleId,
+            RoundId = x.ban.RoundId,
             Active = x.ban.Unban == null && (!x.ban.ExpirationTime.HasValue || x.ban.ExpirationTime > now)
         });
 
         return query.OrderByDescending(b => b.BanTime);
     }
 
-
     // Refresh the cache and update the UI.
     private async Task Refresh()
     {
         await using var context = await ContextFactory!.CreateDbContextAsync();
-        _bansList = await GetBansQuery(context).ToListAsync();
+        _roleBansList = await GetRoleBansQuery(context).ToListAsync();
         _confirmations.Clear();
         await InvokeAsync(StateHasChanged);
     }
@@ -155,18 +165,18 @@ public partial class Bans
         // Only active bans can be unbanned
         if (active)
         {
-            await UnbanBan(banId);
+            await UnbanRoleBan(banId);
         }
 
         await Refresh();
     }
 
-    // Unban a ban by creating an Unban entity
-    private async Task UnbanBan(int banId)
+    // Unban a role ban by creating an Unban entity
+    private async Task UnbanRoleBan(int banId)
     {
         await using var context = await ContextFactory!.CreateDbContextAsync();
 
-        var ban = await context.Ban
+        var ban = await context.RoleBan
             .Include(b => b.Unban)
             .SingleOrDefaultAsync(b => b.Id == banId);
 
@@ -187,7 +197,7 @@ public partial class Bans
         var adminId = user.Claims.GetUserId();
 
         // Create the unban record
-        ban.Unban = new ServerUnban
+        ban.Unban = new ServerRoleUnban
         {
             Ban = ban,
             UnbanningAdmin = adminId,
@@ -197,16 +207,16 @@ public partial class Bans
         await context.SaveChangesAsync();
     }
 
-    public class BanViewModel
+    public class RoleBanViewModel
     {
         public int Id { get; set; }
         public string Reason { get; set; } = "";
         public DateTime BanTime { get; set; }
-        public int? Round { get; set; }
+        public int? RoundId { get; set; }
         public DateTime? ExpirationTime { get; set; }
-        public int HitCount { get; set; }
         public string Admin { get; set; } = "";
         public string PlayerName { get; set; } = "";
+        public string RoleId { get; set; } = "";
         public bool Active { get; set; }
 
         //PII

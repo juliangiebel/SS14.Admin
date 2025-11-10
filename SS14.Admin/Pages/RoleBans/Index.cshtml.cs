@@ -10,7 +10,7 @@ namespace SS14.Admin.Pages.RoleBans;
 [ValidateAntiForgeryToken]
 public class Index : PageModel
 {
-    private readonly PostgresServerDbContext _dbContext;
+    private readonly IDbContextFactory<PostgresServerDbContext> _contextFactory;
     private readonly BanHelper _banHelper;
 
     public ISortState SortState { get; private set; } = default!;
@@ -21,9 +21,9 @@ public class Index : PageModel
     public ShowFilter? Show { get; set; }
 
 
-    public Index(PostgresServerDbContext dbContext, BanHelper banHelper)
+    public Index(IDbContextFactory<PostgresServerDbContext> contextFactory, BanHelper banHelper)
     {
-        _dbContext = dbContext;
+        _contextFactory = contextFactory;
         _banHelper = banHelper;
     }
 
@@ -36,7 +36,8 @@ public class Index : PageModel
     {
         Pagination.Init(pageIndex, perPage, AllRouteData);
 
-        var bans = SearchHelper.SearchRoleBans(_banHelper.CreateRoleBanJoin(), search, User);
+        await using var context = await _contextFactory.CreateDbContextAsync();
+        var bans = SearchHelper.SearchRoleBans(_banHelper.CreateRoleBanJoin(context), search, User);
 
         bans = show switch
         {
@@ -61,7 +62,9 @@ public class Index : PageModel
 
         var id = model.Id;
 
-        var ban = await _dbContext.RoleBan
+        await using var context = await _contextFactory.CreateDbContextAsync();
+
+        var ban = await context.RoleBan
             .Include(b => b.Unban)
             .SingleOrDefaultAsync(b => b.Id == id);
 
@@ -84,7 +87,7 @@ public class Index : PageModel
             UnbanTime = DateTime.UtcNow
         };
 
-        await _dbContext.SaveChangesAsync();
+        await context.SaveChangesAsync();
         TempData.Add("StatusMessage", "Unban done");
         return RedirectToPage("./Index");
     }

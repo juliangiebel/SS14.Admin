@@ -10,7 +10,7 @@ public partial class EditPermissions : ComponentBase
     public Guid UserId { get; set; }
 
     [Inject]
-    private PostgresServerDbContext? Context { get; set; }
+    private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
     [Inject]
     private NavigationManager Navigation { get; set; }
@@ -21,9 +21,11 @@ public partial class EditPermissions : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        Ranks = await Context.AdminRank.ToListAsync();
+        await using var context = await ContextFactory!.CreateDbContextAsync();
 
-        adminEntity = await Context.Admin
+        Ranks = await context.AdminRank.ToListAsync();
+
+        adminEntity = await context.Admin
             .Include(a => a.Flags)
             .Include(a => a.AdminRank)
             .ThenInclude(r => r.Flags)
@@ -36,7 +38,7 @@ public partial class EditPermissions : ComponentBase
             return;
         }
 
-        var player = await Context.Player.FirstOrDefaultAsync(p => p.UserId == UserId);
+        var player = await context.Player.FirstOrDefaultAsync(p => p.UserId == UserId);
         var username = player?.LastSeenUserName ?? "Unknown";
 
         var posFlags = adminEntity.Flags.Where(f => !f.Negative).Select(f => f.Flag.ToUpper()).ToList();
@@ -112,7 +114,10 @@ public partial class EditPermissions : ComponentBase
 
     private async Task HandleValidSubmit()
     {
-        if (Model == null || Context == null || adminEntity == null) return;
+        if (Model == null || ContextFactory == null || adminEntity == null) return;
+
+        await using var context = await ContextFactory.CreateDbContextAsync();
+        context.Admin.Attach(adminEntity);
 
         adminEntity.Title = string.IsNullOrEmpty(Model.Title) ? null : Model.Title;
         adminEntity.AdminRankId = Model.AdminRankId;
@@ -133,7 +138,7 @@ public partial class EditPermissions : ComponentBase
             adminEntity.Flags.Add(new AdminFlag { Flag = flag.ToUpper(), Negative = true });
         }
 
-        await Context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         Navigation.NavigateTo("/Permissions");
     }

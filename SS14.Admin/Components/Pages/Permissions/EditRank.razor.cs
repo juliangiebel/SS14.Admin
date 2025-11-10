@@ -11,7 +11,7 @@ public partial class EditRank : ComponentBase
     public string? RankName { get; set; }
 
     [Inject]
-    private PostgresServerDbContext? Context { get; set; }
+    private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
     [Inject]
     private NavigationManager Navigation { get; set; }
@@ -22,7 +22,7 @@ public partial class EditRank : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        if (RankName == null || Context == null)
+        if (RankName == null || ContextFactory == null)
             return;
 
         // Check if this is a new rank
@@ -38,8 +38,10 @@ public partial class EditRank : ComponentBase
         }
         else
         {
+            await using var context = await ContextFactory.CreateDbContextAsync();
+
             // Load existing rank by name
-            rankEntity = await Context.AdminRank
+            rankEntity = await context.AdminRank
                 .Include(r => r.Flags)
                 .FirstOrDefaultAsync(r => r.Name == RankName);
 
@@ -83,7 +85,9 @@ public partial class EditRank : ComponentBase
 
     private async Task HandleValidSubmit()
     {
-        if (Model == null || Context == null) return;
+        if (Model == null || ContextFactory == null) return;
+
+        await using var context = await ContextFactory.CreateDbContextAsync();
 
         if (Model.IsNew)
         {
@@ -100,12 +104,15 @@ public partial class EditRank : ComponentBase
                 rankEntity.Flags.Add(new AdminRankFlag { Flag = flag.ToUpper() });
             }
 
-            Context.AdminRank.Add(rankEntity);
+            context.AdminRank.Add(rankEntity);
         }
         else
         {
             // Update existing rank
             if (rankEntity == null) return;
+
+            // Re-attach the entity to the new context
+            context.AdminRank.Attach(rankEntity);
 
             rankEntity.Name = Model.Name;
 
@@ -119,17 +126,19 @@ public partial class EditRank : ComponentBase
             }
         }
 
-        await Context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         Navigation.NavigateTo("/Permissions/Ranks");
     }
 
     private async Task HandleDelete()
     {
-        if (Context == null || rankEntity == null) return;
+        if (ContextFactory == null || rankEntity == null) return;
 
-        Context.AdminRank.Remove(rankEntity);
-        await Context.SaveChangesAsync();
+        await using var context = await ContextFactory.CreateDbContextAsync();
+        context.AdminRank.Attach(rankEntity);
+        context.AdminRank.Remove(rankEntity);
+        await context.SaveChangesAsync();
 
         Navigation.NavigateTo("/Permissions/Ranks");
     }

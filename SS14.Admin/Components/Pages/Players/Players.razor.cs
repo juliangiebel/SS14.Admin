@@ -9,12 +9,12 @@ namespace SS14.Admin.Components.Pages.Players;
 public partial class Players
 {
     [Inject]
-    private PostgresServerDbContext? Context { get; set; }
+    private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
     public QuickGrid<PlayerViewModel> Grid { get; set; }
 
     private PaginationState _pagination = new() { ItemsPerPage = 13 };
 
-    private IQueryable<PlayerViewModel> _playersQuery = Enumerable.Empty<PlayerViewModel>().AsQueryable();
+    private List<PlayerViewModel> _playersList = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -22,11 +22,12 @@ public partial class Players
     }
     private async Task Refresh()
     {
-        _playersQuery = GetPlayersQuery();
+        await using var context = await ContextFactory!.CreateDbContextAsync();
+        _playersList = await GetPlayersQuery(context).ToListAsync();
         await InvokeAsync(StateHasChanged);
     }
-    private IQueryable<PlayerViewModel> GetPlayersQuery() =>
-        from player in Context.Player.AsNoTracking()
+    private IQueryable<PlayerViewModel> GetPlayersQuery(PostgresServerDbContext context) =>
+        from player in context.Player.AsNoTracking()
     orderby player.LastSeenUserName
     select new PlayerViewModel
     {

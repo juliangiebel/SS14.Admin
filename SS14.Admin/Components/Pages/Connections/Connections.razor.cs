@@ -9,7 +9,7 @@ namespace SS14.Admin.Components.Pages.Connections;
 public partial class Connections
 {
     [Inject]
-    private PostgresServerDbContext? Context { get; set; }
+    private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
     private readonly ConnectionsFilterModel _filter = new();
     public QuickGrid<ConnectionViewModel>? Grid { get; set; }
@@ -22,9 +22,11 @@ public partial class Connections
     {
         _connectionsProvider = async request =>
         {
+            await using var context = await ContextFactory!.CreateDbContextAsync();
+
             // Increase the count by one if it's not unlimited so we can check if there is a next page available
             var limit = request.Count + 1;
-            var query = ConnectionsQuery();
+            var query = ConnectionsQuery(context);
             query = request.ApplySorting(query);
             query = query.Skip(request.StartIndex);
 
@@ -49,7 +51,7 @@ public partial class Connections
         };
     }
 
-    private IQueryable<ConnectionViewModel> ConnectionsQuery()
+    private IQueryable<ConnectionViewModel> ConnectionsQuery(PostgresServerDbContext context)
     {
         var acceptableDenies = new List<ConnectionDenyReason?>();
         if (_filter.ShowAccepted)
@@ -68,7 +70,7 @@ public partial class Connections
             acceptableDenies.Add(ConnectionDenyReason.IPChecks);
 
         // Start with the base query
-        var connectionQuery = Context!.ConnectionLog
+        var connectionQuery = context.ConnectionLog
             .AsNoTracking()
             .Include(c => c.Server)
             .Include(c => c.BanHits)
@@ -101,7 +103,7 @@ public partial class Connections
 
         // Now project to the view model
         var query = from connection in connectionQuery
-            join player in Context.Player on connection.UserId equals player.UserId into playerJoin
+            join player in context.Player on connection.UserId equals player.UserId into playerJoin
             from p in playerJoin.DefaultIfEmpty()
             select new ConnectionViewModel
             {

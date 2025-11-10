@@ -9,7 +9,7 @@ namespace SS14.Admin.Components.Pages.Permissions;
 public partial class AdminPermissions
 {
     [Inject]
-    private PostgresServerDbContext? Context { get; set; }
+    private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
     private readonly AdminFilterModel _filter = new();
     public QuickGrid<AdminViewModel>? Grid { get; set; }
@@ -23,9 +23,11 @@ public partial class AdminPermissions
     {
         _adminProvider = async request =>
         {
+            await using var context = await ContextFactory!.CreateDbContextAsync();
+
             // Increase the count by one if it's not unlimited so we can check if there is a next page available
             var limit = request.Count + 1;
-            var query = GetAdminQuery();
+            var query = GetAdminQuery(context);
             query = request.ApplySorting(query);
             query = query.Skip(request.StartIndex);
 
@@ -52,11 +54,11 @@ public partial class AdminPermissions
         };
     }
 
-    private IQueryable<AdminViewModel> GetAdminQuery()
+    private IQueryable<AdminViewModel> GetAdminQuery(PostgresServerDbContext context)
     {
-        var query = from admin in Context.Admin.AsNoTracking()
-                    join player in Context.Player.AsNoTracking() on admin.UserId equals player.UserId
-                    join rank in Context.AdminRank.AsNoTracking() on admin.AdminRankId equals rank.Id into rankJoin
+        var query = from admin in context.Admin.AsNoTracking()
+                    join player in context.Player.AsNoTracking() on admin.UserId equals player.UserId
+                    join rank in context.AdminRank.AsNoTracking() on admin.AdminRankId equals rank.Id into rankJoin
                     from r in rankJoin.DefaultIfEmpty()
                     orderby player.LastSeenUserName
                     select new AdminViewModel

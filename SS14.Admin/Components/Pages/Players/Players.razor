@@ -9,7 +9,7 @@
 
 <QuickGrid TItem="PlayerViewModel"
            @ref="Grid"
-           Items="@_playersQuery"
+           Items="@_playersList.AsQueryable()"
            Pagination="@_pagination"
            Class="grow">
     <PropertyColumn Property="@(player => player.LastSeenUsername)" Title="Last Name"></PropertyColumn>
@@ -19,7 +19,7 @@
     <PropertyColumn Property="@(player => player.LastSeenHwid)" Title="Last Seen Hwid"></PropertyColumn>
     <PropertyColumn Property="@(player => player.FirstSeen)" Title="First Seen"></PropertyColumn>
     <TemplateColumn Title="Actions" Context="player">
-                <NavLink href="@($"players/{player.Guid}")" class="btn btn-primary">
+                <NavLink href="@($"players/{player.Guid.ToString()}")" class="btn btn-primary">
                     <i class="ri-info-card-line"></i>
                 </NavLink>
     </TemplateColumn>

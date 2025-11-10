@@ -39,7 +39,7 @@ var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
 if (connStr == null)
     throw new InvalidOperationException("Need to specify DefaultConnection connection string");
 
-builder.Services.AddDbContext<PostgresServerDbContext>(options => options.UseNpgsql(connStr));
+builder.Services.AddDbContextFactory<PostgresServerDbContext>(options => options.UseNpgsql(connStr));
 
 // dummy implementation
 // Configure this for actually use

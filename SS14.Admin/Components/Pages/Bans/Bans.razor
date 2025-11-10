@@ -25,7 +25,7 @@
 
 <QuickGrid TItem="BanViewModel"
            @ref="Grid"
-           Items="@_bansQuery"
+           Items="@_bansList.AsQueryable()"
            Pagination="@_pagination"
            Class="grow">
     <PropertyColumn Property="@(ban => ban.PlayerName)" Title="Name"></PropertyColumn>
@@ -38,7 +38,18 @@
     <PropertyColumn Property="@(ban => ban.ExpirationTime)" Title="Expires" Format="yyyy-MM-dd HH:mm:ss"
                     Sortable="true"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.Admin)" Title="Banning Admin"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.HitCount)" Title="Hits"></PropertyColumn>
+    <TemplateColumn Title="Hits">
+        @if (context.HitCount > 0)
+        {
+            <NavLink href="@($"/bans/{context.Id.ToString()}/hits")" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+                @context.HitCount
+            </NavLink>
+        }
+        else
+        {
+            <span class="text-gray-500">0</span>
+        }
+    </TemplateColumn>
     <TemplateColumn Title="Actions">
         @if (context.Active)
         {
