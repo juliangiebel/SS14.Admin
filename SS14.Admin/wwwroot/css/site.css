@@ -281,12 +281,18 @@ data-grid-filter .grid-search.search-box-active {
 data-grid .search-popover {
     z-index: 999;
     width: var(--search-box-width);
-    background-color: white;
-    color: var(--text-color-dark);
-    border-top: solid 1px var(--text-color-dark);
+    background-color: var(--ss14-light-bg-1);
+    color: var(--ss14-text-primary-light);
+    border-top: solid 1px var(--border-light);
     padding: 4px;
     font-size: 0.9rem;
-    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+    box-shadow: var(--shadow-md);
+}
+
+.dark data-grid .search-popover {
+    background-color: var(--ss14-dark-bg-2);
+    color: var(--ss14-text-primary-dark);
+    border-top: solid 1px var(--border-dark);
 }
 
 data-grid .search-result:first-of-type {
@@ -314,11 +320,26 @@ data-grid .search-popover .result-tag {
 }
 
 data-grid-filter button.btn {
-    color: var(--text-color-dark);
+    color: var(--ss14-white);
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    transition: all var(--transition-base);
 }
 
 data-grid-filter button.btn:hover {
-    color: var(--text-color-dark);
+    color: var(--ss14-white);
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.dark data-grid-filter button.btn {
+    color: var(--ss14-white);
+}
+
+.dark data-grid-filter button.btn:hover {
+    color: var(--ss14-white);
 }
 
 data-grid-filter button:active {
@@ -391,8 +412,14 @@ data-grid > table .text-center
 data-grid > table td.colored
 {
     /*noinspection CssUnresolvedCustomProperty*/
-    color: var(--cell-color, var(--text-color-dark));
+    color: var(--cell-color, var(--ss14-text-primary-light));
     font-weight: bold;
+}
+
+.dark data-grid > table td.colored
+{
+    /*noinspection CssUnresolvedCustomProperty*/
+    color: var(--cell-color, var(--ss14-text-primary-dark));
 }
 
 data-grid > table thead,
@@ -403,11 +430,19 @@ data-grid > table tr {
 
 data-grid > table th,
 data-grid > table td {
-    padding: 4px 15px;
+    padding: 8px 15px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    min-height: 2.2em;
+    min-height: 2.5em;
+}
+
+data-grid > table td {
+    color: var(--ss14-text-primary-light);
+}
+
+.dark data-grid > table td {
+    color: var(--ss14-text-primary-dark);
 }
 
 data-grid > table th:first-of-type,
@@ -418,17 +453,20 @@ data-grid > table td:first-of-type {
 data-grid > table th {
     position: sticky;
     top: 0;
-    background: var(--ss14-dark-bg-4);
+    background: var(--ss14-red);
     text-align: left;
     font-weight: 600;
-    font-size: 1.1em;
+    font-size: 1.05em;
     color: var(--ss14-white);
     letter-spacing: 0.025em;
-    border-bottom: 2px solid var(--ss14-red);
+    border-bottom: 2px solid var(--ss14-red-dark);
+    text-transform: uppercase;
+    font-size: 0.85rem;
 }
 
 .dark data-grid > table th {
-    background: var(--ss14-dark-bg-4);
+    background: var(--ss14-red);
+    color: var(--ss14-white);
 }
 
 data-grid > table th:last-child {
@@ -439,12 +477,28 @@ data-grid > table tr {
     transition: background-color var(--transition-base);
 }
 
+data-grid > table tbody tr {
+    background-color: var(--ss14-light-bg-1);
+}
+
 data-grid > table tbody tr:hover {
     background-color: var(--ss14-light-bg-3);
 }
 
+data-grid > table tbody tr:nth-child(even) {
+    background-color: var(--ss14-light-bg-2);
+}
+
+.dark data-grid > table tbody tr {
+    background-color: var(--ss14-dark-bg-1);
+}
+
 .dark data-grid > table tbody tr:hover {
     background-color: var(--ss14-dark-bg-3);
+}
+
+.dark data-grid > table tbody tr:nth-child(even) {
+    background-color: var(--ss14-dark-bg-2);
 }
 
 
