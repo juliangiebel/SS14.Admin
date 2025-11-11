@@ -18,7 +18,9 @@
     <PropertyColumn Property="@(admin => admin.Username)" Title="Username"></PropertyColumn>
     <PropertyColumn Property="@(admin => admin.Title)" Title="Title"></PropertyColumn>
     <PropertyColumn Property="@(admin => admin.Rank)" Title="Rank"></PropertyColumn>
-    <PropertyColumn Property="@(admin => admin.Flags)" Title="Flags"></PropertyColumn>
+    <TemplateColumn Title="Flags" Context="admin">
+        @FormatFlags(admin.Flags)
+    </TemplateColumn>
     <TemplateColumn Title="Edit Permissions" Context="admin">
         <NavLink href="@($"/permissions/{admin.UserId}")" class="btn btn-primary">
             Edit

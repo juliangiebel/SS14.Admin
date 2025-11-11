@@ -18,7 +18,9 @@
            Pagination="@_pagination"
            Class="grow">
     <PropertyColumn Property="@(rank => rank.Name)" Title="Rank Name"></PropertyColumn>
-    <PropertyColumn Property="@(rank => rank.Flags)" Title="Flags"></PropertyColumn>
+    <TemplateColumn Title="Flags" Context="rank">
+        @FormatFlags(rank.Flags)
+    </TemplateColumn>
     <TemplateColumn Title="Edit Rank" Context="rank">
         <NavLink href="@($"/permissions/ranks/{rank.Name}")" class="btn btn-primary">
             Edit

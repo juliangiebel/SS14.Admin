@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using SS14.Admin.Helpers;
 using SS14.Admin.Models;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
 
 namespace SS14.Admin.Components.Pages.Players;
 
@@ -13,8 +15,13 @@ public partial class Players
     [Inject]
     private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
+    [Inject]
+    private AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
+
     [SupplyParameterFromForm(FormName = "playerFilter")]
     public PlayerFilterModel _model { get; set; } = new();
+
+    private ClaimsPrincipal? _user;
 
     public QuickGrid<PlayerViewModel> Grid { get; set; }
 
@@ -24,6 +31,8 @@ public partial class Players
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider!.GetAuthenticationStateAsync();
+        _user = authState.User;
         await Refresh();
     }
 
@@ -43,16 +52,10 @@ public partial class Players
     {
         var query = context.Player.AsNoTracking().AsQueryable();
 
-        // Apply search filter
+        // Apply search filter using the existing SearchHelper
         if (!string.IsNullOrWhiteSpace(_model.Search))
         {
-            var search = _model.Search.ToLower();
-            query = query.Where(p =>
-                p.LastSeenUserName.ToLower().Contains(search) ||
-                EF.Functions.Like(p.UserId.ToString().ToLower(), $"%{search}%") ||
-                (p.LastSeenAddress != null && EF.Functions.Like(p.LastSeenAddress.ToString().ToLower(), $"%{search}%")) ||
-                (p.LastSeenHWId != null && EF.Functions.Like(p.LastSeenHWId.ToString().ToLower(), $"%{search}%"))
-            );
+            query = SearchHelper.SearchPlayers(query, _model.Search, _user!);
         }
 
         // Apply first seen date filters

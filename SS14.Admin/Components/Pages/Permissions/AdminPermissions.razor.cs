@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.QuickGrid;
 using Content.Server.Database;
 using Microsoft.EntityFrameworkCore;
 using SS14.Admin.Models;
+using SS14.Admin.Admins;
 
 namespace SS14.Admin.Components.Pages.Permissions;
 
@@ -57,16 +58,18 @@ public partial class AdminPermissions
     private IQueryable<AdminViewModel> GetAdminQuery(PostgresServerDbContext context)
     {
         var query = from admin in context.Admin.AsNoTracking()
+                        .Include(a => a.Flags)
+                        .Include(a => a.AdminRank)
+                        .ThenInclude(r => r.Flags)
                     join player in context.Player.AsNoTracking() on admin.UserId equals player.UserId
-                    join rank in context.AdminRank.AsNoTracking() on admin.AdminRankId equals rank.Id into rankJoin
-                    from r in rankJoin.DefaultIfEmpty()
                     orderby player.LastSeenUserName
                     select new AdminViewModel
                     {
                         UserId = admin.UserId,
                         Username = player.LastSeenUserName,
                         Title = admin.Title ?? "none",
-                        Rank = r != null ? r.Name : null
+                        Rank = admin.AdminRank != null ? admin.AdminRank.Name : null,
+                        Flags = AdminHelper.GetFlags(admin)
                     };
 
         // Apply filters this should reflect AdminFilter.cs params
@@ -92,13 +95,17 @@ public partial class AdminPermissions
         await Grid.RefreshDataAsync();
     }
 
+    private string FormatFlags(AdminFlags flags)
+    {
+        return AdminFlagsHelper.FlagsToDisplayString(flags);
+    }
+
     public class AdminViewModel
     {
         public Guid UserId { get; set; }
         public string Username { get; set; } = "";
         public string Title { get; set; } = "none";
         public string? Rank { get; set; }
-
-        public Dictionary<string, bool> Flags { get; set; } = new();
+        public AdminFlags Flags { get; set; }
     }
 }

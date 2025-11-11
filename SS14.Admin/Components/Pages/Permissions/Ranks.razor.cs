@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Content.Server.Database;
 using Microsoft.EntityFrameworkCore;
+using SS14.Admin.Admins;
 
 namespace SS14.Admin.Components.Pages.Permissions;
 
@@ -67,6 +68,13 @@ public partial class Ranks
 
     private async Task Refresh()
     {
+    }
+
+    private string FormatFlags(List<AdminRankFlag> rankFlags)
+    {
+        var flagNames = rankFlags.Select(f => f.Flag);
+        var flags = AdminFlagsHelper.NamesToFlags(flagNames);
+        return AdminFlagsHelper.FlagsToDisplayString(flags);
     }
 
     public class RankViewModel

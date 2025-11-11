@@ -117,6 +117,21 @@ namespace SS14.Admin.Admins
             var flagsText = string.Join(' ', posFlagNames.Concat(negFlagNames).OrderBy(f => f.flag).Select(p => p.fText));
             return flagsText;
         }
+
+        /// <summary>
+        ///     Converts a bitfield of admin flags to a comma-separated string for display in data grids.
+        /// </summary>
+        /// <param name="flags">The admin flags to display.</param>
+        /// <param name="separator">The separator to use between flags (default: ", ").</param>
+        /// <returns>A string containing all flag names separated by the specified separator.</returns>
+        public static string FlagsToDisplayString(AdminFlags flags, string separator = ", ")
+        {
+            if (flags == AdminFlags.None)
+                return "None";
+
+            var flagNames = FlagsToNames(flags);
+            return string.Join(separator, flagNames);
+        }
     }
 
 }
