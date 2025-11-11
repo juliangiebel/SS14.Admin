@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Content.Server.Database;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace SS14.Admin.Components.Pages.Permissions;
 
@@ -14,7 +15,6 @@ public partial class AddAdmin : ComponentBase
 
     public AddAdminViewModel? Model { get; set; }
     public List<AdminRank> Ranks { get; set; } = new();
-    public List<Player> AvailablePlayers { get; set; } = new();
     public bool IsLoading { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
@@ -24,16 +24,9 @@ public partial class AddAdmin : ComponentBase
         // Load all ranks
         Ranks = await context.AdminRank.ToListAsync();
 
-        // Load all players who are not already admins
-        var existingAdminUserIds = await context.Admin.Select(a => a.UserId).ToListAsync();
-        AvailablePlayers = await context.Player
-            .Where(p => !existingAdminUserIds.Contains(p.UserId))
-            .OrderBy(p => p.LastSeenUserName)
-            .ToListAsync();
-
         Model = new AddAdminViewModel
         {
-            UserId = Guid.Empty,
+            UserIdString = "",
             Title = "",
             AdminRankId = null,
             RankFlags = new List<string>(),
@@ -42,12 +35,6 @@ public partial class AddAdmin : ComponentBase
         };
 
         IsLoading = false;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task UpdateSelectedPlayer()
-    {
-        // This is called when a player is selected from the dropdown
         await InvokeAsync(StateHasChanged);
     }
 
@@ -106,12 +93,19 @@ public partial class AddAdmin : ComponentBase
 
     private async Task HandleValidSubmit()
     {
-        if (Model == null || ContextFactory == null || Model.UserId == Guid.Empty) return;
+        if (Model == null || ContextFactory == null) return;
+
+        // Parse GUID from string
+        if (!Guid.TryParse(Model.UserIdString, out var userId))
+        {
+            // Invalid GUID format - validation should catch this but just in case
+            return;
+        }
 
         await using var context = await ContextFactory.CreateDbContextAsync();
 
-        // Check if admin already exists (shouldn't happen but safety check)
-        var existingAdmin = await context.Admin.FirstOrDefaultAsync(a => a.UserId == Model.UserId);
+        // Check if admin already exists
+        var existingAdmin = await context.Admin.FirstOrDefaultAsync(a => a.UserId == userId);
         if (existingAdmin != null)
         {
             // Admin already exists, redirect back
@@ -122,7 +116,7 @@ public partial class AddAdmin : ComponentBase
         // Create new admin entity
         var newAdmin = new Content.Server.Database.Admin
         {
-            UserId = Model.UserId,
+            UserId = userId,
             Title = string.IsNullOrEmpty(Model.Title) ? null : Model.Title,
             AdminRankId = Model.AdminRankId,
             Flags = new List<AdminFlag>()
@@ -148,7 +142,11 @@ public partial class AddAdmin : ComponentBase
 
     public class AddAdminViewModel
     {
-        public Guid UserId { get; set; }
+        [Required(ErrorMessage = "User ID is required")]
+        [RegularExpression(@"^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$",
+            ErrorMessage = "Invalid GUID format")]
+        public string UserIdString { get; set; } = "";
+
         public string Title { get; set; } = "";
         public int? AdminRankId { get; set; }
         public List<string> RankFlags { get; set; } = new();

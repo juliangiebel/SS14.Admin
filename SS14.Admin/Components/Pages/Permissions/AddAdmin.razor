@@ -22,21 +22,12 @@
 
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 space-y-6">
                 <div class="space-y-2">
-                    <label for="player" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Select Player *</label>
-                    <InputSelect id="player"
-                                 @bind-Value="Model.UserId"
-                                 @bind-Value:after="UpdateSelectedPlayer"
-                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">-- Select a player --</option>
-                        @foreach (var player in AvailablePlayers)
-                        {
-                            <option value="@player.UserId">@player.LastSeenUserName (@player.UserId)</option>
-                        }
-                    </InputSelect>
-                    @if (Model.UserId == Guid.Empty)
-                    {
-                        <p class="text-sm text-red-600 dark:text-red-400">Please select a player</p>
-                    }
+                    <label for="userId" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">User ID (GUID) *</label>
+                    <InputText id="userId"
+                               @bind-Value="Model.UserIdString"
+                               placeholder="e.g., 12345678-1234-1234-1234-123456789abc"
+                               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono" />
+                    <ValidationMessage For="@(() => Model.UserIdString)" class="text-sm text-red-600 dark:text-red-400" />
                 </div>
 
                 <div class="space-y-2">
