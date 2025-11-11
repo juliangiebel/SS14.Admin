@@ -9,15 +9,159 @@
     display: none;
 }*/
 
-/* This file contains the global theme, e.g. the colors and fonts that get used throughout the site */
+/* Space Station 14 Admin Panel Theme */
 
-/* Colors */
+/* Based on the official SS14 branding */
 
-:root
-{
-  --color-severity-medium: #F8C630;
-  --color-severity-high: #FA8420;
-  --color-severity-extreme: #C21906;
+/* ============================================ */
+
+/* CSS VARIABLES - Space Station 14 Colors */
+
+/* ============================================ */
+
+:root {
+  /* Primary Brand Colors (from SS14 logo) */
+  --ss14-red: #D43029;
+  --ss14-red-dark: #B22820;
+  --ss14-red-darker: #8F1F18;
+  --ss14-white: #FFFFFF;
+  --ss14-light-gray: #F5F5F5;
+  /* Dark Mode Backgrounds */
+  --ss14-dark-bg-1: #1A1B1E;
+  --ss14-dark-bg-2: #2B2D31;
+  --ss14-dark-bg-3: #313338;
+  --ss14-dark-bg-4: #383A40;
+  /* Light Mode Backgrounds */
+  --ss14-light-bg-1: #FFFFFF;
+  --ss14-light-bg-2: #F5F5F5;
+  --ss14-light-bg-3: #E8E8E8;
+  /* Text Colors */
+  --ss14-text-primary-light: #1F2937;
+  --ss14-text-secondary-light: #6B7280;
+  --ss14-text-primary-dark: #F9FAFB;
+  --ss14-text-secondary-dark: #D1D5DB;
+  /* Severity Colors */
+  --color-severity-low: #9CA3AF;
+  --color-severity-medium: #F59E0B;
+  --color-severity-high: #F97316;
+  --color-severity-extreme: #DC2626;
+  /* Status Colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+  /* Border Colors */
+  --border-light: #E5E7EB;
+  --border-dark: #374151;
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================ */
+
+/* BASE LAYER - Typography & Element Defaults */
+
+/* ============================================ */
+
+/* ============================================ */
+
+/* COMPONENT LAYER - Reusable Components */
+
+/* ============================================ */
+
+/* ============================================ */
+
+/* KEYFRAME ANIMATIONS */
+
+/* ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* ============================================ */
+
+/* UTILITY CLASSES */
+
+/* ============================================ */
+
+.animate-fade-in {
+  animation: fadeIn 300ms ease-in;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 300ms ease-out;
+}
+
+.animate-slide-in-down {
+  animation: slideInDown 300ms ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 200ms ease-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 *, ::before, ::after
@@ -576,64 +720,94 @@ video {
   display: none;
 }
 
-p, span
-{
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+/* Reset and Base Styles */
+
+* {
+  transition: background-color var(--transition-base),
+                    color var(--transition-base),
+                    border-color var(--transition-base),
+                    transform var(--transition-fast);
 }
 
-p:is(.dark *), span:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+/* Typography */
+
+p, span {
+  color: var(--ss14-text-primary-light);
 }
 
-a
-{
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+p:is(.dark *), span:is(.dark *) {
+  color: var(--ss14-text-primary-dark);
 }
 
-a:hover
-{
-  --tw-text-opacity: 1;
-  color: rgb(225 29 72 / var(--tw-text-opacity, 1));
+a {
+  color: var(--ss14-text-primary-light);
 }
 
-a:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+a:hover {
+  color: var(--ss14-red);
 }
 
-a:hover:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(225 29 72 / var(--tw-text-opacity, 1));
+a:is(.dark *) {
+  color: var(--ss14-text-primary-dark);
 }
 
-h1, h2, h3, h4, h5, h6
-{
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+a:hover:is(.dark *) {
+  color: var(--ss14-red);
 }
 
-h1:is(.dark *), h2:is(.dark *), h3:is(.dark *), h4:is(.dark *), h5:is(.dark *), h6:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+a {
+  position: relative;
 }
 
-label
-{
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--ss14-red);
+  transition: width var(--transition-base);
 }
 
-label:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+a:hover::after {
+  width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--ss14-text-primary-light);
+}
+
+h1:is(.dark *), h2:is(.dark *), h3:is(.dark *), h4:is(.dark *), h5:is(.dark *), h6:is(.dark *) {
+  color: var(--ss14-text-primary-dark);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+h1 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+
+h2 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+label {
+  color: var(--ss14-text-primary-light);
+}
+
+label:is(.dark *) {
+  color: var(--ss14-text-primary-dark);
 }
 
 label
@@ -641,64 +815,88 @@ label
   font-size: 0.75rem;
   line-height: 1rem;
   font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+/* Form Elements */
+
+input, textarea, select {
+  background-color: var(--ss14-light-bg-2);
+}
+
+input:is(.dark *), textarea:is(.dark *), select:is(.dark *) {
+  background-color: var(--ss14-dark-bg-3);
+}
+
+input, textarea, select {
+  color: var(--ss14-text-primary-light);
+}
+
+input:is(.dark *), textarea:is(.dark *), select:is(.dark *) {
+  color: var(--ss14-text-primary-dark);
 }
 
 input, textarea, select
 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(245 245 244 / var(--tw-bg-opacity, 1));
+  padding: 0.5rem;
+  border: 1px solid var(--border-light);
+  border-radius: 0.375rem;
+  transition: all var(--transition-base);
 }
 
-input:is(.dark *), textarea:is(.dark *), select:is(.dark *)
-{
-  --tw-bg-opacity: 1;
-  background-color: rgb(28 25 23 / var(--tw-bg-opacity, 1));
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--ss14-red);
+  box-shadow: 0 0 0 3px rgba(212, 48, 41, 0.1);
 }
 
-input, textarea, select
-{
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+input:is(.dark *), textarea:is(.dark *), select:is(.dark *) {
+  border-color: var(--border-dark);
 }
 
-input:is(.dark *), textarea:is(.dark *), select:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+input:focus:is(.dark *), textarea:focus:is(.dark *), select:focus:is(.dark *) {
+  border-color: var(--ss14-red);
+  box-shadow: 0 0 0 3px rgba(212, 48, 41, 0.2);
 }
 
-input, textarea, select
-{
-  padding: 0.25rem;
+/* Buttons */
+
+button {
+  background-color: var(--ss14-light-bg-1);
 }
 
-button
-{
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+button:is(.dark *) {
+  background-color: var(--ss14-dark-bg-2);
 }
 
-button:is(.dark *)
-{
-  --tw-bg-opacity: 1;
-  background-color: rgb(41 37 36 / var(--tw-bg-opacity, 1));
+button {
+  color: var(--ss14-text-primary-light);
 }
 
-button
-{
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
-}
-
-button:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+button:is(.dark *) {
+  color: var(--ss14-text-primary-dark);
 }
 
 button
 {
-  padding: 0.25rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all var(--transition-base);
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .container
@@ -759,119 +957,227 @@ button
   border-color: rgb(64 64 64 / var(--tw-border-opacity, 1));
 }
 
-.bg-primary-1
-{
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+/* Background Colors */
+
+.bg-primary-1 {
+  background-color: var(--ss14-light-bg-1);
 }
 
-.bg-primary-1:is(.dark *)
-{
-  --tw-bg-opacity: 1;
-  background-color: rgb(41 37 36 / var(--tw-bg-opacity, 1));
+.bg-primary-1:is(.dark *) {
+  background-color: var(--ss14-dark-bg-2);
 }
 
-.bg-secondary-1
-{
-  --tw-bg-opacity: 1;
-  background-color: rgb(245 245 244 / var(--tw-bg-opacity, 1));
+.bg-secondary-1 {
+  background-color: var(--ss14-light-bg-2);
 }
 
-.bg-secondary-1:is(.dark *)
-{
-  --tw-bg-opacity: 1;
-  background-color: rgb(28 25 23 / var(--tw-bg-opacity, 1));
+.bg-secondary-1:is(.dark *) {
+  background-color: var(--ss14-dark-bg-3);
 }
 
-.text-primary-1
-{
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+.bg-tertiary-1 {
+  background-color: var(--ss14-light-bg-3);
 }
 
-.text-primary-1:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+.bg-tertiary-1:is(.dark *) {
+  background-color: var(--ss14-dark-bg-4);
 }
 
-.text-muted-1
-{
-  --tw-text-opacity: 1;
-  color: rgb(82 82 82 / var(--tw-text-opacity, 1));
+/* Text Colors */
+
+.text-primary-1 {
+  color: var(--ss14-text-primary-light);
 }
 
-.text-muted-1:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(163 163 163 / var(--tw-text-opacity, 1));
+.text-primary-1:is(.dark *) {
+  color: var(--ss14-text-primary-dark);
 }
 
-.text-link-1
-{
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
+.text-secondary-1 {
+  color: var(--ss14-text-secondary-light);
 }
 
-.text-link-1:hover
-{
-  --tw-text-opacity: 1;
-  color: rgb(225 29 72 / var(--tw-text-opacity, 1));
+.text-secondary-1:is(.dark *) {
+  color: var(--ss14-text-secondary-dark);
 }
 
-.text-link-1:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+.text-muted-1 {
+  color: #6B7280;
 }
 
-.text-link-1:hover:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(225 29 72 / var(--tw-text-opacity, 1));
+.text-muted-1:is(.dark *) {
+  color: #9CA3AF;
 }
 
-.text-impact-severity-low
-{
-  --tw-text-opacity: 1;
-  color: rgb(82 82 82 / var(--tw-text-opacity, 1));
+/* Link Colors */
+
+.text-link-1 {
+  color: var(--ss14-text-primary-light);
 }
 
-.text-impact-severity-low:is(.dark *)
-{
-  --tw-text-opacity: 1;
-  color: rgb(163 163 163 / var(--tw-text-opacity, 1));
+.text-link-1:hover {
+  color: var(--ss14-red);
 }
 
-.text-impact-severity-medium
-{
+.text-link-1:is(.dark *) {
+  color: var(--ss14-text-primary-dark);
+}
+
+.text-link-1:hover:is(.dark *) {
+  color: var(--ss14-red);
+}
+
+/* Accent Color */
+
+.text-accent-1, .text-ss14-red {
+  color: var(--ss14-red);
+}
+
+.bg-accent-1, .bg-ss14-red {
+  background-color: var(--ss14-red);
+}
+
+.border-accent-1, .border-ss14-red {
+  border-color: var(--ss14-red);
+}
+
+/* Severity Colors */
+
+.text-impact-severity-low {
+  color: var(--color-severity-low);
+}
+
+.text-impact-severity-medium {
   color: var(--color-severity-medium);
 }
 
-.text-impact-severity-medium:is(.dark *)
-{
-  color: var(--color-severity-medium);
-}
-
-.text-impact-severity-high
-{
+.text-impact-severity-high {
   color: var(--color-severity-high);
 }
 
-.text-impact-severity-high:is(.dark *)
-{
-  color: var(--color-severity-high);
-}
-
-.text-impact-severity-extreme
-{
+.text-impact-severity-extreme {
   color: var(--color-severity-extreme);
 }
 
-.text-impact-severity-extreme:is(.dark *)
-{
-  color: var(--color-severity-extreme);
+/* Status Colors */
+
+.text-success {
+  color: var(--color-success);
 }
+
+.text-warning {
+  color: var(--color-warning);
+}
+
+.text-danger {
+  color: var(--color-danger);
+}
+
+.text-info {
+  color: var(--color-info);
+}
+
+/* Cards */
+
+.card {
+  background-color: var(--ss14-light-bg-1);
+}
+
+.card:is(.dark *) {
+  background-color: var(--ss14-dark-bg-2);
+}
+
+.card
+{
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-base);
+}
+
+.card:is(.dark *) {
+  border-color: var(--border-dark);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* Badges */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+.badge-primary {
+  background-color: var(--ss14-red);
+  color: white;
+}
+
+.badge-secondary {
+  background-color: var(--ss14-light-bg-2);
+}
+
+.badge-secondary:is(.dark *) {
+  background-color: var(--ss14-dark-bg-3);
+}
+
+.badge-secondary {
+  color: var(--ss14-text-primary-light);
+}
+
+.badge-secondary:is(.dark *) {
+  color: var(--ss14-text-primary-dark);
+}
+
+/* Animations */
+
+.fade-in {
+  animation: fadeIn var(--transition-base) ease-in;
+}
+
+.slide-in-up {
+  animation: slideInUp var(--transition-slow) ease-out;
+}
+
+.slide-in-down {
+  animation: slideInDown var(--transition-slow) ease-out;
+}
+
+.scale-in {
+  animation: scaleIn var(--transition-base) ease-out;
+}
+
+/* Hover Effects */
+
+.hover-lift {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.hover-glow {
+  transition: box-shadow var(--transition-base);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(212, 48, 41, 0.3);
+}
+
+/* Focus Rings */
 
 .active-nav-link
 {

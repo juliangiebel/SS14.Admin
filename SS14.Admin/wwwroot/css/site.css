@@ -1,129 +1,135 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
+﻿/* Space Station 14 Admin Panel - Main Styles */
+/* Unified color system using theme.css variables */
+
 :root {
-    --background-color: white;
-    --header-color-secondary: #6c7ae0;
-    /*--header-color-secondary: #463F3A;*/
-    --header-color: #50514F;
-    --row-color: #f8f6ff;
-    --text-color-dark: #50514f;
-    --text-accent-color-dark: #848683;
-    --text-color-light: white;
+    /* Legacy compatibility - use theme.css variables instead */
+    --background-color: var(--ss14-light-bg-1);
+    --header-color: #2B2D31;
+    --header-color-secondary: var(--ss14-red);
+    --row-color: var(--ss14-light-bg-2);
+    --text-color-dark: var(--ss14-text-primary-light);
+    --text-accent-color-dark: var(--ss14-text-secondary-light);
+    --text-color-light: var(--ss14-white);
 
-    --color-severity-low: var(--text-color-dark);
-    --color-severity-medium: #F8C630;
-    --color-severity-high: #FA8420;
-    --color-severity-extreme: #C21906;
-
-    --color-filter-search: #9AC4F8;
-    --color-filter-type: #F78764;
+    --color-filter-search: var(--ss14-red);
+    --color-filter-type: var(--ss14-text-primary-light);
 }
 
 /* ---------------- DARK MODE STYLES ---------------- */
 .dark {
-    --background-color: #0D1117; /* Rich Black */
-    --header-color: #25252A; /* Raisin Black */
-    --header-color-secondary: #D43029; /* Persian Red */
-    --row-color: #1E1E24; /* Darker variation */
-    --text-color-dark: #D5D5D6; /* Timberwolf */
-    --text-accent-color-dark: #9CA3AF; /* Light Gray */
-    --text-color-light: #FBFBFB; /* White */
+    --background-color: var(--ss14-dark-bg-1);
+    --header-color: var(--ss14-dark-bg-3);
+    --header-color-secondary: var(--ss14-red);
+    --row-color: var(--ss14-dark-bg-2);
+    --text-color-dark: var(--ss14-text-primary-dark);
+    --text-accent-color-dark: var(--ss14-text-secondary-dark);
+    --text-color-light: var(--ss14-white);
 
-    --color-severity-low: #9CA3AF;
-    --color-severity-medium: #facc15;
-    --color-severity-high: #f97316;
-    --color-severity-extreme: #dc2626;
-
-    --color-filter-search: #D43029; /* Persian Red */
-    --color-filter-type: #FBFBFB; /* White */
+    --color-filter-search: var(--ss14-red);
+    --color-filter-type: var(--ss14-text-primary-dark);
 }
 
 /* ---------------- APPLY DARK MODE TO UI ELEMENTS ---------------- */
 .dark body {
-    background-color: var(--background-color);
-    color: var(--text-color-dark);
+    background-color: var(--ss14-dark-bg-1);
+    color: var(--ss14-text-primary-dark);
 }
 
 .dark a {
-    color: var(--color-filter-search);
+    color: var(--ss14-text-primary-dark);
 }
 
 .dark a:hover {
-    color: var(--color-filter-type);
+    color: var(--ss14-red);
 }
 
 .dark .navbar, .dark .header {
-    background-color: var(--header-color);
-    border-bottom: 1px solid var(--header-color-secondary);
+    background-color: var(--ss14-dark-bg-3);
+    border-bottom: 2px solid var(--ss14-red);
 }
 
-.dark input, .dark textarea {
-    background-color: var(--background-color);
-    color: var(--text-color-dark);
+.dark input, .dark textarea, .dark select {
+    background-color: var(--ss14-dark-bg-3);
+    color: var(--ss14-text-primary-dark);
+    border-color: var(--border-dark);
+}
+
+.dark input:focus, .dark textarea:focus, .dark select:focus {
+    border-color: var(--ss14-red);
+    box-shadow: 0 0 0 3px rgba(212, 48, 41, 0.2);
 }
 
 .dark table {
-    background-color: var(--row-color);
+    background-color: var(--ss14-dark-bg-2);
 }
 
 .dark th, .dark td {
-    color: var(--text-color-dark);
-    border-color: var(--header-color-secondary);
+    color: var(--ss14-text-primary-dark);
+    border-color: var(--border-dark);
+}
+
+.dark th {
+    background-color: var(--ss14-dark-bg-4);
+}
+
+.dark tr:hover {
+    background-color: var(--ss14-dark-bg-3);
 }
 
 /* ---------------- BLANKET DARK MODE FIXES ---------------- */
 .dark .blazor-error-boundary {
     background-color: var(--color-severity-extreme);
-    color: var(--text-color-light);
+    color: var(--ss14-white);
 }
 
 /* Dark mode for buttons */
-.dark .btn-primary {
-    background-color: var(--color-filter-search);
-    border-color: var(--color-filter-type);
+.dark .btn-primary, .dark button.btn-primary {
+    background-color: var(--ss14-red);
+    border-color: var(--ss14-red);
     color: white;
 }
 
-.dark .btn-primary:hover {
-    background-color: var(--color-filter-type);
-    color: var(--text-color-light);
+.dark .btn-primary:hover, .dark button.btn-primary:hover {
+    background-color: var(--ss14-red-dark);
+    border-color: var(--ss14-red-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
 }
 
 /* Dark mode for Blazor errors */
 .dark #blazor-error-ui {
     background-color: var(--color-severity-extreme);
-    color: var(--text-color-light);
+    color: var(--ss14-white);
 }
 
 .dark #blazor-error-ui .dismiss {
-    color: var(--text-accent-color-dark);
+    color: var(--ss14-text-secondary-dark);
 }
 
 /* ---------------- TABLE STYLES ---------------- */
 .dark data-grid {
-    background-color: var(--background-color);
+    background-color: var(--ss14-dark-bg-2);
 }
 
 .dark data-grid th {
-    background: var(--header-color-secondary);
-    color: var(--text-color-light);
+    background: var(--ss14-red);
+    color: var(--ss14-white);
 }
 
 .dark data-grid td {
-    background-color: var(--row-color);
-    color: var(--text-color-dark);
+    background-color: var(--ss14-dark-bg-2);
+    color: var(--ss14-text-primary-dark);
+}
+
+.dark data-grid tr:hover td {
+    background-color: var(--ss14-dark-bg-3);
 }
 
 /* ---------------- FORMS ---------------- */
 .dark input::placeholder,
-.dark textarea::placeholder {
-    color: var(--text-accent-color-dark);
-}
-
-.dark input:focus,
-.dark textarea:focus {
-    border-color: var(--color-filter-search);
-    outline: none;
+.dark textarea::placeholder,
+.dark select::placeholder {
+    color: var(--ss14-text-secondary-dark);
 }
 
 /* Blazor errors */
@@ -228,11 +234,12 @@ body {
   overflow-wrap: break-word;
 }
 
-/* Proper DataGrid styling
+/* Proper DataGrid styling with modern animations
 -------------------------------------------------------- */
 data-grid {
     display: block;
     width: 100%;
+    animation: fadeIn 300ms ease-in;
 
     /*layout*/
     --search-box-width: 400px;
@@ -240,13 +247,15 @@ data-grid {
 }
 
 data-grid data-grid-filter {
-    padding: 8px 15px;
+    padding: 12px 20px;
     width: 100%;
     align-items: baseline;
-    background: var(--header-color-secondary);
-    color: var(--text-color-light);
-    font-weight: normal;
+    background: var(--ss14-red);
+    color: var(--ss14-white);
+    font-weight: 500;
     font-size: 1.1rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    box-shadow: var(--shadow-md);
 }
 
 data-grid data-grid-filter p {
@@ -409,16 +418,33 @@ data-grid > table td:first-of-type {
 data-grid > table th {
     position: sticky;
     top: 0;
-    background: var(--header-color);
+    background: var(--ss14-dark-bg-4);
     text-align: left;
-    font-weight: normal;
+    font-weight: 600;
     font-size: 1.1em;
-    color: var(--text-color-light);
+    color: var(--ss14-white);
+    letter-spacing: 0.025em;
+    border-bottom: 2px solid var(--ss14-red);
 }
 
+.dark data-grid > table th {
+    background: var(--ss14-dark-bg-4);
+}
 
 data-grid > table th:last-child {
     border: 0;
+}
+
+data-grid > table tr {
+    transition: background-color var(--transition-base);
+}
+
+data-grid > table tbody tr:hover {
+    background-color: var(--ss14-light-bg-3);
+}
+
+.dark data-grid > table tbody tr:hover {
+    background-color: var(--ss14-dark-bg-3);
 }
 
 
@@ -432,15 +458,24 @@ data-grid-footer {
 
 .on-click {
     cursor: pointer;
+    transition: all var(--transition-base);
 }
 
 .on-click > * {
-    border-bottom: 1px dashed #00000000;
-    transition: border-color linear .05s;
+    border-bottom: 1px dashed transparent;
+    transition: border-color var(--transition-base), transform var(--transition-fast);
+}
+
+.on-click:hover {
+    transform: translateY(-1px);
 }
 
 .on-click:hover > * {
-    border-bottom: 1px dashed var(--text-color-dark);
+    border-bottom: 1px dashed var(--ss14-red);
+}
+
+.on-click:active {
+    transform: translateY(0);
 }
 
 .entity-link {
@@ -474,15 +509,21 @@ data-grid-footer {
     top: 0;
     right: 0;
     width: 26vw;
-    /*background-color: var(--background-color, white);*/
+    background-color: var(--ss14-light-bg-1);
     pointer-events: all;
-    padding: 1rem;
-    color: var(--text-color-dark)
+    padding: 1.5rem;
+    color: var(--text-color-dark);
+    box-shadow: var(--shadow-xl);
+    border-left: 3px solid var(--ss14-red);
+}
+
+.dark .side-panel {
+    background-color: var(--ss14-dark-bg-2);
 }
 
 .transition-right {
     will-change: transform;
-    transition: transform cubic-bezier(.79,.14,.15,.86) 0.5s;
+    transition: transform cubic-bezier(0.79, 0.14, 0.15, 0.86) 0.5s;
 }
 
 .hidden-right {
@@ -629,6 +670,181 @@ hr.line-inset {
 .quick-links-dropdown.closed {
     opacity: 0;
     transform: scale(0.95);
+}
+
+/* ------------- */
+
+/* Blazor Reconnection UI - Light/Dark Mode Styling */
+
+#components-reconnect-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background-color: var(--ss14-light-bg-1);
+    border: 2px solid var(--ss14-red);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-xl);
+    min-width: 320px;
+    animation: slideInDown 300ms ease-out;
+}
+
+.dark #components-reconnect-modal {
+    background-color: var(--ss14-dark-bg-2);
+    color: var(--ss14-text-primary-dark);
+}
+
+#components-reconnect-modal h5 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ss14-text-primary-light);
+}
+
+.dark #components-reconnect-modal h5 {
+    color: var(--ss14-text-primary-dark);
+}
+
+#components-reconnect-modal p {
+    margin: 0.5rem 0;
+    color: var(--ss14-text-secondary-light);
+}
+
+.dark #components-reconnect-modal p {
+    color: var(--ss14-text-secondary-dark);
+}
+
+/* Reconnection loading animation */
+#components-reconnect-modal::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 1rem;
+    border: 4px solid var(--ss14-light-bg-3);
+    border-top-color: var(--ss14-red);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.dark #components-reconnect-modal::before {
+    border-color: var(--ss14-dark-bg-4);
+    border-top-color: var(--ss14-red);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Reconnection states */
+.components-reconnect-show {
+    display: block !important;
+}
+
+.components-reconnect-hide {
+    display: none !important;
+}
+
+/* Failed reconnection state */
+#components-reconnect-modal.components-reconnect-failed {
+    border-color: var(--color-severity-extreme);
+}
+
+#components-reconnect-modal.components-reconnect-failed::before {
+    content: '⚠';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 1rem;
+    border: 4px solid var(--color-severity-extreme);
+    border-radius: 50%;
+    font-size: 1.5rem;
+    animation: none;
+    color: var(--color-severity-extreme);
+}
+
+/* Reconnection button */
+#components-reconnect-modal button {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: var(--ss14-red);
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+#components-reconnect-modal button:hover {
+    background-color: var(--ss14-red-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+#components-reconnect-modal button:active {
+    transform: translateY(0);
+}
+
+/* Overlay behind modal */
+#components-reconnect-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    animation: fadeIn 300ms ease-in;
+}
+
+.dark #components-reconnect-modal-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Toast notification style (alternative to modal) */
+.components-reconnect-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: var(--ss14-light-bg-1);
+    border-left: 4px solid var(--ss14-red);
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    box-shadow: var(--shadow-lg);
+    z-index: 9999;
+    animation: slideInUp 300ms ease-out;
+    min-width: 280px;
+}
+
+.dark .components-reconnect-toast {
+    background-color: var(--ss14-dark-bg-3);
+}
+
+.components-reconnect-toast .toast-header {
+    font-weight: 600;
+    color: var(--ss14-text-primary-light);
+    margin-bottom: 0.5rem;
+}
+
+.dark .components-reconnect-toast .toast-header {
+    color: var(--ss14-text-primary-dark);
+}
+
+.components-reconnect-toast .toast-body {
+    color: var(--ss14-text-secondary-light);
+    font-size: 0.875rem;
+}
+
+.dark .components-reconnect-toast .toast-body {
+    color: var(--ss14-text-secondary-dark);
 }
 
 /* ------------- */
