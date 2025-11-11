@@ -1,5 +1,7 @@
 @page "/permissions/{UserId:guid}"
+@using Microsoft.AspNetCore.Authorization
 @using SS14.Admin.Admins
+@attribute [Authorize(Roles = "PERMISSIONS")]
 
 <PageTitle>Edit Permissions for @Model?.Username</PageTitle>
 

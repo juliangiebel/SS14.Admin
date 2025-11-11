@@ -1,5 +1,7 @@
 @page "/permissions/ranks/{RankName}"
+@using Microsoft.AspNetCore.Authorization
 @using SS14.Admin.Admins
+@attribute [Authorize(Roles = "PERMISSIONS")]
 
 <PageTitle>Edit Admin Rank</PageTitle>
 

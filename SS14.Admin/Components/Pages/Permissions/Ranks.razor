@@ -1,5 +1,7 @@
 @page "/Permissions/Ranks"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.QuickGrid
+@attribute [Authorize(Roles = "PERMISSIONS")]
 
 <PageTitle>Manage Ranks</PageTitle>
 

@@ -1,4 +1,6 @@
 ﻿@page "/Permissions"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "PERMISSIONS")]
 
 <PageTitle>Permissions Management</PageTitle>
 

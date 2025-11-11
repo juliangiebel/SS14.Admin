@@ -1,6 +1,8 @@
 @page "/Permissions/Admins"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using SS14.Admin.Components.Forms
+@attribute [Authorize(Roles = "PERMISSIONS")]
 
 <PageTitle>Admin Permissions</PageTitle>
 
