@@ -88,20 +88,23 @@ public partial class BanHits
                                 on hit.ConnectionId equals connection.Id
                             where hit.BanId == BanId
                             orderby connection.Time descending
-                            select new ConnectionHitViewModel
-                            {
-                                Id = connection.Id,
-                                UserName = connection.UserName,
-                                UserId = connection.UserId,
-                                Address = connection.Address != null ? connection.Address.ToString() : "",
-                                HWId = connection.HWId != null ? connection.HWId.ToString() : "",
-                                Time = connection.Time,
-                                ServerName = connection.Server.Name,
-                                ServerId = connection.ServerId,
-                                Denied = connection.Denied
-                            };
+                            select connection;
 
-            _connectionHits = await hitsQuery.ToListAsync();
+            var connectionEntities = await hitsQuery.ToListAsync();
+
+            // Map to view models with proper HWID formatting
+            _connectionHits = connectionEntities.Select(connection => new ConnectionHitViewModel
+            {
+                Id = connection.Id,
+                UserName = connection.UserName,
+                UserId = connection.UserId,
+                Address = connection.Address != null ? connection.Address.ToString() : "",
+                HWId = BanHelper.FormatHwid(connection.HWId) ?? "",
+                Time = connection.Time,
+                ServerName = connection.Server.Name,
+                ServerId = connection.ServerId,
+                Denied = connection.Denied
+            }).ToList();
         }
 
         _loading = false;

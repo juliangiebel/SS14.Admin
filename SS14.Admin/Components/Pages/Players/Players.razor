@@ -1,11 +1,12 @@
 ﻿@page "/players"
 @using Microsoft.AspNetCore.Components.QuickGrid
+@using SS14.Admin.Components.Forms
 
 <PageTitle>Players</PageTitle>
 
-<h1 class="text-2xl font-bold mb-4">Bans</h1>
+<h1 class="text-2xl font-bold mb-4">Players</h1>
 
-<filter Model="_model" />
+<PlayerFilter Filter="_model" FormName="playerFilter" OnSubmit="@OnFilterSubmit" />
 
 <QuickGrid TItem="PlayerViewModel"
            @ref="Grid"

@@ -90,24 +90,27 @@ public partial class ConnectionHits
             var bansQuery = from hit in context.ServerBanHit.AsNoTracking()
                             join banJoin in BanHelper!.CreateServerBanJoin(context) on hit.BanId equals banJoin.Ban.Id
                             where hit.ConnectionId == ConnectionId
-                            select new BanHitViewModel
-                            {
-                                Id = banJoin.Ban.Id,
-                                PlayerUserId = banJoin.Ban.PlayerUserId != null ? banJoin.Ban.PlayerUserId.ToString() : "",
-                                PlayerName = banJoin.Player != null ? banJoin.Player.LastSeenUserName : "",
-                                IPAddress = banJoin.Ban.Address != null ? banJoin.Ban.Address.ToString() : "",
-                                Hwid = banJoin.Ban.HWId != null ? banJoin.Ban.HWId.ToString() : "",
-                                Reason = banJoin.Ban.Reason,
-                                BanTime = banJoin.Ban.BanTime,
-                                ExpirationTime = banJoin.Ban.ExpirationTime,
-                                RoundId = banJoin.Ban.RoundId,
-                                Admin = banJoin.Admin != null ? banJoin.Admin.LastSeenUserName : "",
-                                Unban = banJoin.Ban.Unban,
-                                Active = banJoin.Ban.Unban == null && (banJoin.Ban.ExpirationTime == null || banJoin.Ban.ExpirationTime > now),
-                                HitCount = banJoin.Ban.BanHits.Count
-                            };
+                            select banJoin;
 
-            _banHits = await bansQuery.ToListAsync();
+            var banEntities = await bansQuery.ToListAsync();
+
+            // Map to view models with proper HWID formatting
+            _banHits = banEntities.Select(banJoin => new BanHitViewModel
+            {
+                Id = banJoin.Ban.Id,
+                PlayerUserId = banJoin.Ban.PlayerUserId != null ? banJoin.Ban.PlayerUserId.ToString() : "",
+                PlayerName = banJoin.Player != null ? banJoin.Player.LastSeenUserName : "",
+                IPAddress = banJoin.Ban.Address != null ? banJoin.Ban.Address.ToString() : "",
+                Hwid = BanHelper.FormatHwid(banJoin.Ban.HWId) ?? "",
+                Reason = banJoin.Ban.Reason,
+                BanTime = banJoin.Ban.BanTime,
+                ExpirationTime = banJoin.Ban.ExpirationTime,
+                RoundId = banJoin.Ban.RoundId,
+                Admin = banJoin.Admin != null ? banJoin.Admin.LastSeenUserName : "",
+                Unban = banJoin.Ban.Unban,
+                Active = banJoin.Ban.Unban == null && (banJoin.Ban.ExpirationTime == null || banJoin.Ban.ExpirationTime > now),
+                HitCount = banJoin.Ban.BanHits.Count
+            }).ToList();
         }
 
         _loading = false;

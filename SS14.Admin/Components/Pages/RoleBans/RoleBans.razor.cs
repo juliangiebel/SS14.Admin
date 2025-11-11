@@ -35,7 +35,7 @@ public partial class RoleBans
         await Refresh();
     }
 
-    private IQueryable<RoleBanViewModel> GetRoleBansQuery(PostgresServerDbContext context)
+    private async Task<List<(ServerRoleBan ban, Player? player, Player? admin)>> GetRoleBansQueryEntities(PostgresServerDbContext context)
     {
         var now = DateTime.UtcNow;
 
@@ -57,8 +57,7 @@ public partial class RoleBans
                 (x.ban.Reason != null && x.ban.Reason.ToLower().Contains(search)) ||
                 (x.a != null && x.a.LastSeenUserName.ToLower().Contains(search)) ||
                 (x.ban.RoleId != null && x.ban.RoleId.ToLower().Contains(search)) ||
-                (x.ban.Address != null && EF.Functions.Like(x.ban.Address.ToString().ToLower(), $"%{search}%")) ||
-                (x.ban.HWId != null && EF.Functions.Like(x.ban.HWId.ToString().ToLower(), $"%{search}%"))
+                (x.ban.Address != null && EF.Functions.Like(x.ban.Address.ToString().ToLower(), $"%{search}%"))
             );
         }
 
@@ -107,35 +106,39 @@ public partial class RoleBans
         else if (!_model.ShowActive && !_model.ShowExpired)
         {
             // Neither selected - return empty
-            return Enumerable.Empty<RoleBanViewModel>().AsQueryable();
+            return new List<(ServerRoleBan, Player?, Player?)>();
         }
         // If both are true, show all (no filter needed)
 
-        // Now do the final projection
-        var query = baseQuery.Select(x => new RoleBanViewModel
-        {
-            Id = x.ban.Id,
-            PlayerUserId = x.ban.PlayerUserId.ToString(),
-            PlayerName = x.p != null ? x.p.LastSeenUserName : "",
-            IPAddress = x.ban.Address != null ? x.ban.Address.ToString() : "",
-            Hwid = x.ban.HWId != null ? x.ban.HWId.ToString() : "",
-            Reason = x.ban.Reason,
-            BanTime = x.ban.BanTime,
-            ExpirationTime = x.ban.ExpirationTime,
-            Admin = x.a != null ? x.a.LastSeenUserName : "",
-            RoleId = x.ban.RoleId,
-            RoundId = x.ban.RoundId,
-            Active = x.ban.Unban == null && (!x.ban.ExpirationTime.HasValue || x.ban.ExpirationTime > now)
-        });
-
-        return query.OrderByDescending(b => b.BanTime);
+        var results = await baseQuery.OrderByDescending(x => x.ban.BanTime).ToListAsync();
+        return results.Select(x => (x.ban, x.p, x.a)).ToList();
     }
 
     // Refresh the cache and update the UI.
     private async Task Refresh()
     {
         await using var context = await ContextFactory!.CreateDbContextAsync();
-        _roleBansList = await GetRoleBansQuery(context).ToListAsync();
+        var entities = await GetRoleBansQueryEntities(context);
+
+        var now = DateTime.UtcNow;
+
+        // Map entities to view models with proper HWID formatting
+        _roleBansList = entities.Select(x => new RoleBanViewModel
+        {
+            Id = x.ban.Id,
+            PlayerUserId = x.ban.PlayerUserId.ToString(),
+            PlayerName = x.player != null ? x.player.LastSeenUserName : "",
+            IPAddress = x.ban.Address != null ? x.ban.Address.ToString() : "",
+            Hwid = x.ban.HWId != null ? x.ban.HWId.ToImmutable().ToString() : "",
+            Reason = x.ban.Reason,
+            BanTime = x.ban.BanTime,
+            ExpirationTime = x.ban.ExpirationTime,
+            Admin = x.admin != null ? x.admin.LastSeenUserName : "",
+            RoleId = x.ban.RoleId,
+            RoundId = x.ban.RoundId,
+            Active = x.ban.Unban == null && (!x.ban.ExpirationTime.HasValue || x.ban.ExpirationTime > now)
+        }).ToList();
+
         _confirmations.Clear();
         await InvokeAsync(StateHasChanged);
     }

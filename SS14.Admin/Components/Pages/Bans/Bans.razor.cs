@@ -35,7 +35,7 @@ public partial class Bans
         await Refresh();
     }
 
-    private IQueryable<BanViewModel> GetBansQuery(PostgresServerDbContext context)
+    private async Task<List<(ServerBan ban, Player? player, Player? admin)>> GetBansQueryEntities(PostgresServerDbContext context)
     {
         var now = DateTime.UtcNow;
 
@@ -97,27 +97,12 @@ public partial class Bans
         else if (!_model.ShowActive && !_model.ShowExpired)
         {
             // Neither selected - return empty
-            return Enumerable.Empty<BanViewModel>().AsQueryable();
+            return new List<(ServerBan, Player?, Player?)>();
         }
         // If both are true, show all (no filter needed)
 
-        // Now do the final projection
-        var query = baseQuery.Select(x => new BanViewModel
-        {
-            Id = x.ban.Id,
-            PlayerUserId = x.ban.PlayerUserId.ToString(),
-            PlayerName = x.p != null ? x.p.LastSeenUserName : "",
-            IPAddress = x.ban.Address != null ? x.ban.Address.ToString() : "",
-            Hwid = x.ban.HWId != null ? x.ban.HWId.ToString() : "",
-            Reason = x.ban.Reason,
-            BanTime = x.ban.BanTime,
-            ExpirationTime = x.ban.ExpirationTime,
-            HitCount = x.ban.BanHits.Count,
-            Admin = x.a != null ? x.a.LastSeenUserName : "",
-            Active = x.ban.Unban == null && (!x.ban.ExpirationTime.HasValue || x.ban.ExpirationTime > now)
-        });
-
-        return query.OrderByDescending(b => b.BanTime);
+        var results = await baseQuery.OrderByDescending(x => x.ban.BanTime).ToListAsync();
+        return results.Select(x => (x.ban, x.p, x.a)).ToList();
     }
 
 
@@ -125,7 +110,26 @@ public partial class Bans
     private async Task Refresh()
     {
         await using var context = await ContextFactory!.CreateDbContextAsync();
-        _bansList = await GetBansQuery(context).ToListAsync();
+        var entities = await GetBansQueryEntities(context);
+
+        var now = DateTime.UtcNow;
+
+        // Map entities to view models with proper HWID formatting
+        _bansList = entities.Select(x => new BanViewModel
+        {
+            Id = x.ban.Id,
+            PlayerUserId = x.ban.PlayerUserId.ToString(),
+            PlayerName = x.player != null ? x.player.LastSeenUserName : "",
+            IPAddress = x.ban.Address != null ? x.ban.Address.ToString() : "",
+            Hwid = x.ban.HWId != null ? x.ban.HWId.ToImmutable().ToString() : "",
+            Reason = x.ban.Reason,
+            BanTime = x.ban.BanTime,
+            ExpirationTime = x.ban.ExpirationTime,
+            HitCount = x.ban.BanHits.Count,
+            Admin = x.admin != null ? x.admin.LastSeenUserName : "",
+            Active = x.ban.Unban == null && (!x.ban.ExpirationTime.HasValue || x.ban.ExpirationTime > now)
+        }).ToList();
+
         _confirmations.Clear();
         await InvokeAsync(StateHasChanged);
     }

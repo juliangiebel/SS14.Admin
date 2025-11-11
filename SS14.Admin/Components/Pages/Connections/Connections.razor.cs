@@ -2,6 +2,7 @@ using Content.Server.Database;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.EntityFrameworkCore;
+using SS14.Admin.Helpers;
 using SS14.Admin.Models;
 
 namespace SS14.Admin.Components.Pages.Connections;
@@ -24,12 +25,15 @@ public partial class Connections
         {
             await using var context = await ContextFactory!.CreateDbContextAsync();
 
-            // Increase the count by one if it's not unlimited so we can check if there is a next page available
-            var limit = request.Count + 1;
-            var query = ConnectionsQuery(context);
-            query = request.ApplySorting(query);
+            // First, create a query that projects to ConnectionViewModel with ToString() for compatibility with SQL
+            var baseQuery = ConnectionsQuery(context);
+
+            // Apply sorting and paging
+            var query = request.ApplySorting(baseQuery);
             query = query.Skip(request.StartIndex);
 
+            // Increase the count by one if it's not unlimited so we can check if there is a next page available
+            var limit = request.Count + 1;
             if (limit != null)
                 query = query.Take(limit.Value);
 
@@ -37,6 +41,24 @@ public partial class Connections
 
             if (page.Count == 0)
                 return GridItemsProviderResult.From(page, request.StartIndex);
+
+            // Now fix the HWID formatting by reloading the entities and reformatting
+            var connectionIds = page.Select(p => p.Id).ToList();
+            var connections = await context.ConnectionLog
+                .AsNoTracking()
+                .Include(c => c.Server)
+                .Include(c => c.BanHits)
+                .Where(c => connectionIds.Contains(c.Id))
+                .ToDictionaryAsync(c => c.Id);
+
+            // Update HWID formatting
+            foreach (var item in page)
+            {
+                if (connections.TryGetValue(item.Id, out var connection) && connection.HWId != null)
+                {
+                    item.HWId = connection.HWId.ToImmutable().ToString();
+                }
+            }
 
             // We assume that there's at least another page worth of items left if the amount of returned items
             // is more than the requested amount.
@@ -101,7 +123,7 @@ public partial class Connections
             connectionQuery = connectionQuery.Where(c => c.ServerId == _filter.ServerId);
         }
 
-        // Now project to the view model
+        // Project to view model (HWID will be fixed after loading)
         var query = from connection in connectionQuery
             join player in context.Player on connection.UserId equals player.UserId into playerJoin
             from p in playerJoin.DefaultIfEmpty()
