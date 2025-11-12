@@ -1,5 +1,3 @@
-using SS14.Admin.Models;
-
 namespace SS14.Admin.Services;
 
 /// <summary>
@@ -25,28 +23,4 @@ public interface IPiiRedactor
     /// Example: "a1b2c3d4e5f6g7h8" -> "a1b2c3d4...g7h8"
     /// </summary>
     string RedactHardwareId(string hardwareId);
-
-    /// <summary>
-    /// Redacts an email address to show only first character and domain.
-    /// Example: "john.doe@example.com" -> "j***@example.com"
-    /// </summary>
-    string RedactEmail(string email);
-
-    /// <summary>
-    /// Redacts a phone number to show only last 4 digits.
-    /// Example: "(555) 123-4567" -> "(***) ***-4567"
-    /// </summary>
-    string RedactPhoneNumber(string phoneNumber);
-
-    /// <summary>
-    /// Redacts a physical address to show only city/state if parseable, otherwise full redaction.
-    /// Example: "123 Main St, Springfield, IL 62701" -> "Springfield, IL"
-    /// </summary>
-    string RedactPhysicalAddress(string address);
-
-    /// <summary>
-    /// Generic redaction for any PII value.
-    /// Automatically detects type or uses full asterisk replacement.
-    /// </summary>
-    string RedactValue(string value, PiiKind kind);
 }
