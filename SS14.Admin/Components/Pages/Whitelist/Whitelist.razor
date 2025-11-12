@@ -47,9 +47,9 @@
                Items="@_whitelistQuery"
                Pagination="@_pagination"
                Class="w-full">
-        <PropertyColumn Property="@(w => w.UserId)" Title="User ID" Sortable="true" />
-        <PropertyColumn Property="@(w => w.LastSeenUsername)" Title="Last Known Username" Sortable="true" />
-        <PropertyColumn Property="@(w => w.LastSeenTime)" Title="Last Seen" Sortable="true" Format="yyyy-MM-dd HH:mm:ss" />
+        <PropertyColumn Property="@(w => w.UserId)" Title="User ID" Sortable="true" Class="text-primary-1" />
+        <PropertyColumn Property="@(w => w.LastSeenUsername)" Title="Last Known Username" Sortable="true" Class="text-primary-1" />
+        <PropertyColumn Property="@(w => w.LastSeenTime)" Title="Last Seen" Sortable="true" Format="yyyy-MM-dd HH:mm:ss" Class="text-primary-1" />
         <TemplateColumn Title="Actions" Context="whitelist">
             <div class="flex gap-2">
                 <NavLink href="@($"players/{whitelist.UserId}")" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">

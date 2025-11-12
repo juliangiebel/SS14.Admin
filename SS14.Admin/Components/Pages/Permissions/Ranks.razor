@@ -17,7 +17,7 @@
            ItemsProvider="@_rankProvider"
            Pagination="@_pagination"
            Class="grow">
-    <PropertyColumn Property="@(rank => rank.Name)" Title="Rank Name"></PropertyColumn>
+    <PropertyColumn Property="@(rank => rank.Name)" Title="Rank Name" Class="text-primary-1"></PropertyColumn>
     <TemplateColumn Title="Flags" Context="rank">
         @FormatFlags(rank.Flags)
     </TemplateColumn>

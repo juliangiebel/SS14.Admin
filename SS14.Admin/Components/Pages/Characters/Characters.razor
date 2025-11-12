@@ -1,8 +1,6 @@
 ﻿@page "/characters"
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using SS14.Admin.Components.Forms
-@using SS14.Admin.Models
-@using SS14.Admin.Components.Shared
 
 <PageTitle>Characters</PageTitle>
 
@@ -16,13 +14,13 @@
                Items="@_characterQuery"
                Pagination="@_pagination"
                Class="w-full">
-        <PropertyColumn Property="@(c => c.CharacterName)" Title="Character Name" Sortable="true" />
-        <PropertyColumn Property="@(c => c.PlayerName)" Title="Player Name" Sortable="true" />
-        <PropertyColumn Property="@(c => c.Slot)" Title="Slot" Sortable="true" />
-        <PropertyColumn Property="@(c => c.Species)" Title="Species" Sortable="true" />
-        <PropertyColumn Property="@(c => c.Age)" Title="Age" Sortable="true" />
-        <PropertyColumn Property="@(c => c.Sex)" Title="Sex" Sortable="true" />
-        <PropertyColumn Property="@(c => c.Gender)" Title="Gender" Sortable="true" />
+        <PropertyColumn Property="@(c => c.CharacterName)" Title="Character Name" Sortable="true" Class="text-primary-1" />
+        <PropertyColumn Property="@(c => c.PlayerName)" Title="Player Name" Sortable="true" Class="text-primary-1" />
+        <PropertyColumn Property="@(c => c.Slot)" Title="Slot" Sortable="true" Class="text-primary-1" />
+        <PropertyColumn Property="@(c => c.Species)" Title="Species" Sortable="true" Class="text-primary-1" />
+        <PropertyColumn Property="@(c => c.Age)" Title="Age" Sortable="true" Class="text-primary-1" />
+        <PropertyColumn Property="@(c => c.Sex)" Title="Sex" Sortable="true" Class="text-primary-1" />
+        <PropertyColumn Property="@(c => c.Gender)" Title="Gender" Sortable="true" Class="text-primary-1" />
         <TemplateColumn Title="Actions" Context="character">
             <NavLink href="@($"players/{character.PlayerUserId}")" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
                 View Player

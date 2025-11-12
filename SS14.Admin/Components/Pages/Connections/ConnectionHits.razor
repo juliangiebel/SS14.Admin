@@ -75,18 +75,18 @@
                        Items="@GetFilteredBans()"
                        Pagination="@_pagination"
                        Class="w-full">
-                <PropertyColumn Property="@(b => b.PlayerName)" Title="Player Name" Sortable="true" />
-                <PropertyColumn Property="@(b => b.PlayerUserId)" Title="User ID" Sortable="true" />
+                <PropertyColumn Property="@(b => b.PlayerName)" Title="Player Name" Sortable="true" Class="text-primary-1" />
+                <PropertyColumn Property="@(b => b.PlayerUserId)" Title="User ID" Sortable="true" Class="text-primary-1" />
                 @if (ShowPII)
                 {
-                    <PropertyColumn Property="@(b => b.IPAddress)" Title="IP Address" />
-                    <PropertyColumn Property="@(b => b.Hwid)" Title="HWID" />
+                    <PropertyColumn Property="@(b => b.IPAddress)" Title="IP Address" Class="text-primary-1" />
+                    <PropertyColumn Property="@(b => b.Hwid)" Title="HWID" Class="text-primary-1" />
                 }
-                <PropertyColumn Property="@(b => b.Reason)" Title="Reason" />
-                <PropertyColumn Property="@(b => b.BanTime)" Title="Ban Time" Format="yyyy-MM-dd HH:mm:ss" Sortable="true" />
-                <PropertyColumn Property="@(b => b.ExpirationTime)" Title="Expires" Format="yyyy-MM-dd HH:mm:ss" Sortable="true" />
-                <PropertyColumn Property="@(b => b.RoundId)" Title="Round" />
-                <PropertyColumn Property="@(b => b.Admin)" Title="Banning Admin" />
+                <PropertyColumn Property="@(b => b.Reason)" Title="Reason" Class="text-primary-1" />
+                <PropertyColumn Property="@(b => b.BanTime)" Title="Ban Time" Format="yyyy-MM-dd HH:mm:ss" Sortable="true" Class="text-primary-1" />
+                <PropertyColumn Property="@(b => b.ExpirationTime)" Title="Expires" Format="yyyy-MM-dd HH:mm:ss" Sortable="true" Class="text-primary-1" />
+                <PropertyColumn Property="@(b => b.RoundId)" Title="Round" Class="text-primary-1" />
+                <PropertyColumn Property="@(b => b.Admin)" Title="Banning Admin" Class="text-primary-1" />
                 <TemplateColumn Title="Ban hits">
                     @if (context.HitCount > 0)
                     {

@@ -20,9 +20,9 @@
            ItemsProvider="@_adminProvider"
            Pagination="@_pagination"
            Class="grow">
-    <PropertyColumn Property="@(admin => admin.Username)" Title="Username"></PropertyColumn>
-    <PropertyColumn Property="@(admin => admin.Title)" Title="Title"></PropertyColumn>
-    <PropertyColumn Property="@(admin => admin.Rank)" Title="Rank"></PropertyColumn>
+    <PropertyColumn Property="@(admin => admin.Username)" Title="Username" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(admin => admin.Title)" Title="Title" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(admin => admin.Rank)" Title="Rank" Class="text-primary-1"></PropertyColumn>
     <TemplateColumn Title="Flags" Context="admin">
         @FormatFlags(admin.Flags)
     </TemplateColumn>

@@ -28,16 +28,16 @@
            Items="@_bansList.AsQueryable()"
            Pagination="@_pagination"
            Class="grow">
-    <PropertyColumn Property="@(ban => ban.PlayerName)" Title="Name"></PropertyColumn>
-    <PropertyColumn Property="@(ban => RedactIp(ban.IPAddress))" Title="IP"></PropertyColumn>
-    <PropertyColumn Property="@(ban => RedactHwid(ban.Hwid))" Title="HWID"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.PlayerUserId)" Title="GUID"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.Reason)" Title="Reason"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.PlayerName)" Title="Name" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(ban => RedactIp(ban.IPAddress))" Title="IP" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(ban => RedactHwid(ban.Hwid))" Title="HWID" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.PlayerUserId)" Title="GUID" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.Reason)" Title="Reason" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.BanTime)" Title="Ban Time" Format="yyyy-MM-dd HH:mm:ss"
-                    Sortable="true"></PropertyColumn>
+                    Sortable="true" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.ExpirationTime)" Title="Expires" Format="yyyy-MM-dd HH:mm:ss"
-                    Sortable="true"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.Admin)" Title="Banning Admin"></PropertyColumn>
+                    Sortable="true" Class="text-primary-1"></PropertyColumn>
+    <PropertyColumn Property="@(ban => ban.Admin)" Title="Banning Admin" Class="text-primary-1"></PropertyColumn>
     <TemplateColumn Title="Hits">
         @if (context.HitCount > 0)
         {

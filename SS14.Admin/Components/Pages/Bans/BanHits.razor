@@ -89,15 +89,15 @@
                        Items="@GetFilteredConnections()"
                        Pagination="@_pagination"
                        Class="w-full">
-                <PropertyColumn Property="@(c => c.UserName)" Title="Username" Sortable="true" />
-                <PropertyColumn Property="@(c => c.UserId)" Title="User ID" Sortable="true" />
+                <PropertyColumn Property="@(c => c.UserName)" Title="Username" Sortable="true" Class="text-primary-1" />
+                <PropertyColumn Property="@(c => c.UserId)" Title="User ID" Sortable="true" Class="text-primary-1" />
                 @if (ShowPII)
                 {
-                    <PropertyColumn Property="@(c => c.Address)" Title="IP Address" />
-                    <PropertyColumn Property="@(c => c.HWId)" Title="HWID" />
+                    <PropertyColumn Property="@(c => c.Address)" Title="IP Address" Class="text-primary-1" />
+                    <PropertyColumn Property="@(c => c.HWId)" Title="HWID" Class="text-primary-1" />
                 }
-                <PropertyColumn Property="@(c => c.Time)" Title="Connection Time" Format="yyyy-MM-dd HH:mm:ss" Sortable="true" />
-                <PropertyColumn Property="@(c => c.ServerName)" Title="Server" Sortable="true" />
+                <PropertyColumn Property="@(c => c.Time)" Title="Connection Time" Format="yyyy-MM-dd HH:mm:ss" Sortable="true" Class="text-primary-1" />
+                <PropertyColumn Property="@(c => c.ServerName)" Title="Server" Sortable="true" Class="text-primary-1" />
                 <TemplateColumn Title="Status">
                     @if (context.Denied.HasValue)
                     {
