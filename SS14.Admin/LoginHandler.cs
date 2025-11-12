@@ -40,7 +40,8 @@ namespace SS14.Admin
 
             if (adminData == null)
             {
-                ctx.Response.Redirect(_linkGenerator.GetUriByPage(ctx.HttpContext, "/LoginFailed")!);
+                var redirectUrl = "/unauthorized?notAdmin=true";
+                ctx.Response.Redirect(redirectUrl);
 
                 ctx.HandleResponse();
                 return;

@@ -1,11 +1,24 @@
 ﻿@page "/unauthorized"
 @using SS14.Admin.Services
+@using Microsoft.AspNetCore.WebUtilities
 @inject ClientPreferencesService ClientPreferences
 @inject IConfiguration Configuration
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 
 <div class="@(_clientPreferences.darkMode ? "dark" : "")">
+    <!-- Loading Overlay -->
+    @if (_isAuthenticating)
+    {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 dark:bg-gray-900/70 backdrop-blur-sm transition-opacity duration-300">
+            <div class="text-center">
+                <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-solid border-blue-500 border-t-transparent"></div>
+                <p class="mt-4 text-white font-medium text-lg">Authenticating...</p>
+            </div>
+        </div>
+    }
+
     <main class="h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center relative overflow-hidden">
 
         <!-- Animated Background Elements -->
@@ -33,7 +46,7 @@
                 </div>
 
                 <!-- Login Form -->
-                <form action="./login" class="space-y-4">
+                <form action="./login" method="post" class="space-y-4">
                     <div class="text-center mb-6">
                         <p class="text-gray-600 dark:text-gray-300 text-sm">
                             Please authenticate to access the admin panel
@@ -43,6 +56,7 @@
                     <!-- Login Button -->
                     <button
                         type="submit"
+                        @onclick="OnLoginClick"
                         class="w-full px-6 py-3 font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                     >
                         <span class="flex items-center justify-center gap-2">
@@ -81,6 +95,9 @@
                     </p>
                 </div>
             </div>
+
+            <!-- Not Admin Banner - slides in under login box -->
+            <NotAdminBanner @bind-Visible="@_showNotAdminBanner" AutoHideMs="10000" />
         </div>
     </main>
 </div>
@@ -88,6 +105,31 @@
 @code {
     private ClientPreferencesService.ClientPreferences _clientPreferences;
     private bool _showDevBypass = false;
+    private bool _showNotAdminBanner = false;
+    private bool _isAuthenticating = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if we're in the middle of authentication
+        var uri = new Uri(Navigation.Uri);
+
+        // First, check sessionStorage to see if we're returning from OAuth
+        try
+        {
+            var isAuthenticating = await JSRuntime.InvokeAsync<string>("sessionStorage.getItem", "isAuthenticating");
+            if (isAuthenticating == "true")
+            {
+                _isAuthenticating = true;
+            }
+        }
+        catch { }
+
+        // If there's a login-related query or we just came from OIDC, show loading
+        if (uri.Query.Contains("ReturnUrl") || uri.Query.Contains("code="))
+        {
+            _isAuthenticating = true;
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -100,6 +142,40 @@
             var isDevelopmentMode = Configuration.GetValue<bool>("DevelopmentMode", false);
             var isLocalhost = await IsLocalhost();
             _showDevBypass = isDevelopmentMode && isLocalhost;
+
+            // Check for notAdmin query parameter
+            var uri = new Uri(Navigation.Uri);
+            var queryParams = QueryHelpers.ParseQuery(uri.Query);
+            if (queryParams.TryGetValue("notAdmin", out var notAdminValue) && notAdminValue == "true")
+            {
+                // Turn off authenticating state
+                _isAuthenticating = false;
+
+                // Clear sessionStorage
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("sessionStorage.removeItem", "isAuthenticating");
+                }
+                catch { }
+
+                // Show the banner
+                _showNotAdminBanner = true;
+
+                // Remove the query parameter from URL to avoid re-showing on refresh
+                Navigation.NavigateTo("/unauthorized", false);
+            }
+            else
+            {
+                // If no notAdmin flag, turn off loading state
+                _isAuthenticating = false;
+
+                // Clear sessionStorage
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("sessionStorage.removeItem", "isAuthenticating");
+                }
+                catch { }
+            }
 
             StateHasChanged();
         }
@@ -116,6 +192,20 @@
         {
             return false;
         }
+    }
+
+    private async Task OnLoginClick()
+    {
+        _isAuthenticating = true;
+
+        // Store in sessionStorage so it persists across page navigation
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("sessionStorage.setItem", "isAuthenticating", "true");
+        }
+        catch { }
+
+        StateHasChanged();
     }
 
     private void DevBypassLogin()
