@@ -30,7 +30,10 @@
             <NavLink href="/Login/Logout" class="text-link-1">Logout</NavLink>
             <!--<img class="rounded-full h-8 w-8" height="32" alt="@placeholder" src="https://i.pravatar.cc/32" width="32">-->
         </div>
-        <DarkModeToggle />
+        <div class="flex gap-x-2">
+            <PiiToggle />
+            <DarkModeToggle />
+        </div>
     </header>
 
     <div class="flex h-full-content bg-secondary-1">
@@ -58,7 +61,7 @@
     private Task<AuthenticationState>? AuthState { get; set; }
 
     [Inject]
-    private PostgresServerDbContext? Context { get; set; }
+    private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
 
     private string adminUsername = string.Empty;
     private string adminSubtitle = string.Empty;
@@ -76,7 +79,9 @@
 
         // Little bit of fun to show the admin title
         var userId = user.Claims.GetUserId();
-        var adminData = await Context.Admin
+
+        await using var context = await ContextFactory!.CreateDbContextAsync();
+        var adminData = await context.Admin
             .Include(a => a.AdminRank)
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.UserId == userId);

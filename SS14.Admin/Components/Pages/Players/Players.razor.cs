@@ -7,10 +7,11 @@ using SS14.Admin.Models;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
+using SS14.Admin.Services;
 
 namespace SS14.Admin.Components.Pages.Players;
 
-public partial class Players
+public partial class Players : IDisposable
 {
     [Inject]
     private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
@@ -18,10 +19,17 @@ public partial class Players
     [Inject]
     private AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
 
+    [Inject]
+    private ClientPreferencesService? ClientPreferences { get; set; }
+
+    [Inject]
+    private IPiiRedactor? PiiRedactor { get; set; }
+
     [SupplyParameterFromForm(FormName = "playerFilter")]
     public PlayerFilterModel _model { get; set; } = new();
 
     private ClaimsPrincipal? _user;
+    private bool _shouldCensorPii;
 
     public QuickGrid<PlayerViewModel> Grid { get; set; }
 
@@ -33,7 +41,33 @@ public partial class Players
     {
         var authState = await AuthenticationStateProvider!.GetAuthenticationStateAsync();
         _user = authState.User;
+
+        // Initially censor PII until we can load client preferences
+        var hasPiiPermission = _user.IsInRole(Constants.PIIRole);
+        _shouldCensorPii = !hasPiiPermission;
+
+        ClientPreferences!.OnChange += OnPreferencesChanged;
+
         await Refresh();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Now we can safely call JavaScript interop to get client preferences
+            var hasPiiPermission = _user?.IsInRole(Constants.PIIRole) ?? false;
+            var clientPrefs = await ClientPreferences!.GetClientPreferences();
+            _shouldCensorPii = !hasPiiPermission || clientPrefs.censorPii;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void OnPreferencesChanged(ClientPreferencesService.ClientPreferences preferences)
+    {
+        var hasPiiPermission = _user?.IsInRole(Constants.PIIRole) ?? false;
+        _shouldCensorPii = !hasPiiPermission || preferences.censorPii;
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task Refresh()
@@ -41,6 +75,42 @@ public partial class Players
         await using var context = await ContextFactory!.CreateDbContextAsync();
         _playersList = await GetPlayersQuery(context).ToListAsync();
         await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Redacts an IP address based on PII settings
+    /// </summary>
+    private string RedactIp(string ipAddress)
+    {
+        if (string.IsNullOrWhiteSpace(ipAddress) || !_shouldCensorPii)
+            return ipAddress;
+
+        if (System.Net.IPAddress.TryParse(ipAddress, out var ip))
+        {
+            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                return PiiRedactor!.RedactIPv4(ipAddress);
+            else
+                return PiiRedactor!.RedactIPv6(ipAddress);
+        }
+        return ipAddress;
+    }
+
+    /// <summary>
+    /// Redacts a HWID based on PII settings
+    /// </summary>
+    private string RedactHwid(string hwid)
+    {
+        if (string.IsNullOrWhiteSpace(hwid) || !_shouldCensorPii)
+            return hwid;
+        return PiiRedactor!.RedactHardwareId(hwid);
+    }
+
+    public void Dispose()
+    {
+        if (ClientPreferences != null)
+        {
+            ClientPreferences.OnChange -= OnPreferencesChanged;
+        }
     }
 
     private async Task OnFilterSubmit(EditContext context)

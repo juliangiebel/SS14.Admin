@@ -29,8 +29,8 @@
            Pagination="@_pagination"
            Class="grow">
     <PropertyColumn Property="@(ban => ban.PlayerName)" Title="Name"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.IPAddress)" Title="IP"></PropertyColumn>
-    <PropertyColumn Property="@(ban => ban.Hwid)" Title="HWID"></PropertyColumn>
+    <PropertyColumn Property="@(ban => RedactIp(ban.IPAddress))" Title="IP"></PropertyColumn>
+    <PropertyColumn Property="@(ban => RedactHwid(ban.Hwid))" Title="HWID"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.PlayerUserId)" Title="GUID"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.Reason)" Title="Reason"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.BanTime)" Title="Ban Time" Format="yyyy-MM-dd HH:mm:ss"

@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.EntityFrameworkCore;
 using SS14.Admin.Helpers;
 using Microsoft.AspNetCore.Components.Authorization;
+using SS14.Admin.Services;
+using System.Security.Claims;
 
 namespace SS14.Admin.Components.Pages.Connections;
 
-public partial class ConnectionHits
+public partial class ConnectionHits : IDisposable
 {
     [Inject]
     private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
@@ -15,8 +17,13 @@ public partial class ConnectionHits
     [Inject]
     private BanHelper? BanHelper { get; set; }
 
+    [Inject]
+    private ClientPreferencesService? ClientPreferences { get; set; }
+
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+    private ClaimsPrincipal? _user;
 
     [Parameter]
     public int ConnectionId { get; set; }
@@ -40,7 +47,29 @@ public partial class ConnectionHits
 
     protected override async Task OnInitializedAsync()
     {
+        // Check if user has PII flag
+        var authState = await AuthenticationState!;
+        _user = authState.User;
+        var hasPiiPermission = _user.IsInRole(Constants.PIIRole);
+
+        // Initially hide PII until we can load client preferences
+        ShowPII = hasPiiPermission;
+
+        ClientPreferences!.OnChange += OnPreferencesChanged;
+
         await LoadData();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Now we can safely call JavaScript interop to get client preferences
+            var hasPiiPermission = _user?.IsInRole(Constants.PIIRole) ?? false;
+            var clientPrefs = await ClientPreferences!.GetClientPreferences();
+            ShowPII = hasPiiPermission && !clientPrefs.censorPii;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     protected override async Task OnParametersSetAsync()
@@ -54,10 +83,6 @@ public partial class ConnectionHits
     private async Task LoadData()
     {
         _loading = true;
-
-        // Check if user has PII role
-        var authState = await AuthenticationState!;
-        ShowPII = authState.User.IsInRole(Constants.PIIRole);
 
         await using var context = await ContextFactory!.CreateDbContextAsync();
 
@@ -151,6 +176,13 @@ public partial class ConnectionHits
     }
 
     // When the user confirms, unban the ban and refresh
+    private void OnPreferencesChanged(ClientPreferencesService.ClientPreferences preferences)
+    {
+        var hasPiiPermission = _user?.IsInRole(Constants.PIIRole) ?? false;
+        ShowPII = hasPiiPermission && !preferences.censorPii;
+        InvokeAsync(StateHasChanged);
+    }
+
     private async Task ConfirmUnban(int banId)
     {
         _confirmations[banId] = false;
@@ -158,6 +190,14 @@ public partial class ConnectionHits
 
         await UnbanBan(banId);
         await LoadData();
+    }
+
+    public void Dispose()
+    {
+        if (ClientPreferences != null)
+        {
+            ClientPreferences.OnChange -= OnPreferencesChanged;
+        }
     }
 
     // Unban a ban by creating an Unban entity

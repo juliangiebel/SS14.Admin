@@ -34,6 +34,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 builder.Services.AddScoped<ClientPreferencesService>();
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IFilterKeyService, FilterKeyService>();
+builder.Services.AddSingleton<IPiiRedactor, PiiRedactor>();
 
 var connStr = builder.Configuration.GetConnectionString("DefaultConnection");
 if (connStr == null)

@@ -17,8 +17,8 @@
     <PropertyColumn Property="@(c => c.Time)" Title="Time" Sortable="true" IsDefaultSortColumn InitialSortDirection="SortDirection.Descending" Format="yyyy-MM-dd HH:mm:ss" Class="text-primary-1 w-48"></PropertyColumn>
     <PropertyColumn Property="@(c => c.UserName)" Title="Username" Sortable="true" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(c => c.UserId)" Title="User ID" Class="text-primary-1 font-mono text-sm"></PropertyColumn>
-    <PropertyColumn Property="@(c => c.Address)" Title="IP Address" Class="text-primary-1 font-mono text-sm"></PropertyColumn>
-    <PropertyColumn Property="@(c => c.HWId)" Title="HWID" Class="text-primary-1 font-mono text-sm"></PropertyColumn>
+    <PropertyColumn Property="@(c => RedactIp(c.Address))" Title="IP Address" Class="text-primary-1 font-mono text-sm"></PropertyColumn>
+    <PropertyColumn Property="@(c => RedactHwid(c.HWId))" Title="HWID" Class="text-primary-1 font-mono text-sm"></PropertyColumn>
     <PropertyColumn Property="@(c => c.ServerName)" Title="Server" Sortable="true" Class="text-primary-1"></PropertyColumn>
     <TemplateColumn Title="Status" SortBy="@(GridSort<ConnectionViewModel>.ByAscending(c => c.Denied))">
         @if (context.Denied == null)

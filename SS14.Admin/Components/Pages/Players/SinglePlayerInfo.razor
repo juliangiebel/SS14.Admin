@@ -62,27 +62,25 @@
                     <dt>Last seen time:</dt>
                     <dd>@PlayerModel.LastSeen.ToString("yyyy-MM-dd HH:mm:ss") UTC</dd>
 
-                    <AuthorizeView Roles="PII">
-                        <Authorized>
-                            <dt>Last seen address:</dt>
-                            <dd>
-                                <code>
-                                    <a href="/connections?search=@PlayerModel.LastSeenIPAddress">
-                                        @PlayerModel.LastSeenIPAddress
-                                    </a>
-                                </code>
-                            </dd>
+                    <dt>Last seen address:</dt>
+                    <dd>
+                        <code>
+                            <button @onclick="() => NavigateToConnectionsByIp(PlayerModel.LastSeenIPAddress)"
+                                    class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer bg-transparent border-0 p-0">
+                                @RedactIp(PlayerModel.LastSeenIPAddress)
+                            </button>
+                        </code>
+                    </dd>
 
-                            <dt>Last seen HWID:</dt>
-                            <dd>
-                                <code>
-                                    <a href="/connections?search=@PlayerModel.LastSeenHwid">
-                                        @PlayerModel.LastSeenHwid
-                                    </a>
-                                </code>
-                            </dd>
-                        </Authorized>
-                    </AuthorizeView>
+                    <dt>Last seen HWID:</dt>
+                    <dd>
+                        <code>
+                            <button @onclick="() => NavigateToConnectionsByHwid(PlayerModel.LastSeenHwid)"
+                                    class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer bg-transparent border-0 p-0">
+                                @RedactHwid(PlayerModel.LastSeenHwid)
+                            </button>
+                        </code>
+                    </dd>
 
                     <dt>Whitelisted:</dt>
                     <dd>
@@ -339,12 +337,8 @@
                                     <th>Banned By</th>
                                     <th>Ban Time (UTC)</th>
                                     <th>Expires (UTC)</th>
-                                    <AuthorizeView Roles="PII">
-                                        <Authorized>
-                                            <th>Address</th>
-                                            <th>HWID</th>
-                                        </Authorized>
-                                    </AuthorizeView>
+                                    <th>Address</th>
+                                    <th>HWID</th>
                                     <th>Unban Info</th>
                                 </tr>
                             </thead>
@@ -386,30 +380,26 @@
                                                 <span class="badge badge-permanent">Permanent</span>
                                             }
                                         </td>
-                                        <AuthorizeView Roles="PII">
-                                            <Authorized>
-                                                <td>
-                                                    @if (!string.IsNullOrEmpty(ban.Address))
-                                                    {
-                                                        <code>@ban.Address</code>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="text-muted">N/A</span>
-                                                    }
-                                                </td>
-                                                <td>
-                                                    @if (!string.IsNullOrEmpty(ban.Hwid))
-                                                    {
-                                                        <code>@ban.Hwid</code>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="text-muted">N/A</span>
-                                                    }
-                                                </td>
-                                            </Authorized>
-                                        </AuthorizeView>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(ban.Address))
+                                            {
+                                                <code>@RedactIp(ban.Address)</code>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(ban.Hwid))
+                                            {
+                                                <code>@RedactHwid(ban.Hwid)</code>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
                                         <td>
                                             @if (ban.UnbanTime.HasValue)
                                             {
@@ -453,12 +443,8 @@
                                     <th>Banned By</th>
                                     <th>Ban Time (UTC)</th>
                                     <th>Expires (UTC)</th>
-                                    <AuthorizeView Roles="PII">
-                                        <Authorized>
-                                            <th>Address</th>
-                                            <th>HWID</th>
-                                        </Authorized>
-                                    </AuthorizeView>
+                                    <th>Address</th>
+                                    <th>HWID</th>
                                     <th>Unban Info</th>
                                 </tr>
                             </thead>
@@ -501,30 +487,26 @@
                                                 <span class="badge badge-permanent">Permanent</span>
                                             }
                                         </td>
-                                        <AuthorizeView Roles="PII">
-                                            <Authorized>
-                                                <td>
-                                                    @if (!string.IsNullOrEmpty(ban.Address))
-                                                    {
-                                                        <code>@ban.Address</code>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="text-muted">N/A</span>
-                                                    }
-                                                </td>
-                                                <td>
-                                                    @if (!string.IsNullOrEmpty(ban.Hwid))
-                                                    {
-                                                        <code>@ban.Hwid</code>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="text-muted">N/A</span>
-                                                    }
-                                                </td>
-                                            </Authorized>
-                                        </AuthorizeView>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(ban.Address))
+                                            {
+                                                <code>@RedactIp(ban.Address)</code>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(ban.Hwid))
+                                            {
+                                                <code>@RedactHwid(ban.Hwid)</code>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
                                         <td>
                                             @if (ban.UnbanTime.HasValue)
                                             {

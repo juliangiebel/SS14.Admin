@@ -1,5 +1,6 @@
 ﻿/**
- * Gets the client's preferences, i.e. dark mode.
+ * Gets the client's preferences, i.e. dark mode and PII censoring.
+ * yes i know this is on darkmode.js or whatever ill refactor it sometime
  * @returns {ClientPreferences}
  */
 window.getClientPreferences = () => {
@@ -14,7 +15,11 @@ window.getClientPreferences = () => {
         darkMode = darkModeOverride === "true";
     }
 
+    // Get PII censoring preference (defaults to false if not set)
+    let censorPii = localStorage.getItem("censorPii") === "true";
+
     return {
-        darkMode
+        darkMode,
+        censorPii
     };
 }

@@ -6,15 +6,21 @@ using Microsoft.EntityFrameworkCore;
 using SS14.Admin.Helpers;
 using System.Security.Claims;
 using System.Text.Json;
+using SS14.Admin.Services;
+using SS14.Admin.Models;
 
 namespace SS14.Admin.Components.Pages.Players
 {
-    public partial class SinglePlayerInfo : ComponentBase
+    public partial class SinglePlayerInfo : ComponentBase, IDisposable
     {
     [Inject] private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
     [Inject] private BanHelper? BanHelper { get; set; }
     [Inject] private AuthenticationStateProvider? AuthStateProvider { get; set; }
     [Inject] private IHttpClientFactory? HttpClientFactory { get; set; }
+    [Inject] private ClientPreferencesService? ClientPreferences { get; set; }
+    [Inject] private IFilterKeyService? FilterKeyService { get; set; }
+    [Inject] private NavigationManager? Navigation { get; set; }
+    [Inject] private IPiiRedactor? PiiRedactor { get; set; }
     [Parameter] public Guid userId { get; set; }
 
         public PlayerViewModel? PlayerModel { get; set; }
@@ -26,6 +32,7 @@ namespace SS14.Admin.Components.Pages.Players
         public List<RoleBanViewModel> RoleBans { get; set; } = new();
         public DateTime? AccountCreationDate { get; set; }
         public bool HasActiveBan => Bans.Any(b => b.IsActive);
+        public bool ShowPII { get; set; }
 
         private bool _isLoading = true;
         private ClaimsPrincipal? _user;
@@ -38,16 +45,34 @@ namespace SS14.Admin.Components.Pages.Players
 
         protected override async Task OnInitializedAsync()
         {
+            // Get the current user for PII checks
+            var authState = await AuthStateProvider!.GetAuthenticationStateAsync();
+            _user = authState.User;
+
+            // Initially hide PII until we can load client preferences
+            var hasPiiPermission = _user.IsInRole(Constants.PIIRole);
+            ShowPII = hasPiiPermission;
+
+            ClientPreferences!.OnChange += OnPreferencesChanged;
+
             await LoadPlayerDataAsync();
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                // Now we can safely call JavaScript interop to get client preferences
+                var hasPiiPermission = _user?.IsInRole(Constants.PIIRole) ?? false;
+                var clientPrefs = await ClientPreferences!.GetClientPreferences();
+                ShowPII = hasPiiPermission && !clientPrefs.censorPii;
+                await InvokeAsync(StateHasChanged);
+            }
         }
 
         private async Task LoadPlayerDataAsync()
         {
             _isLoading = true;
-
-            // Get the current user for PII checks
-            var authState = await AuthStateProvider!.GetAuthenticationStateAsync();
-            _user = authState.User;
 
             await using var context = await ContextFactory!.CreateDbContextAsync();
 
@@ -258,9 +283,88 @@ namespace SS14.Admin.Components.Pages.Players
             }
         }
 
+        private void OnPreferencesChanged(ClientPreferencesService.ClientPreferences preferences)
+        {
+            var hasPiiPermission = _user?.IsInRole(Constants.PIIRole) ?? false;
+            ShowPII = hasPiiPermission && !preferences.censorPii;
+            InvokeAsync(StateHasChanged);
+        }
+
         private void CancelToggleWhitelist()
         {
             _showWhitelistDialog = false;
+        }
+
+        /// <summary>
+        /// Navigates to connections page with a filter for the given IP address.
+        /// Uses opaque filter key to prevent PII leakage in URL.
+        /// </summary>
+        private void NavigateToConnectionsByIp(string ipAddress)
+        {
+            if (string.IsNullOrWhiteSpace(ipAddress))
+                return;
+
+            var filterCriteria = new FilterCriteria
+            {
+                UserId = _user?.Identity?.Name ?? "unknown",
+                Type = FilterType.Connections,
+                Search = ipAddress
+            };
+
+            var filterKey = FilterKeyService!.CreateFilterKey(filterCriteria);
+            Navigation!.NavigateTo($"/connections?fk={filterKey}");
+        }
+
+        /// <summary>
+        /// Navigates to connections page filtered by this player's UserId.
+        /// Note: We search by UserId instead of HWID because HWIDs are complex types that can't be queried in EF.
+        /// Uses opaque filter key to prevent PII leakage in URL.
+        /// </summary>
+        private void NavigateToConnectionsByHwid(string hwid)
+        {
+            if (string.IsNullOrWhiteSpace(hwid))
+                return;
+
+            // Search by the player's UserId instead of HWID (EF Core compatibility)
+            var filterCriteria = new FilterCriteria
+            {
+                UserId = _user?.Identity?.Name ?? "unknown",
+                Type = FilterType.Connections,
+                Search = userId.ToString() // Use the player's GUID, not the HWID
+            };
+
+            var filterKey = FilterKeyService!.CreateFilterKey(filterCriteria);
+            Navigation!.NavigateTo($"/connections?fk={filterKey}");
+        }
+
+        private string RedactIp(string ipAddress)
+        {
+            if (string.IsNullOrWhiteSpace(ipAddress) || ShowPII)
+                return ipAddress;
+
+            if (System.Net.IPAddress.TryParse(ipAddress, out var ip))
+            {
+                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    return PiiRedactor!.RedactIPv4(ipAddress);
+                else
+                    return PiiRedactor!.RedactIPv6(ipAddress);
+            }
+            return ipAddress;
+        }
+
+        private string RedactHwid(string hwid)
+        {
+            if (string.IsNullOrWhiteSpace(hwid) || ShowPII)
+                return hwid;
+            return PiiRedactor!.RedactHardwareId(hwid);
+        }
+
+        public void Dispose()
+        {
+            if (ClientPreferences != null)
+            {
+                ClientPreferences.OnChange -= OnPreferencesChanged;
+            }
         }
 
         private async Task FetchAccountCreationDateAsync(Guid userId)

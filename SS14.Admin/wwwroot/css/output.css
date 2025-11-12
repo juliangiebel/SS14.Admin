@@ -2097,6 +2097,11 @@ button:disabled {
   border-width: 1px;
 }
 
+.border-0
+{
+  border-width: 0px;
+}
+
 .border-b
 {
   border-bottom-width: 1px;
@@ -2378,6 +2383,11 @@ button:disabled {
   background-color: rgb(87 83 78 / var(--tw-bg-opacity, 1));
 }
 
+.bg-transparent
+{
+  background-color: transparent;
+}
+
 .bg-white
 {
   --tw-bg-opacity: 1;
@@ -2462,6 +2472,11 @@ button:disabled {
 .to-red-600
 {
   --tw-gradient-to: #dc2626 var(--tw-gradient-to-position);
+}
+
+.p-0
+{
+  padding: 0px;
 }
 
 .p-2

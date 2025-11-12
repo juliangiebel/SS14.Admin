@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Microsoft.JSInterop;
 
 namespace SS14.Admin.Services;
@@ -38,11 +37,24 @@ public sealed class ClientPreferencesService(IJSRuntime jsRuntime)
     }
 
     /// <summary>
+    /// Toggles the current state of PII censoring, raising the appropriate event.
+    /// This sets an explicit override for censoring PII on the client side.
+    /// </summary>
+    public async Task TogglePiiCensoring()
+    {
+        var clientPreferences = await GetClientPreferences();
+        var newClientPreferences = new ClientPreferences{darkMode = clientPreferences.darkMode, censorPii = !clientPreferences.censorPii};
+        await jsRuntime.InvokeVoidAsync("localStorage.setItem", "censorPii", newClientPreferences.censorPii ? "true" : "false");
+        OnChange?.Invoke(newClientPreferences);
+    }
+
+    /// <summary>
     /// JSON struct for passing the client preferences between the client and server.
     /// </summary>
     public record struct ClientPreferences
     {
         // FIXME: It doesn't marshal for some reason if I use JsonPropertyName
         public bool darkMode { get; set; }
+        public bool censorPii { get; set; }
     };
 }

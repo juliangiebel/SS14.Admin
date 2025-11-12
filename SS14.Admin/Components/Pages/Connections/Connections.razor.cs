@@ -4,13 +4,38 @@ using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.EntityFrameworkCore;
 using SS14.Admin.Helpers;
 using SS14.Admin.Models;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
+using SS14.Admin.Services;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace SS14.Admin.Components.Pages.Connections;
 
-public partial class Connections
+public partial class Connections : IDisposable
 {
     [Inject]
     private IDbContextFactory<PostgresServerDbContext>? ContextFactory { get; set; }
+
+    [Inject]
+    private AuthenticationStateProvider? AuthenticationStateProvider { get; set; }
+
+    [Inject]
+    private ClientPreferencesService? ClientPreferences { get; set; }
+
+    [Inject]
+    private IFilterKeyService? FilterKeyService { get; set; }
+
+    [Inject]
+    private NavigationManager? Navigation { get; set; }
+
+    [Inject]
+    private IPiiRedactor? PiiRedactor { get; set; }
+
+    private ClaimsPrincipal? _user;
+    private bool _shouldCensorPii;
+
+    // Store filterKey search separately to avoid exposing PII in the search box UI
+    private string? _filterKeySearch;
 
     private readonly ConnectionsFilterModel _filter = new();
     public QuickGrid<ConnectionViewModel>? Grid { get; set; }
@@ -21,6 +46,31 @@ public partial class Connections
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider!.GetAuthenticationStateAsync();
+        _user = authState.User;
+
+        // Initially censor PII until we can load client preferences
+        var hasPiiPermission = _user.IsInRole(Constants.PIIRole);
+        _shouldCensorPii = !hasPiiPermission;
+
+        // Check for filterKey in query parameters
+        var uri = new Uri(Navigation!.Uri);
+        var queryParams = QueryHelpers.ParseQuery(uri.Query);
+
+        if (queryParams.TryGetValue("fk", out var filterKeyValue) && !string.IsNullOrWhiteSpace(filterKeyValue))
+        {
+            var userId = _user.Identity?.Name ?? "unknown";
+            var filterCriteria = FilterKeyService!.GetFilterCriteria(filterKeyValue, userId);
+
+            if (filterCriteria != null)
+            {
+                // Apply filter criteria to the filter model
+                ApplyFilterCriteria(filterCriteria);
+            }
+        }
+
+        ClientPreferences!.OnChange += OnPreferencesChanged;
+
         _connectionsProvider = async request =>
         {
             await using var context = await ContextFactory!.CreateDbContextAsync();
@@ -73,6 +123,18 @@ public partial class Connections
         };
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Now we can safely call JavaScript interop to get client preferences
+            var hasPiiPermission = _user?.IsInRole(Constants.PIIRole) ?? false;
+            var clientPrefs = await ClientPreferences!.GetClientPreferences();
+            _shouldCensorPii = !hasPiiPermission || clientPrefs.censorPii;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
     private IQueryable<ConnectionViewModel> ConnectionsQuery(PostgresServerDbContext context)
     {
         var acceptableDenies = new List<ConnectionDenyReason?>();
@@ -98,9 +160,28 @@ public partial class Connections
             .Include(c => c.BanHits)
             .Where(c => acceptableDenies.Contains(c.Denied));
 
-        // Apply filters on the entity before projection
-        if (!string.IsNullOrWhiteSpace(_filter.Search))
+        // Handle FilterKey search (IP/UserId) vs manual search (Username/GUID) differently
+        if (!string.IsNullOrWhiteSpace(_filterKeySearch))
         {
+            // FilterKey search - try to match IP address or UserId
+            var searchTerm = _filterKeySearch;
+
+            // Try to parse as IP address
+            if (System.Net.IPAddress.TryParse(searchTerm, out var ipAddress))
+            {
+                // Search by IP address directly
+                connectionQuery = connectionQuery.Where(c => c.Address == ipAddress);
+            }
+            // Try to parse as GUID
+            else if (Guid.TryParse(searchTerm, out var userGuid))
+            {
+                // Search by UserId - this is used for HWID links (since HWIDs can't be queried in EF)
+                connectionQuery = connectionQuery.Where(c => c.UserId == userGuid);
+            }
+        }
+        else if (!string.IsNullOrWhiteSpace(_filter.Search))
+        {
+            // Manual search from form - search username and userId only
             var searchUpper = _filter.Search.ToUpper();
             connectionQuery = connectionQuery.Where(c =>
                 c.UserName.ToUpper().Contains(searchUpper) ||
@@ -149,9 +230,94 @@ public partial class Connections
     {
     }
 
+    private void OnPreferencesChanged(ClientPreferencesService.ClientPreferences preferences)
+    {
+        var hasPiiPermission = _user?.IsInRole(Constants.PIIRole) ?? false;
+        _shouldCensorPii = !hasPiiPermission || preferences.censorPii;
+        InvokeAsync(StateHasChanged);
+    }
+
     private async Task RefreshFilter()
     {
         await Grid!.RefreshDataAsync();
+    }
+
+    /// <summary>
+    /// Applies filter criteria from a FilterKey to the current filter model.
+    /// IMPORTANT: Search criteria is stored in _filterKeySearch to avoid exposing PII in the UI.
+    /// </summary>
+    private void ApplyFilterCriteria(FilterCriteria criteria)
+    {
+        if (!string.IsNullOrWhiteSpace(criteria.Search))
+        {
+            // Store in internal field, NOT in _filter.Search (which shows in the search box UI)
+            _filterKeySearch = criteria.Search;
+        }
+
+        if (criteria.DateFrom.HasValue)
+        {
+            _filter.DateFrom = criteria.DateFrom.Value;
+        }
+
+        if (criteria.DateTo.HasValue)
+        {
+            _filter.DateTo = criteria.DateTo.Value;
+        }
+
+        if (criteria.ServerId.HasValue)
+        {
+            _filter.ServerId = criteria.ServerId.Value;
+        }
+
+        if (criteria.ConnectionTypes != null)
+        {
+            _filter.ShowAccepted = criteria.ConnectionTypes.ShowAccepted;
+            _filter.ShowBanned = criteria.ConnectionTypes.ShowBanned;
+            _filter.ShowWhitelist = criteria.ConnectionTypes.ShowWhitelist;
+            _filter.ShowFull = criteria.ConnectionTypes.ShowFull;
+            _filter.ShowPanic = criteria.ConnectionTypes.ShowPanic;
+            _filter.ShowBabyJail = criteria.ConnectionTypes.ShowBabyJail;
+            _filter.ShowIPChecks = criteria.ConnectionTypes.ShowIPChecks;
+        }
+    }
+
+    /// <summary>
+    /// Redacts an IP address based on PII settings
+    /// </summary>
+    private string RedactIp(string ipAddress)
+    {
+        if (string.IsNullOrWhiteSpace(ipAddress) || !_shouldCensorPii)
+            return ipAddress;
+
+        // Try to determine if it's IPv4 or IPv6
+        if (System.Net.IPAddress.TryParse(ipAddress, out var ip))
+        {
+            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                return PiiRedactor!.RedactIPv4(ipAddress);
+            else
+                return PiiRedactor!.RedactIPv6(ipAddress);
+        }
+
+        return ipAddress;
+    }
+
+    /// <summary>
+    /// Redacts a HWID based on PII settings
+    /// </summary>
+    private string RedactHwid(string hwid)
+    {
+        if (string.IsNullOrWhiteSpace(hwid) || !_shouldCensorPii)
+            return hwid;
+
+        return PiiRedactor!.RedactHardwareId(hwid);
+    }
+
+    public void Dispose()
+    {
+        if (ClientPreferences != null)
+        {
+            ClientPreferences.OnChange -= OnPreferencesChanged;
+        }
     }
 
     public class ConnectionViewModel
