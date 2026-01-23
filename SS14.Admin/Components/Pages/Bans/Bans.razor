@@ -38,7 +38,7 @@
     <PropertyColumn Property="@(ban => ban.ExpirationTime)" Title="Expires" Format="yyyy-MM-dd HH:mm:ss"
                     Sortable="true" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.Admin)" Title="Banning Admin" Class="text-primary-1"></PropertyColumn>
-    <TemplateColumn Title="Hits">
+    <TemplateColumn Title="Hits" Class="text-primary-1">
         @if (context.HitCount > 0)
         {
             <NavLink href="@($"/bans/{context.Id.ToString()}/hits")" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
@@ -50,7 +50,7 @@
             <span class="text-gray-500">0</span>
         }
     </TemplateColumn>
-    <TemplateColumn Title="Actions">
+    <TemplateColumn>
         @if (context.Active)
         {
             @if (!_confirmations.ContainsKey(context.Id) || !_confirmations[context.Id])

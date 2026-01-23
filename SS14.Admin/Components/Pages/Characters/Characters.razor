@@ -21,7 +21,7 @@
         <PropertyColumn Property="@(c => c.Age)" Title="Age" Sortable="true" Class="text-primary-1" />
         <PropertyColumn Property="@(c => c.Sex)" Title="Sex" Sortable="true" Class="text-primary-1" />
         <PropertyColumn Property="@(c => c.Gender)" Title="Gender" Sortable="true" Class="text-primary-1" />
-        <TemplateColumn Title="Actions" Context="character">
+        <TemplateColumn Context="character">
             <NavLink href="@($"players/{character.PlayerUserId}")" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
                 View Player
             </NavLink>

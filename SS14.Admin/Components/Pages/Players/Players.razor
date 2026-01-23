@@ -19,9 +19,9 @@
     <PropertyColumn Property="@(player => RedactIp(player.LastSeenIPAddress))" Title="Last Seen Address" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(player => RedactHwid(player.LastSeenHwid))" Title="Last Seen Hwid" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(player => player.FirstSeen)" Title="First Seen" Class="text-primary-1"></PropertyColumn>
-    <TemplateColumn Title="Actions" Context="player">
-                <NavLink href="@($"players/{player.Guid.ToString()}")" class="btn btn-primary">
-                    <i class="ri-info-card-line"></i>
+    <TemplateColumn Title="Actions" Context="player" Class="text-primary-1">
+        <NavLink href="@($"players/{player.Guid.ToString()}")" class="btn">
+                    <i class="ri-info-card-line"> Player Info</i>
                 </NavLink>
     </TemplateColumn>
 </QuickGrid>

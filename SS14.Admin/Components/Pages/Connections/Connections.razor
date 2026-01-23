@@ -30,7 +30,7 @@
             <span class="text-red-600 dark:text-red-400 font-bold">@context.Denied</span>
         }
     </TemplateColumn>
-    <TemplateColumn Title="Ban Hits">
+    <TemplateColumn Title="Bans Hits" Class="text-primary-1">
         @if (context.BanHitCount > 0)
         {
             <NavLink href="@($"/connections/{context.Id}/hits")" class="text-blue-600 dark:text-blue-400 hover:underline font-semibold">

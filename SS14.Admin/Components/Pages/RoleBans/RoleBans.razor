@@ -35,7 +35,7 @@
                     Sortable="true" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.RoundId)" Title="Round" Class="text-primary-1"></PropertyColumn>
     <PropertyColumn Property="@(ban => ban.Admin)" Title="Banning Admin" Class="text-primary-1"></PropertyColumn>
-    <TemplateColumn Title="Actions">
+    <TemplateColumn>
         @if (context.Active)
         {
             @if (!_confirmations.ContainsKey(context.Id) || !_confirmations[context.Id])
@@ -55,7 +55,7 @@
         }
         else
         {
-            <span class="text-gray-500 italic">Already unbanned/expired</span>
+            <span class="text-gray-500 italic">Unbanned</span>
         }
     </TemplateColumn>
 </QuickGrid>
