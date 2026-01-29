@@ -96,8 +96,9 @@
                 </div>
             </div>
 
-            <!-- Not Admin Banner - slides in under login box -->
+            <!-- Error Messages -->
             <NotAdminBanner @bind-Visible="@_showNotAdminBanner" AutoHideMs="10000" />
+            <SuspendedAdminBanner @bind-Visible="@_showSuspendedBanner" AutoHideMs="10000" />
         </div>
     </main>
 </div>
@@ -106,6 +107,7 @@
     private ClientPreferencesService.ClientPreferences _clientPreferences;
     private bool _showDevBypass = false;
     private bool _showNotAdminBanner = false;
+    private bool _showSuspendedBanner = false;
     private bool _isAuthenticating = false;
 
     protected override async Task OnInitializedAsync()
@@ -160,6 +162,24 @@
 
                 // Show the banner
                 _showNotAdminBanner = true;
+
+                // Remove the query parameter from URL to avoid re-showing on refresh
+                Navigation.NavigateTo("/unauthorized", false);
+            }
+            else if (queryParams.TryGetValue("suspended", out var suspendedValue) && suspendedValue == "true")
+            {
+                // Turn off authenticating state
+                _isAuthenticating = false;
+
+                // Clear sessionStorage
+                try
+                {
+                    await JSRuntime.InvokeVoidAsync("sessionStorage.removeItem", "isAuthenticating");
+                }
+                catch { }
+
+                // Show the banner
+                _showSuspendedBanner = true;
 
                 // Remove the query parameter from URL to avoid re-showing on refresh
                 Navigation.NavigateTo("/unauthorized", false);
