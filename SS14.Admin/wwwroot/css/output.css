@@ -2293,9 +2293,21 @@ button:disabled {
   background-color: transparent !important;
 }
 
+.bg-amber-600
+{
+  --tw-bg-opacity: 1;
+  background-color: rgb(217 119 6 / var(--tw-bg-opacity, 1));
+}
+
 .bg-amber-600\/90
 {
   background-color: rgb(217 119 6 / 0.9);
+}
+
+.bg-amber-700
+{
+  --tw-bg-opacity: 1;
+  background-color: rgb(180 83 9 / var(--tw-bg-opacity, 1));
 }
 
 .bg-black
