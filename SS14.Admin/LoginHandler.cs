@@ -32,7 +32,6 @@ namespace SS14.Admin
             var guid = identity.Claims.GetUserId();
 
             var adminData = await _dbContext.Admin
-                .AsNoTracking()
                 .Include(a => a.AdminRank)
                 .ThenInclude(r => r!.Flags)
                 .Include(a => a.Flags)
@@ -42,15 +41,6 @@ namespace SS14.Admin
             if (adminData == null)
             {
                 var redirectUrl = "/unauthorized?notAdmin=true";
-                ctx.Response.Redirect(redirectUrl);
-
-                ctx.HandleResponse();
-                return;
-            }
-
-            if (adminData.Suspended)
-            {
-                var redirectUrl = "/unauthorized?suspended=true";
                 ctx.Response.Redirect(redirectUrl);
 
                 ctx.HandleResponse();

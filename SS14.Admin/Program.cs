@@ -1,9 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Security.Claims;
 using Content.Server.Database;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -68,39 +65,6 @@ builder.Services.AddAuthentication(options =>
     .AddCookie("Cookies", options =>
     {
         options.ExpireTimeSpan = TimeSpan.FromHours(1);
-        options.Events = new CookieAuthenticationEvents
-        {
-            OnValidatePrincipal = async context =>
-            {
-                var identity = context.Principal?.Identities?.FirstOrDefault(i => i.IsAuthenticated);
-                if (identity == null)
-                {
-                    return;
-                }
-
-                var userIdClaim = identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
-                {
-                    context.RejectPrincipal();
-                    await context.HttpContext.SignOutAsync("Cookies");
-                    return;
-                }
-
-                var dbContextFactory = context.HttpContext.RequestServices
-                    .GetRequiredService<IDbContextFactory<PostgresServerDbContext>>();
-                await using var dbContext = await dbContextFactory.CreateDbContextAsync();
-
-                var adminData = await dbContext.Admin
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(a => a.UserId == userId);
-
-                if (adminData == null || adminData.Suspended)
-                {
-                    context.RejectPrincipal();
-                    await context.HttpContext.SignOutAsync("Cookies");
-                }
-            }
-        };
     })
     .AddOpenIdConnect("oidc", options =>
     {
